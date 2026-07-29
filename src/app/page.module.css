@@ -1,0 +1,480 @@
+.page {
+  --bg: #eaf4fb;
+  --surface: #ffffff;
+  --ink: #10304f;
+  --primary: #2f7fc1;
+  --accent: #f5b942;
+  --teal: #4fa895;
+  --ink-soft: #4c6884;
+
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body), sans-serif;
+  overflow-x: hidden;
+}
+
+.page :global(h1),
+.page :global(h2),
+.page :global(h3) {
+  font-family: var(--font-display), sans-serif;
+  color: var(--ink);
+}
+
+/* ---------- NAV ---------- */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(234, 244, 251, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(16, 48, 79, 0.08);
+}
+
+.navInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+}
+
+.logo {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logoDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+}
+
+.navLink {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  transition: color 0.15s ease;
+}
+
+.navLink:hover {
+  color: var(--primary);
+}
+
+.ctaButton {
+  background: var(--ink) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.ctaButton:hover {
+  background: var(--primary) !important;
+}
+
+.ghostButton {
+  color: var(--ink) !important;
+  font-weight: 600 !important;
+}
+
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.burger span {
+  width: 22px;
+  height: 2px;
+  background: var(--ink);
+  border-radius: 2px;
+}
+
+.mobileMenu {
+  display: none;
+}
+
+@media (max-width: 48em) {
+  .burger {
+    display: flex;
+  }
+  :global(.mantine-Group-root)[data-mobile-hide] {
+    display: none;
+  }
+  .mobileMenu {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 24px 24px;
+  }
+  .mobileMenu a {
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 600;
+  }
+}
+
+/* ---------- HERO ---------- */
+.hero {
+  padding: 64px 0 40px;
+}
+
+.heroInner {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  align-items: center;
+}
+
+@media (max-width: 62em) {
+  .heroInner {
+    grid-template-columns: 1fr;
+  }
+}
+
+.eyebrow {
+  background: rgba(47, 127, 193, 0.12) !important;
+  color: var(--primary) !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 6px 14px !important;
+}
+
+.heroTitle {
+  font-size: 52px;
+  line-height: 1.08;
+  font-weight: 700;
+  margin-top: 20px;
+  letter-spacing: -0.5px;
+}
+
+@media (max-width: 36em) {
+  .heroTitle {
+    font-size: 36px;
+  }
+}
+
+.underline {
+  position: relative;
+  color: var(--primary);
+}
+
+.underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  height: 10px;
+  background: var(--accent);
+  opacity: 0.5;
+  z-index: -1;
+  border-radius: 4px;
+}
+
+.heroSubtitle {
+  font-size: 18px;
+  color: var(--ink-soft);
+  max-width: 460px;
+  margin-top: 20px;
+  line-height: 1.6;
+}
+
+.statRow {
+  padding-top: 32px;
+  border-top: 1px solid rgba(16, 48, 79, 0.1);
+}
+
+.statNum {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.statLabel {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.statDivider {
+  width: 1px;
+  height: 32px;
+  background: rgba(16, 48, 79, 0.15);
+}
+
+/* ---------- CLOTHESLINE SIGNATURE ---------- */
+.clotheslineWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.clotheslineSvg {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+}
+
+.swayA,
+.swayB,
+.swayC {
+  transform-origin: center 8px;
+  animation: sway 3.4s ease-in-out infinite;
+}
+
+.swayB {
+  animation-duration: 4s;
+  animation-delay: 0.3s;
+}
+
+.swayC {
+  animation-duration: 3.8s;
+  animation-delay: 0.6s;
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swayA, .swayB, .swayC {
+    animation: none;
+  }
+}
+
+/* ---------- SECTION HEADERS ---------- */
+.sectionEyebrow {
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 34px;
+  margin-top: 8px;
+}
+
+/* ---------- STEPS ---------- */
+.steps {
+  padding: 90px 0;
+}
+
+.stepsRow {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 56px;
+}
+
+@media (max-width: 62em) {
+  .stepsRow {
+    grid-template-columns: 1fr;
+  }
+  .stepsLine {
+    display: none;
+  }
+}
+
+.stepsLine {
+  position: absolute;
+  top: 22px;
+  left: 8%;
+  right: 8%;
+  height: 0;
+  border-top: 2px dashed rgba(16, 48, 79, 0.25);
+}
+
+.stepCard {
+  position: relative;
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 40px 24px 28px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(16, 48, 79, 0.06);
+}
+
+.stepClip {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--ink);
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(245, 185, 66, 0.4);
+}
+
+.stepTitle {
+  margin-top: 20px;
+  font-size: 19px;
+}
+
+.stepDesc {
+  margin-top: 10px;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ---------- PRICING ---------- */
+.pricing {
+  padding: 70px 0 90px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.priceCard {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 28px 22px;
+  border: 1px solid rgba(16, 48, 79, 0.08);
+}
+
+.priceName {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+
+.priceValue {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--primary);
+  margin-top: 10px;
+}
+
+.priceValue span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.priceNote {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--teal);
+  font-weight: 600;
+}
+
+/* ---------- TESTIMONIALS ---------- */
+.testimonials {
+  padding: 70px 0 90px;
+}
+
+.testiCard {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 12px 30px rgba(16, 48, 79, 0.05);
+}
+
+.testiQuote {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.testiFooter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.testiAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-family: var(--font-display), sans-serif;
+}
+
+.testiName {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.testiRole {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+/* ---------- FINAL CTA ---------- */
+.finalCta {
+  background: var(--ink);
+  padding: 80px 0;
+}
+
+.finalCtaInner {
+  text-align: center;
+}
+
+.finalCtaTitle {
+  color: #fff;
+  font-size: 36px;
+}
+
+.finalCtaSubtitle {
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 12px;
+  font-size: 16px;
+}
+
+.ctaButtonLight {
+  background: var(--accent) !important;
+  color: var(--ink) !important;
+  font-weight: 700 !important;
+  margin-top: 28px !important;
+}
+
+.ctaButtonLight:hover {
+  background: #fff !important;
+}
+
+/* ---------- FOOTER ---------- */
+.footer {
+  background: var(--ink);
+  padding: 24px 0 40px;
+}
+
+.footerInner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer .logo {
+  color: #fff;
+}
+
+.footerNote {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+}
