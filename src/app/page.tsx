@@ -1,4 +1,61 @@
-import Link from 'next/link';
-import { Button, Container, Group, Paper, SimpleGrid, Stack, Text, Title } from '@mantine/core';
-import { LocationPermissionGate } from '@/components/shared/LocationPermissionGate';
-export default function Page(){return <Container size="lg" py="xl"><Stack gap="xl"><Group justify="space-between"><Title order={2}>Popo Laundry</Title><Group><Button component={Link} href="/login" variant="default">Masuk</Button><Button component={Link} href="/register">Daftar</Button></Group></Group><LocationPermissionGate/><Paper withBorder p={40}><Stack maw={650}><Title>Laundry dijemput, diproses, dan diantar kembali.</Title><Text c="dimmed">Pilih satu alamat tersimpan untuk pickup dan delivery. Sistem menentukan outlet terdekat maksimal 10 km.</Text><Group><Button component={Link} href="/request-pickup">Request Pickup</Button><Button component={Link} href="/pesanan" variant="light">Lacak Pesanan</Button></Group></Stack></Paper><SimpleGrid cols={{base:1,sm:3}}>{['Request pickup','Tracking proses','Pembayaran Midtrans'].map(x=><Paper key={x} withBorder p="lg"><Title order={4}>{x}</Title><Text c="dimmed">Alur sesuai Final Business Rules v1.4.</Text></Paper>)}</SimpleGrid></Stack></Container>}
+"use client"
+
+import Link from "next/link";
+import {
+  Button,
+  Container,
+  Group,
+  Paper,
+  SimpleGrid,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
+import { LocationPermissionGate } from "@/components/shared/LocationPermissionGate";
+export default function Page() {
+  return (
+    <Container size="lg" py="xl">
+      <Stack gap="xl">
+        <Group justify="space-between">
+          <Title order={2}>Popo Laundry</Title>
+          <Group>
+            <Button component={Link} href="/login" variant="default">
+              Masuk
+            </Button>
+            <Button component={Link} href="/register">
+              Daftar
+            </Button>
+          </Group>
+        </Group>
+        <LocationPermissionGate />
+        <Paper withBorder p={40}>
+          <Stack maw={650}>
+            <Title>Laundry dijemput, diproses, dan diantar kembali.</Title>
+            <Text c="dimmed">
+              Pilih satu alamat tersimpan untuk pickup dan delivery. Sistem
+              menentukan outlet terdekat maksimal 10 km.
+            </Text>
+            <Group>
+              <Button component={Link} href="/request-pickup">
+                Request Pickup
+              </Button>
+              <Button component={Link} href="/pesanan" variant="light">
+                Lacak Pesanan
+              </Button>
+            </Group>
+          </Stack>
+        </Paper>
+        <SimpleGrid cols={{ base: 1, sm: 3 }}>
+          {["Request pickup", "Tracking proses", "Pembayaran Midtrans"].map(
+            (x) => (
+              <Paper key={x} withBorder p="lg">
+                <Title order={4}>{x}</Title>
+                <Text c="dimmed">Alur sesuai Final Business Rules v1.4.</Text>
+              </Paper>
+            ),
+          )}
+        </SimpleGrid>
+      </Stack>
+    </Container>
+  );
+}

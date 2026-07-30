@@ -1,3 +1,49 @@
-import { Alert, Card, Grid, Stack, Text, Title } from '@mantine/core';
-import { PageHeader } from '@/components/ui/PageHeader';
-export function FeaturePlaceholder({title,description,notes=[]}:{title:string;description:string;notes?:string[]}){return <Stack><PageHeader title={title} description={description}/>{notes.length>0&&<Alert title="Aturan bisnis halaman ini">{notes.map(n=><Text key={n} size="sm">• {n}</Text>)}</Alert>}<Grid><Grid.Col span={{base:12,md:4}}><Card withBorder><Title order={4}>Loading</Title><Text c="dimmed">Gunakan Skeleton saat mengambil data.</Text></Card></Grid.Col><Grid.Col span={{base:12,md:4}}><Card withBorder><Title order={4}>Empty</Title><Text c="dimmed">Tampilkan empty state yang instruktif.</Text></Card></Grid.Col><Grid.Col span={{base:12,md:4}}><Card withBorder><Title order={4}>Error</Title><Text c="dimmed">Tampilkan pesan error dan tombol retry.</Text></Card></Grid.Col></Grid></Stack>}
+"use client";
+
+import { Alert, Card, Grid, Stack, Text, Title } from "@mantine/core";
+import { PageHeader } from "@/components/ui/PageHeader";
+
+export function FeaturePlaceholder({
+  title,
+  description,
+  notes = [],
+}: {
+  title: string;
+  description: string;
+  notes?: string[];
+}) {
+  return (
+    <Stack>
+      <PageHeader title={title} description={description} />
+      {notes.length > 0 && (
+        <Alert title="Aturan bisnis halaman ini">
+          {notes.map((n) => (
+            <Text key={n} size="sm">
+              • {n}
+            </Text>
+          ))}
+        </Alert>
+      )}
+      <Grid>
+        <Grid.Col span={{ base: 12, md: 4 }}>
+          <Card withBorder>
+            <Title order={4}>Loading</Title>
+            <Text c="dimmed">Gunakan Skeleton saat mengambil data.</Text>
+          </Card>
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, md: 4 }}>
+          <Card withBorder>
+            <Title order={4}>Empty</Title>
+            <Text c="dimmed">Tampilkan empty state yang instruktif.</Text>
+          </Card>
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, md: 4 }}>
+          <Card withBorder>
+            <Title order={4}>Error</Title>
+            <Text c="dimmed">Tampilkan pesan error dan tombol retry.</Text>
+          </Card>
+        </Grid.Col>
+      </Grid>
+    </Stack>
+  );
+}

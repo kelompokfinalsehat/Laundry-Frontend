@@ -1,8 +1,9 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 
 const protectedPrefixes = ['/beranda', '/request-pickup', '/pesanan', '/alamat', '/profil', '/notifikasi', '/internal'];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const hasSession = Boolean(request.cookies.get('popo_session'));
   const isProtected = protectedPrefixes.some((prefix) => pathname.startsWith(prefix));
