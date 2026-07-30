@@ -1,0 +1,63 @@
+export type Role = 'CUSTOMER' | 'WORKER' | 'DRIVER' | 'OUTLET_ADMIN' | 'SUPER_ADMIN';
+export type AccountStatus = 'INVITED' | 'ACTIVE' | 'INACTIVE';
+export type AttendanceStatus = 'OFF_DUTY' | 'ON_DUTY';
+export type AvailabilityStatus = 'AVAILABLE' | 'BUSY';
+export type PaymentStatus = 'UNPAID' | 'PENDING' | 'PAID' | 'FAILED' | 'CANCELLED' | 'EXPIRED';
+export type InternalOrderState = 'ON_HOLD_BYPASS' | 'PAUSED_OFF_HOURS';
+export type CustomerOrderStatus =
+  | 'MENUNGGU_PENJEMPUTAN_DRIVER'
+  | 'LAUNDRY_SEDANG_MENUJU_OUTLET'
+  | 'LAUNDRY_TELAH_SAMPAI_OUTLET'
+  | 'LAUNDRY_SEDANG_DICUCI'
+  | 'LAUNDRY_SEDANG_DISETRIKA'
+  | 'LAUNDRY_SEDANG_DI_PACKING'
+  | 'MENUNGGU_PEMBAYARAN'
+  | 'LAUNDRY_SIAP_DIANTAR'
+  | 'LAUNDRY_SEDANG_DIKIRIM_MENUJU_CUSTOMER'
+  | 'MENUNGGU_KONFIRMASI_CUSTOMER'
+  | 'SELESAI'
+  | 'DIBATALKAN_CUSTOMER'
+  | 'DALAM_PENANGANAN_KOMPLAIN';
+
+export interface SessionUser {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  accountStatus: AccountStatus;
+  outletId?: string;
+  stationType?: 'WASHING' | 'IRONING' | 'PACKING';
+  isEmailVerified?: boolean;
+}
+
+export interface ListQuery {
+  page: number;
+  pageSize: 10 | 20 | 50;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  filters?: Record<string, string | number | boolean | undefined>;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+}
+
+export interface OrderListItem {
+  id: string;
+  orderNumber: string;
+  customerName: string;
+  outletName: string;
+  status: CustomerOrderStatus;
+  paymentStatus: PaymentStatus;
+  createdAt: string;
+  total?: number;
+}
