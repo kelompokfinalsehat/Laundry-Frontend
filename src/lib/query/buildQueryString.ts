@@ -1,4 +1,4 @@
-import type { ListQuery } from '@/types/api';
+import type { ListQuery } from "@/types/api";
 
 export function buildQueryString(query: ListQuery): string {
   const params = new URLSearchParams({
@@ -9,7 +9,7 @@ export function buildQueryString(query: ListQuery): string {
     ...(query.sortOrder ? { sortOrder: query.sortOrder } : {}),
   });
   Object.entries(query.filters ?? {}).forEach(([key, value]) => {
-    if (value !== undefined && value !== '') params.set(key, String(value));
+    if (value !== undefined && value !== "") params.set(key, String(value));
   });
   return params.toString();
 }
