@@ -10,7 +10,7 @@ export default function Footer() {
         color: "var(--color-background)",
       }}
     >
-      <Container size="lg" py={40} px={{ base: 20, sm: 40 }}>
+      <Container size="xl" py={40} px={{ base: 20, sm: 40 }}>
         <Flex
           direction={{ base: "column", sm: "row" }}
           justify="space-between"
@@ -21,7 +21,7 @@ export default function Footer() {
               Popo Laundry
             </Title>
             <Text size="sm" opacity={0.75}>
-              Laundry dijemput, diproses, dan diantar kembali — bersih, rapi,
+              Laundry dijemput, diproses, dan diantar kembali bersih, rapi,
               tepat waktu.
             </Text>
           </Stack>

@@ -18,7 +18,7 @@ a { color: inherit; text-decoration: none; }
   /* Primary */
   --color-primary: #2c6e8c;         /* Rinse Blue — nav, header, elemen struktural */
   --color-primary-dark: #204f65;    /* hover/active state tombol/link primary */
-  --color-primary-light: #e6f0f4;   /* background lembut, badge, highlight ringan */
+  --color-primary-light: #eaf4fb;   /* background lembut, badge, highlight ringan */
  
   /* Accent / CTA */
   --color-accent: #f2a93b;          /* Sundry Yellow — tombol aksi utama */
@@ -26,7 +26,8 @@ a { color: inherit; text-decoration: none; }
   --color-accent-light: #fdf1de;    /* background lembut untuk badge/alert info */
  
   /* Base */
-  --color-background: #f5f6f2;      /* Chalk Linen — background utama */
+  --color-background: #eaf4fb;      /* Chalk Linen — background utama */
+  --color-background-dark: #4d6270;
   --color-surface: #ffffff;         /* kartu/panel di atas background */
   --color-border: #e2e3de;          /* garis pembatas halus */
  
@@ -58,4 +59,13 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--radius-sm);
 }
 
+.page {
+  --bg: #eaf4fb;
+  --surface: #ffffff;
+  --ink: #10304f;
+  --primary: #2f7fc1;
+  --accent: #f5b942;
+  --teal: #4fa895;
+  --ink-soft: #4c6884;
+}
 /* Dark mode belum dirancang untuk brand ini — override di sini nanti kalau dibutuhkan. */
