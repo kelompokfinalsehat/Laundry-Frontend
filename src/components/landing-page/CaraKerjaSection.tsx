@@ -36,8 +36,7 @@ const STEPS: {
 
 export default function CaraKerja() {
   return (
-   <Box component="section" id="cara-kerja" py={20}>
-      <Container size="xl">
+   <Box component="section" id="cara-kerja" py={20}>  
         <Text
           tt="uppercase"
           fw={700}
@@ -113,7 +112,6 @@ export default function CaraKerja() {
             ))}
           </SimpleGrid>
         </Box>
-      </Container>
     </Box>
   );
 }

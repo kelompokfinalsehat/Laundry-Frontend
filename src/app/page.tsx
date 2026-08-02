@@ -33,19 +33,17 @@ export default function Page() {
           {/* Hero section — carousel */}
           <HeroSection />
 
-
           {/* <LocationPermissionGate /> */}
 
           {/* Layanan / features */}
           <Box
-            component="section"
-            id="layanan"
-            aria-labelledby="layanan-heading"
+            component="section" py={20}
           >
-            <Stack gap="md">
+            <Stack gap="md" >
               <Title
                 id="layanan-heading"
                 order={2}
+                py={20}
                 style={{ color: "var(--color-text-primary)" }}
               >
                 Layanan kami
