@@ -1,7 +1,7 @@
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import './globals.css';
-import { Providers } from '@/components/shared/Providers';
+import { Providers } from '@/app/Providers';
 import { Baloo_2, Plus_Jakarta_Sans } from 'next/font/google';
 
 export const metadata = {

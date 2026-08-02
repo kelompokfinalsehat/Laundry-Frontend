@@ -1,25 +1,36 @@
-import { Button, Paper, Stack, Text, Title } from "@mantine/core";
+"use client";
+
+import { Button, Stack, Text, ThemeIcon } from "@mantine/core";
+import { IconInbox } from "@tabler/icons-react";
+import type { ReactNode } from "react";
 
 export function EmptyState({
+  icon,
   title = "Belum ada data",
-  description = "Data akan tampil di sini.",
-  actionLabel,
-  onAction,
+  description,
+  action,
 }: {
+  icon?: ReactNode;
   title?: string;
   description?: string;
-  actionLabel?: string;
-  onAction?: () => void;
+  action?: { label: string; onClick: () => void };
 }) {
   return (
-    <Paper withBorder p="xl">
-      <Stack align="center">
-        <Title order={4}>{title}</Title>
-        <Text c="dimmed" ta="center">
+    <Stack align="center" py={48} gap="xs">
+      <ThemeIcon size={56} radius="xl" variant="light" color="gray">
+        {icon ?? <IconInbox size={28} />}
+      </ThemeIcon>
+      <Text fw={600}>{title}</Text>
+      {description && (
+        <Text size="sm" c="dimmed" ta="center" maw={320}>
           {description}
         </Text>
-        {actionLabel && <Button onClick={onAction}>{actionLabel}</Button>}
-      </Stack>
-    </Paper>
+      )}
+      {action && (
+        <Button variant="light" size="xs" mt="xs" onClick={action.onClick}>
+          {action.label}
+        </Button>
+      )}
+    </Stack>
   );
 }
