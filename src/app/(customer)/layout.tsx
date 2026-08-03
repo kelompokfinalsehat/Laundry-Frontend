@@ -5,6 +5,6 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  ;
+  await requireRole(["CUSTOMER"]);
   return <CustomerAppShell>{children}</CustomerAppShell>;
 }

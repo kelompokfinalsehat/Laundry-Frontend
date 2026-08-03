@@ -19,21 +19,21 @@ export const FEATURES: {
     title: "Request pickup",
     description:
       "Jadwalkan penjemputan cucian dari alamat tersimpan, kapan saja kamu mau.",
-    href: "/alamat",
+    href: "/request-pickup",
   },
   {
     icon: IconActivity,
     title: "Tracking proses",
     description:
       "Ikuti tiap tahap: pickup, cuci-setrika-packing, sampai diantar kembali.",
-    href: "/",
+    href: "/pesanan",
   },
   {
     icon: IconMapPin,
     title: "Outlet Terdekat",
     description:
       "Temukan outlet Popo Laundry terdekat dan nikmati layanan laundry yang cepat, mudah, dan nyaman.",
-    href: "/",
+    href: "/beranda",
   },
 ];
 

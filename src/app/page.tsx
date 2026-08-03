@@ -1,21 +1,15 @@
 "use client";
 
-import Link from "next/link";
-import {
-  Box,
-  Container,
-  SimpleGrid,
-  Stack,
-  Title,
-} from "@mantine/core";
-import { LocationPermissionGate } from "@/components/shared/LocationPermissionGate";
+import { Box, Container, SimpleGrid, Stack, Title } from "@mantine/core";
 import Footer from "@/components/landing-page/Footer";
-import HeroSection from "@/components/landing-page/HeroSection";
 import FeatureCard, {
   FEATURES,
 } from "@/components/landing-page/FeatureSection";
 import HeaderNav from "@/components/landing-page/Header";
 import CaraKerja from "@/components/landing-page/CaraKerjaSection";
+import CarouselSection from "@/components/landing-page/CarouselSection";
+import HeroSection from "@/components/landing-page/HeroSection";
+import { LocationPermissionGate } from "@/components/shared/LocationPermission/LocationPermissionGate";
 
 export default function Page() {
   return (
@@ -27,19 +21,19 @@ export default function Page() {
 
       <Container size="xl" py="xl">
         <Stack gap="xl">
-          {/* Cara Kerja - section */}
-          <CaraKerja/>
-
           {/* Hero section — carousel */}
           <HeroSection />
 
-          {/* <LocationPermissionGate /> */}
+          <CarouselSection />
+
+          {/* Cara Kerja - section */}
+          <CaraKerja />
+
+          <LocationPermissionGate />
 
           {/* Layanan / features */}
-          <Box
-            component="section" py={20}
-          >
-            <Stack gap="md" >
+          <Box component="section" py={20}>
+            <Stack gap="md">
               <Title
                 id="layanan-heading"
                 order={2}

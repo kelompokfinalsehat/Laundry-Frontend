@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Container,
-  Group,
-  Button,
-  Badge,
-  Text,
-  Title,
-  SimpleGrid,
-  Box,
-  Paper,
-} from "@mantine/core";
+import { Text, Title, SimpleGrid, Box, Paper, Flex } from "@mantine/core";
 
 const STEPS: {
   n: number;
@@ -36,7 +26,13 @@ const STEPS: {
 
 export default function CaraKerja() {
   return (
-   <Box component="section" id="cara-kerja" py={20}>  
+    <Box component="section" id="cara-kerja" py={20} mt={50}>
+      <Flex
+        justify="center"
+        align="center"
+        direction="column"
+        wrap="wrap"
+      >
         <Text
           tt="uppercase"
           fw={700}
@@ -50,68 +46,68 @@ export default function CaraKerja() {
         <Title order={2} mt={8} fz={{ base: 28, sm: 34 }}>
           Semudah menjemur baju
         </Title>
+      </Flex>
+      <Box pos="relative" mt={56}>
+        {/* garis putus-putus penghubung, hanya tampil di desktop */}
+        <Box
+          visibleFrom="md"
+          pos="absolute"
+          top={22}
+          left="8%"
+          right="8%"
+          h={0}
+          style={{ borderTop: "2px dashed var(--mantine-color-gray-4)" }}
+        />
 
-        <Box pos="relative" mt={56}>
-          {/* garis putus-putus penghubung, hanya tampil di desktop */}
-          <Box
-            visibleFrom="md"
-            pos="absolute"
-            top={22}
-            left="8%"
-            right="8%"
-            h={0}
-            style={{ borderTop: "2px dashed var(--mantine-color-gray-4)" }}
-          />
-
-          <SimpleGrid cols={{ base: 1, md: 3 }} spacing={32}>
-            {STEPS.map((s) => (
-              <Paper
-                key={s.n}
-                pos="relative"
-                radius="lg"
-                shadow="sm"
-                pt={40}
-                pb={28}
-                px={24}
-                ta="center"
+        <SimpleGrid cols={{ base: 1, md: 3 }} spacing={32}>
+          {STEPS.map((s) => (
+            <Paper
+              key={s.n}
+              pos="relative"
+              radius="lg"
+              shadow="sm"
+              pt={40}
+              pb={28}
+              px={24}
+              ta="center"
+              style={{
+                boxShadow: "0 12px 30px rgba(16, 48, 79, 0.06)",
+              }}
+            >
+              {/* nomor bulat */}
+              <Box
+                pos="absolute"
+                top={-22}
+                left="50%"
+                w={44}
+                h={44}
                 style={{
-                  boxShadow: "0 12px 30px rgba(16, 48, 79, 0.06)",
+                  transform: "translateX(-50%)",
+                  borderRadius: "50%",
+                  background: "var(--mantine-color-orange-4)",
+                  boxShadow: "0 6px 16px rgba(245, 185, 66, 0.4)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: 700,
+                  fontSize: 18,
+                  color: "var(--mantine-color-dark-7)",
                 }}
               >
-                {/* nomor bulat */}
-                <Box
-                  pos="absolute"
-                  top={-22}
-                  left="50%"
-                  w={44}
-                  h={44}
-                  style={{
-                    transform: "translateX(-50%)",
-                    borderRadius: "50%",
-                    background: "var(--mantine-color-orange-4)",
-                    boxShadow: "0 6px 16px rgba(245, 185, 66, 0.4)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: 700,
-                    fontSize: 18,
-                    color: "var(--mantine-color-dark-7)",
-                  }}
-                >
-                  {s.n}
-                </Box>
+                {s.n}
+              </Box>
 
-                <Title order={3} mt={20} fz={19}>
-                  {s.title}
-                </Title>
+              <Title order={3} mt={20} fz={19}>
+                {s.title}
+              </Title>
 
-                <Text mt={10} fz={15} lh={1.6} c="dimmed">
-                  {s.desc}
-                </Text>
-              </Paper>
-            ))}
-          </SimpleGrid>
-        </Box>
+              <Text mt={10} fz={15} lh={1.6} c="dimmed">
+                {s.desc}
+              </Text>
+            </Paper>
+          ))}
+        </SimpleGrid>
+      </Box>
     </Box>
   );
 }

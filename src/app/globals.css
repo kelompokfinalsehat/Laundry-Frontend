@@ -16,8 +16,8 @@ a { color: inherit; text-decoration: none; }
  
 :root {
   /* Primary */
-  --color-primary: #2c6e8c;         /* Rinse Blue — nav, header, elemen struktural */
-  --color-primary-dark: #204f65;    /* hover/active state tombol/link primary */
+  --color-primary: #53b2df;         /* Rinse Blue — nav, header, elemen struktural */
+  --color-primary-dark: #041720;    /* hover/active state tombol/link primary */
   --color-primary-light: #eaf4fb;   /* background lembut, badge, highlight ringan */
  
   /* Accent / CTA */

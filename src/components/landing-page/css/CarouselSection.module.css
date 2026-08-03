@@ -1,0 +1,12 @@
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: color-mix(in srgb, var(--color-background) 33%, transparent);
+  transition: width 200ms ease;
+}
+
+.indicator[data-active] {
+  width: 24px;
+  background-color: var(--color-accent);
+}

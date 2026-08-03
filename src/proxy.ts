@@ -14,11 +14,11 @@ export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const hasSession = Boolean(request.cookies.get("popo_session"));
   
-  const isProtected = false;
+  // const isProtected = false;
 
-  // const isProtected = protectedPrefixes.some((prefix) =>
-  //   pathname.startsWith(prefix),
-  // );
+  const isProtected = protectedPrefixes.some((prefix) =>
+    pathname.startsWith(prefix),
+  );
   
   if (isProtected && !hasSession) {
     const login = new URL("/login", request.url);
