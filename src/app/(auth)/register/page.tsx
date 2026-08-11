@@ -1,5 +1,5 @@
 import { Paper, Title, Text, Stack } from "@mantine/core";
-import { RegisterForm } from "@/components/auth/RegisterForm";
+import { RegisterCustomerForm } from "@/components/auth/RegisterCustomerForm";
 
 export default function RegisterPage() {
   return (
@@ -22,7 +22,7 @@ export default function RegisterPage() {
           </Text>
         </div>
 
-        <RegisterForm />
+        <RegisterCustomerForm />
       </Stack>
     </Paper>
   );

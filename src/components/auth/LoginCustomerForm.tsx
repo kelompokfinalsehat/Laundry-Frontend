@@ -18,7 +18,7 @@ import { ApiError } from "@/lib/api/axios";
 import { useLoginCustomer, useLoginWithGoogle } from "@/components/auth/auth.hooks";
 import { GoogleSignInButton } from "./GoogleLoginButton";
 
-export function LoginForm() {
+export function LoginCustomerForm() {
   const router = useRouter();
 
   const {

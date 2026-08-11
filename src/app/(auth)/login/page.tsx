@@ -1,5 +1,5 @@
 import { Paper, Title, Text, Stack, Alert } from "@mantine/core";
-import { LoginForm } from "@/components/auth/LoginForm";
+import { LoginCustomerForm } from "@/components/auth/LoginCustomerForm";
 
 export default function LoginPage({
   searchParams,
@@ -34,7 +34,7 @@ export default function LoginPage({
           </Alert>
         )}
 
-        <LoginForm />
+        <LoginCustomerForm />
       </Stack>
     </Paper>
   );

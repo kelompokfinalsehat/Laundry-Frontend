@@ -19,7 +19,7 @@ import { ApiError } from "@/lib/api/axios";
 import { useRegisterCustomer, useLoginWithGoogle } from "@/components/auth/auth.hooks";
 import { GoogleSignInButton } from "./GoogleLoginButton";
 
-export function RegisterForm() {
+export function RegisterCustomerForm() {
   const router = useRouter();
 
   const {
