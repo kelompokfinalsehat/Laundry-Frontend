@@ -20,13 +20,22 @@ export const emailVerificationSchema = z.object({
   password: z.string().min(8, "Kata sandi minimal 8 karakter"),
 });
 
-export const passwordSchema = z
-  .object({ password: z.string().min(8), confirmPassword: z.string().min(8) })
-  .refine((v) => v.password === v.confirmPassword, {
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Format email tidak valid"),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, "Password minimal 8 karakter"),
+    confirmPassword: z.string().min(1, "Konfirmasi password wajib diisi"),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    message: "Konfirmasi password tidak cocok",
     path: ["confirmPassword"],
-    message: "Password tidak sama",
   });
 
 export type LoginCustomerSchema = z.infer<typeof loginCustomerSchema>;
 export type RegisterCustomerSchema = z.infer<typeof registerCustomerSchema>;
 export type EmailVerificationSchema = z.infer<typeof emailVerificationSchema>;
+export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;

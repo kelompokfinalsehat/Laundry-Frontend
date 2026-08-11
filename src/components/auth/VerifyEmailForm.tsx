@@ -14,9 +14,9 @@ import {
   Anchor,
 } from "@mantine/core";
 import { useForm, schemaResolver } from "@mantine/form";
-import { useVerifyCustomerEmail } from "@/components/auth/auth.hooks";
+import { useVerifyCustomerEmail } from "@/hooks/auth.hooks";
 import { ApiError } from "@/lib/api/axios";
-import { emailVerificationSchema } from "@/lib/validation/auth";
+import { emailVerificationSchema } from "@/lib/validation/auth.validation";
 
 export default function VerifyEmailContent() {
   const router = useRouter();
@@ -33,10 +33,7 @@ export default function VerifyEmailContent() {
     validate: schemaResolver(emailVerificationSchema),
   });
 
-  function handleSubmit(values: {
-    name: string;
-    password: string;
-  }) {
+  function handleSubmit(values: { name: string; password: string }) {
     if (!token) return;
 
     mutate(
@@ -49,7 +46,6 @@ export default function VerifyEmailContent() {
 
   const apiError = error instanceof ApiError ? error : null;
 
-  
   // Token nggak ada di URL sama sekali — link rusak/nggak lengkap.
   if (!token) {
     return (
@@ -59,8 +55,8 @@ export default function VerifyEmailContent() {
             Link tidak valid
           </Title>
           <Text size="sm" c="var(--color-text-secondary)">
-            Link verifikasi ini tidak lengkap. Pastikan kamu membuka link persis seperti yang
-            dikirim ke email.
+            Link verifikasi ini tidak lengkap. Pastikan kamu membuka link persis
+            seperti yang dikirim ke email.
           </Text>
           <Anchor component={Link} href="/register" c="var(--color-primary)">
             Kembali ke halaman daftar
@@ -69,61 +65,61 @@ export default function VerifyEmailContent() {
       </Paper>
     );
   }
-  
-if (apiError?.code === "TOKEN_EXPIRED") {
-  return (
-    <Paper maw={420} mx="auto" mt={64} p={32} radius="md" withBorder>
-      <Stack gap="md" ta="center" align="center">
-        <Title order={3} style={{ color: "var(--color-error)" }}>
-          Link sudah kedaluwarsa
-        </Title>
 
-        <Text size="sm" c="var(--color-text-secondary)">
-          {apiError.message}
-        </Text>
+  if (apiError?.code === "TOKEN_EXPIRED") {
+    return (
+      <Paper maw={420} mx="auto" mt={64} p={32} radius="md" withBorder>
+        <Stack gap="md" ta="center" align="center">
+          <Title order={3} style={{ color: "var(--color-error)" }}>
+            Link sudah kedaluwarsa
+          </Title>
 
-        <Button
-          component={Link}
-          href="/resend-verification"
-          style={{
-            backgroundColor: "var(--color-accent)",
-            color: "var(--color-text-on-accent)",
-          }}
-        >
-          Kirim ulang link verifikasi
-        </Button>
-      </Stack>
-    </Paper>
-  );
-}
+          <Text size="sm" c="var(--color-text-secondary)">
+            {apiError.message}
+          </Text>
 
-if (apiError?.code === "TOKEN_ALREADY_USED") {
-  return (
-    <Paper maw={420} mx="auto" mt={64} p={32} radius="md" withBorder>
-      <Stack gap="md" ta="center" align="center">
-        <Title order={3} style={{ color: "var(--color-error)" }}>
-          Email sudah diverifikasi
-        </Title>
+          <Button
+            component={Link}
+            href="/resend-verification"
+            style={{
+              backgroundColor: "var(--color-accent)",
+              color: "var(--color-text-on-accent)",
+            }}
+          >
+            Kirim ulang link verifikasi
+          </Button>
+        </Stack>
+      </Paper>
+    );
+  }
 
-        <Text size="sm" c="var(--color-text-secondary)">
-          Link verifikasi ini sudah pernah digunakan. Silakan login
-          menggunakan akun kamu.
-        </Text>
+  if (apiError?.code === "TOKEN_ALREADY_USED") {
+    return (
+      <Paper maw={420} mx="auto" mt={64} p={32} radius="md" withBorder>
+        <Stack gap="md" ta="center" align="center">
+          <Title order={3} style={{ color: "var(--color-error)" }}>
+            Email sudah diverifikasi
+          </Title>
 
-        <Button
-          component={Link}
-          href="/login"
-          style={{
-            backgroundColor: "var(--color-accent)",
-            color: "var(--color-text-on-accent)",
-          }}
-        >
-          Kembali ke login
-        </Button>
-      </Stack>
-    </Paper>
-  );
-}
+          <Text size="sm" c="var(--color-text-secondary)">
+            Link verifikasi ini sudah pernah digunakan. Silakan login
+            menggunakan akun kamu.
+          </Text>
+
+          <Button
+            component={Link}
+            href="/login"
+            style={{
+              backgroundColor: "var(--color-accent)",
+              color: "var(--color-text-on-accent)",
+            }}
+          >
+            Kembali ke login
+          </Button>
+        </Stack>
+      </Paper>
+    );
+  }
   return (
     <Paper maw={420} mx="auto" mt={64} p={32} radius="md" withBorder>
       <Stack gap="md">
@@ -139,7 +135,10 @@ if (apiError?.code === "TOKEN_ALREADY_USED") {
         {apiError && (
           <Alert
             color="red"
-            style={{ backgroundColor: "var(--color-error-light)", color: "var(--color-error)" }}
+            style={{
+              backgroundColor: "var(--color-error-light)",
+              color: "var(--color-error)",
+            }}
           >
             {apiError.message}
           </Alert>
@@ -161,7 +160,10 @@ if (apiError?.code === "TOKEN_ALREADY_USED") {
             <Button
               type="submit"
               loading={isPending}
-              style={{ backgroundColor: "var(--color-accent)", color: "var(--color-text-on-accent)" }}
+              style={{
+                backgroundColor: "var(--color-accent)",
+                color: "var(--color-text-on-accent)",
+              }}
             >
               Verifikasi & Buat Akun
             </Button>

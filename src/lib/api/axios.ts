@@ -14,6 +14,7 @@ export class ApiError extends Error {
 
   constructor(code: string, message: string, fields?: Record<string, string>) {
     super(message);
+
     this.name = "ApiError";
     this.code = code;
     this.fields = fields;
@@ -35,6 +36,23 @@ type RetryableRequestConfig = InternalAxiosRequestConfig & {
 
 let refreshPromise: Promise<void> | null = null;
 
+const NO_REFRESH_ENDPOINTS = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/verify-email",
+  "/auth/resend-verification",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+  "/auth/login/google",
+  "/auth/refresh",
+];
+
+function shouldSkipRefresh(url?: string): boolean {
+  if (!url) return false;
+
+  return NO_REFRESH_ENDPOINTS.some((endpoint) => url.includes(endpoint));
+}
+
 export async function refreshAccessToken(): Promise<void> {
   if (refreshPromise) {
     return refreshPromise;
@@ -49,9 +67,9 @@ export async function refreshAccessToken(): Promise<void> {
       },
     )
     .then(() => {
-      // Backend mengirim Set-Cookie:
-      // accessToken baru
-      // refreshToken baru
+      // Backend mengirim:
+      // Set-Cookie: accessToken=...
+      // Set-Cookie: refreshToken=...
     })
     .finally(() => {
       refreshPromise = null;
@@ -73,27 +91,47 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Jangan refresh request /auth/refresh
-    if (originalRequest.url?.includes("/auth/refresh")) {
-      return Promise.reject(error);
+    /*
+     * Endpoint authentication/public tidak boleh
+     * memicu refresh access token.
+     *
+     * Contoh:
+     * /auth/verify-email
+     * /auth/forgot-password
+     * /auth/reset-password
+     */
+    if (shouldSkipRefresh(originalRequest.url)) {
+      const payload = error.response?.data?.error;
+
+      return Promise.reject(
+        new ApiError(
+          payload?.code ?? "UNKNOWN_ERROR",
+          payload?.message ?? "Terjadi kesalahan. Silakan coba lagi.",
+          payload?.fields,
+        ),
+      );
     }
 
-    // Access token expired / tidak valid
+    /*
+     * Request selain endpoint public:
+     * kalau 401, coba refresh access token.
+     */
     if (status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         await refreshAccessToken();
 
-        // Backend sudah mengirim accessToken baru
-        // melalui Set-Cookie.
+        // Cookie accessToken baru sudah dikirim backend.
         return api(originalRequest);
       } catch (refreshError) {
-        // Refresh token sudah tidak valid / expired.
         return Promise.reject(refreshError);
       }
     }
 
+    /*
+     * Semua error lainnya dikonversi menjadi ApiError.
+     */
     const payload = error.response?.data?.error;
 
     return Promise.reject(

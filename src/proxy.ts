@@ -12,7 +12,10 @@ const protectedPrefixes = [
 
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
-  const hasSession = Boolean(request.cookies.get("popo_session"));
+  const hasSession = Boolean(
+    request.cookies.get("accessToken"),
+  );
+
   
   // const isProtected = false;
 

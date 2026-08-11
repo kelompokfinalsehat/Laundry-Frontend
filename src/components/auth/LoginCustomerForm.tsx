@@ -13,19 +13,37 @@ import { useForm, schemaResolver } from "@mantine/form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { loginCustomerSchema } from "@/lib/validation/auth";
+import { loginCustomerSchema } from "@/lib/validation/auth.validation";
 import { ApiError } from "@/lib/api/axios";
-import { useLoginCustomer, useLoginWithGoogle } from "@/components/auth/auth.hooks";
+import { useLoginCustomer, useLoginWithGoogle } from "@/hooks/auth.hooks";
 import { GoogleSignInButton } from "./GoogleLoginButton";
 
-export function LoginCustomerForm() {
+type LoginCustomerFormProps = {
+  intendedUrl?: string;
+};
+
+function getSafeRedirectUrl(url?: string): string | null {
+  if (!url) {
+    return null;
+  }
+
+  // Hanya izinkan internal URL
+  if (!url.startsWith("/")) {
+    return null;
+  }
+
+  // Cegah protocol-relative URL seperti //evil.com
+  if (url.startsWith("//")) {
+    return null;
+  }
+
+  return url;
+}
+
+export function LoginCustomerForm({ intendedUrl }: LoginCustomerFormProps) {
   const router = useRouter();
 
-  const {
-    mutate,
-    isPending,
-    error,
-  } = useLoginCustomer();
+  const { mutate, isPending, error } = useLoginCustomer();
 
   const form = useForm({
     initialValues: {
@@ -36,10 +54,16 @@ export function LoginCustomerForm() {
     validate: schemaResolver(loginCustomerSchema),
   });
 
+  const redirectAfterLogin = (homeUrl: string) => {
+    const safeRedirectUrl = getSafeRedirectUrl(intendedUrl);
+
+    router.replace(safeRedirectUrl ?? homeUrl ?? "/beranda");
+  };
+
   const submit = form.onSubmit((values) => {
     mutate(values, {
       onSuccess: (data) => {
-        router.push(data.homeUrl);
+        redirectAfterLogin(data.homeUrl);
       },
     });
   });
@@ -49,7 +73,11 @@ export function LoginCustomerForm() {
   function handleGoogleIdToken(idToken: string) {
     mutateGoogle(
       { idToken },
-      { onSuccess: (data) => router.push(data.homeUrl) }
+      {
+        onSuccess: (data) => {
+          redirectAfterLogin(data.homeUrl);
+        },
+      },
     );
   }
 

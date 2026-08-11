@@ -14,22 +14,26 @@ import { useForm, schemaResolver } from "@mantine/form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { registerCustomerSchema } from "@/lib/validation/auth.validation";
+import { forgotPasswordSchema, registerCustomerSchema } from "@/lib/validation/auth.validation";
 import { ApiError } from "@/lib/api/axios";
-import { useRegisterCustomer, useLoginWithGoogle } from "@/hooks/auth.hooks";
+import {
+  useForgotPasswordCustomer,
+  useLoginWithGoogle,
+} from "@/hooks/auth.hooks";
 import { GoogleSignInButton } from "./GoogleLoginButton";
 
-export function RegisterCustomerForm() {
+export function ForgotPasswordForm() {
   const router = useRouter();
 
-  const { mutate, isPending, isSuccess, data, error } = useRegisterCustomer();
+  const { mutate, isPending, isSuccess, data, error } =
+    useForgotPasswordCustomer();
 
   const form = useForm({
     initialValues: {
       email: "",
     },
 
-    validate: schemaResolver(registerCustomerSchema),
+    validate: schemaResolver(forgotPasswordSchema),
   });
 
   const submit = form.onSubmit((values) => {
@@ -61,8 +65,7 @@ export function RegisterCustomerForm() {
           Cek email kamu
         </Title>
         <Text size="sm" c="var(--color-text-secondary)">
-          Kami sudah kirim link verifikasi ke <strong>{data.email}</strong>.
-          Klik link itu untuk melengkapi pendaftaran. Link berlaku 1 jam.
+          <strong>{data.message}</strong>.
         </Text>
         <Anchor
           component={Link}
@@ -107,7 +110,7 @@ export function RegisterCustomerForm() {
               color: "var(--color-text-on-accent)",
             }}
           >
-            Daftar
+            Kirim
           </Button>
         </Stack>
       </form>
@@ -122,7 +125,7 @@ export function RegisterCustomerForm() {
         ta="center"
         c="var(--color-primary-dark)"
       >
-        Sudah punya akun? Masuk di sini
+        Kembali ke Login
       </Anchor>
     </Stack>
   );

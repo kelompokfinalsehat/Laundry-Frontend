@@ -1,5 +1,3 @@
-
-
 export type Role =
   | "CUSTOMER"
   | "WORKER"
@@ -7,14 +5,11 @@ export type Role =
   | "OUTLET_ADMIN"
   | "SUPER_ADMIN";
 
-
-
 export type RegisterCustomerResponse = {
   customerId: string;
   email: string;
   message: string;
 };
-
 
 export type GoogleLoginPayload = { idToken: string };
 
@@ -26,7 +21,7 @@ export type LoginUser = {
   isEmailVerified: boolean;
 };
 
-export type LoginResponse = {
+export type LoginCustomerResponse = {
   user: LoginUser;
   homeUrl: string;
 };
@@ -37,16 +32,33 @@ export type VerifyEmailPayload = {
   password: string;
 };
 
-export type VerifyEmailResponse = {
-  message: string;
-};
-
-export type ResendVerificationPayload = {
+export type VerificationPayload = {
   email: string;
 };
 
 export type MessageResponse = {
   message: string;
+};
+
+export type ResetPasswordCustomerPayload = {
+  token: string;
+  newPassword: string;
+};
+
+export type Me = {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  accountType: "customer" | "employee";
+  phone: string | null;
+  profilePic: string | null;
+  isEmailVerified: boolean;
+};
+
+export type MeResponse = {
+  success: true;
+  data: Me;
 };
 
 export type AccountStatus = "INVITED" | "ACTIVE" | "INACTIVE";

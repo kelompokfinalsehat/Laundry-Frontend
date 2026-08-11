@@ -1,4 +1,4 @@
-import { requireRole } from "@/lib/auth/guards";
+import { requireRole } from "@/lib/auth/AuthGuards";
 export default async function Layout({
   children,
 }: {
