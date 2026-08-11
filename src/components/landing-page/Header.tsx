@@ -11,14 +11,14 @@ export default function HeaderNav() {
         zIndex: 10,
         backgroundColor: "var(--color-background)",
         borderBottom:
-          "3px solid color-mix(in srgb, var(--color-primary) 13%, transparent)",
+          "3px solid color-mix(in srgb, var(--color-primary-dark) 13%, transparent)",
       }}
     >
       <Container size="xl" py="sm">
         <Group justify="space-between">
           <Title
             order={3}
-            style={{ color: "var(--color-primary)", letterSpacing: -0.5 }}
+            style={{ color: "var(--color-primary-dark)", letterSpacing: -0.5 }}
           >
             Popo Laundry
           </Title>
@@ -30,7 +30,7 @@ export default function HeaderNav() {
               variant="outline"
               style={{
                 borderColor: "var(--color-primary)",
-                color: "var(--color-primary)",
+                color: "var(--color-primary-dark)",
               }}
             >
               Masuk

@@ -46,7 +46,7 @@ export default function HeroSection() {
           <span
             style={{
               position: "relative",
-              color: "var(--color-primary)",
+              color: "var(--color-primary-dark)",
               backgroundImage:
                 "linear-gradient(var(--color-accent), var(--color-accent))",
               backgroundRepeat: "no-repeat",
@@ -78,7 +78,7 @@ export default function HeroSection() {
           component={Link}
           href="/request-pickup"
           style={{
-            backgroundColor: "var(--color-primary)",
+            backgroundColor: "var(--color-primary-dark)",
             color: "var(--color-text-on-primary)",
             alignSelf: "flex-start",
           }}

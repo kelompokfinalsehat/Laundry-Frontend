@@ -5,43 +5,41 @@ import {
   Anchor,
   Button,
   Divider,
-  PasswordInput,
   Stack,
+  Text,
   TextInput,
+  Title,
 } from "@mantine/core";
 import { useForm, schemaResolver } from "@mantine/form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { loginCustomerSchema } from "@/lib/validation/auth";
+import { registerCustomerSchema } from "@/lib/validation/auth";
 import { ApiError } from "@/lib/api/axios";
-import { useLoginCustomer, useLoginWithGoogle } from "@/components/auth/auth.hooks";
+import { useRegisterCustomer, useLoginWithGoogle } from "@/components/auth/auth.hooks";
 import { GoogleSignInButton } from "./GoogleLoginButton";
 
-export function LoginForm() {
+export function RegisterForm() {
   const router = useRouter();
 
   const {
     mutate,
     isPending,
+    isSuccess,
+    data,
     error,
-  } = useLoginCustomer();
+  } = useRegisterCustomer();
 
   const form = useForm({
     initialValues: {
       email: "",
-      password: "",
     },
 
-    validate: schemaResolver(loginCustomerSchema),
+    validate: schemaResolver(registerCustomerSchema),
   });
 
   const submit = form.onSubmit((values) => {
-    mutate(values, {
-      onSuccess: (data) => {
-        router.push(data.homeUrl);
-      },
-    });
+    mutate(values);
   });
 
   const { mutate: mutateGoogle, error: googleError } = useLoginWithGoogle();
@@ -49,18 +47,35 @@ export function LoginForm() {
   function handleGoogleIdToken(idToken: string) {
     mutateGoogle(
       { idToken },
-      { onSuccess: (data) => router.push(data.homeUrl) }
+      { onSuccess: (result) => router.push(result.homeUrl) }
     );
   }
 
   const errorMessage =
     error instanceof ApiError
-      ? error.code === "INVALID_CREDENTIALS"
-        ? "Email atau password salah."
-        : error.code === "EMAIL_NOT_VERIFIED"
-          ? "Email kamu belum diverifikasi."
-          : error.message
-      : null;
+      ? error.code === "EMAIL_ALREADY_REGISTERED"
+        ? "Email ini sudah terdaftar. Silakan login, atau gunakan email lain."
+        : error.message
+      : googleError instanceof ApiError
+        ? googleError.message
+        : null;
+
+  if (isSuccess) {
+    return (
+      <Stack gap="md" align="center" ta="center">
+        <Title order={3} style={{ color: "var(--color-primary)" }}>
+          Cek email kamu
+        </Title>
+        <Text size="sm" c="var(--color-text-secondary)">
+          Kami sudah kirim link verifikasi ke <strong>{data.email}</strong>. Klik link itu
+          untuk melengkapi pendaftaran. Link berlaku 1 jam.
+        </Text>
+        <Anchor component={Link} href="/login" size="sm" c="var(--color-primary-dark)">
+          Kembali ke halaman login
+        </Anchor>
+      </Stack>
+    );
+  }
 
   return (
     <Stack gap="md">
@@ -84,22 +99,6 @@ export function LoginForm() {
             {...form.getInputProps("email")}
           />
 
-          <PasswordInput
-            label="Password"
-            placeholder="Masukkan password"
-            {...form.getInputProps("password")}
-          />
-
-          <Anchor
-            component={Link}
-            href="/lupa-password"
-            size="sm"
-            ta="right"
-            c="var(--color-primary-dark)"
-          >
-            Lupa password?
-          </Anchor>
-
           <Button
             type="submit"
             loading={isPending}
@@ -109,22 +108,22 @@ export function LoginForm() {
               color: "var(--color-text-on-accent)",
             }}
           >
-            Masuk
+            Daftar
           </Button>
         </Stack>
       </form>
 
       <Divider label="atau" labelPosition="center" />
 
-      <GoogleSignInButton onIdToken={handleGoogleIdToken} text="signin_with" />
+      <GoogleSignInButton onIdToken={handleGoogleIdToken} text="signup_with" />
 
       <Anchor
         component={Link}
-        href="/register"
+        href="/login"
         ta="center"
         c="var(--color-primary-dark)"
       >
-        Daftar sebagai customer
+        Sudah punya akun? Masuk di sini
       </Anchor>
     </Stack>
   );
