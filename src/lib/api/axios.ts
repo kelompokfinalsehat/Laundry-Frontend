@@ -122,7 +122,7 @@ api.interceptors.response.use(
      */
     const code = error.response?.data?.error?.code;
 
-    if (status === 401 && code === "ACCESS_TOKEN_EXPIRED" && !originalRequest._retry) {
+    if (code === "ACCESS_TOKEN_EXPIRED" || code === "AUTHENTICATION_REQUIRED" && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
