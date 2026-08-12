@@ -64,8 +64,8 @@ export default function FeatureCard({
     >
       <Box
         style={{
-          width: 44,
-          height: 44,
+          width: 50,
+          height: 50,
           borderRadius: "var(--radius-sm)",
           backgroundColor: "var(--color-primary-light)",
           display: "flex",
@@ -74,9 +74,9 @@ export default function FeatureCard({
           marginBottom: 12,
         }}
       >
-        <Icon size={22} color="var(--color-primary)" />
+        <Icon size={22} color="var(--color-primary-dark)" />
       </Box>
-      <Title order={3} style={{ color: "var(--color-primary)" }}>
+      <Title order={3} style={{ color: "var(--color-primary-dark)" }}>
         {title}
       </Title>
       <Text c="dimmed" mt={4}>

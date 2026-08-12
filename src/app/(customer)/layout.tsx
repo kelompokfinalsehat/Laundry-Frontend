@@ -1,10 +1,13 @@
 import { CustomerAppShell } from "@/components/customer/CustomerAppShell";
-import { requireRole } from "@/lib/auth/guards";
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  await requireRole(["CUSTOMER"]);
-  return <CustomerAppShell>{children}</CustomerAppShell>;
+import { AuthGate } from "@/lib/auth/AuthGateCustomer";
+import { Container } from "@mantine/core";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthGate>
+      <CustomerAppShell>
+        <Container size="xl" py="sm">{children}</Container>
+      </CustomerAppShell>
+    </AuthGate>
+  );
 }

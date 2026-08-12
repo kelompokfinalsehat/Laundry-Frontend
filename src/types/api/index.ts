@@ -1,11 +1,66 @@
-import { Icon } from "@tabler/icons-react";
-
 export type Role =
   | "CUSTOMER"
   | "WORKER"
   | "DRIVER"
   | "OUTLET_ADMIN"
   | "SUPER_ADMIN";
+
+export type RegisterCustomerResponse = {
+  customerId: string;
+  email: string;
+  message: string;
+};
+
+export type GoogleLoginPayload = { idToken: string };
+
+export type LoginUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: "CUSTOMER";
+  isEmailVerified: boolean;
+};
+
+export type LoginCustomerResponse = {
+  user: LoginUser;
+  homeUrl: string;
+};
+
+export type VerifyEmailPayload = {
+  token: string;
+  name: string;
+  password: string;
+};
+
+export type VerificationPayload = {
+  email: string;
+};
+
+export type MessageResponse = {
+  message: string;
+};
+
+export type ResetPasswordCustomerPayload = {
+  token: string;
+  newPassword: string;
+};
+
+export type Me = {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  accountType: "customer" | "employee";
+  phone: string | null;
+  profilePic: string | null;
+  isEmailVerified: boolean;
+};
+
+export type MeResponse = {
+  success: true;
+  data: Me;
+};
+
 export type AccountStatus = "INVITED" | "ACTIVE" | "INACTIVE";
 export type AttendanceStatus = "OFF_DUTY" | "ON_DUTY";
 export type AvailabilityStatus = "AVAILABLE" | "BUSY";
@@ -74,5 +129,3 @@ export interface OrderListItem {
   createdAt: string;
   total?: number;
 }
-
-
