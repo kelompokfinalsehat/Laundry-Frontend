@@ -14,27 +14,25 @@ export function AuthGate({ children }: AuthGateProps) {
 
   const { data: user, isLoading, isError } = useCurrentUser();
 
-  useEffect(() => {
-    if (isLoading) return;
+ useEffect(() => {
+  if (isLoading) return;
 
-    // Tidak login / session tidak valid
-    if (isError || !user) {
-      router.replace("/login");
-      return;
-    }
+  if (isError || !user) {
+    const currentPath = window.location.pathname + window.location.search;
+    router.replace(`/login?intended_url=${encodeURIComponent(currentPath)}`);
+    return;
+  }
 
-    // Email belum diverifikasi
-    if (!user.isEmailVerified) {
-      router.replace("/login?reason=email-not-verified");
-      return;
-    }
+  if (!user.isEmailVerified) {
+    router.replace("/login?reason=email-not-verified");
+    return;
+  }
 
-    // Role bukan customer
-    if (user.accountType !== "customer") {
-      router.replace("/login");
-      return;
-    }
-  }, [user, isLoading, isError, router]);
+  if (user.accountType !== "customer") {
+    router.replace("/login");
+    return;
+  }
+}, [user, isLoading, isError, router]);
 
   if (isLoading || !user) {
     return (

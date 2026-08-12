@@ -5,7 +5,7 @@ import Footer from "@/components/landing-page/Footer";
 import FeatureCard, {
   FEATURES,
 } from "@/components/landing-page/FeatureSection";
-import HeaderNav from "@/components/landing-page/Header";
+import Header from "@/components/shared/Headers/Header";
 import CaraKerja from "@/components/landing-page/CaraKerjaSection";
 import CarouselSection from "@/components/landing-page/CarouselSection";
 import HeroSection from "@/components/landing-page/HeroSection";
@@ -17,7 +17,8 @@ export default function Page() {
       style={{ backgroundColor: "var(--color-background)", minHeight: "100vh" }}
     >
       {/* Header */}
-      <HeaderNav />
+      
+      <Header />
 
       <Container size="xl" py="xl">
         <Stack gap="xl">

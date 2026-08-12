@@ -114,9 +114,15 @@ api.interceptors.response.use(
 
     /*
      * Request selain endpoint public:
-     * kalau 401, coba refresh access token.
+     * kalau access token expired, coba refresh.
+     * Cek code spesifik (bukan cuma status 401) supaya
+     * SESSION_REQUIRED / TOKEN_INVALID tidak ikut memicu
+     * refresh yang percuma — dua kasus itu jelas tidak akan
+     * tertolong oleh refresh.
      */
-    if (status === 401 && !originalRequest._retry) {
+    const code = error.response?.data?.error?.code;
+
+    if (status === 401 && code === "ACCESS_TOKEN_EXPIRED" && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
@@ -125,6 +131,11 @@ api.interceptors.response.use(
         // Cookie accessToken baru sudah dikirim backend.
         return api(originalRequest);
       } catch (refreshError) {
+        // Refresh token juga sudah tidak valid — tidak ada jalan lain,
+        // paksa balik ke halaman login.
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
+        }
         return Promise.reject(refreshError);
       }
     }

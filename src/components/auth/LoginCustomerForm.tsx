@@ -16,55 +16,31 @@ import { useRouter } from "next/navigation";
 import { loginCustomerSchema } from "@/lib/validation/auth.validation";
 import { ApiError } from "@/lib/api/axios";
 import { useLoginCustomer, useLoginWithGoogle } from "@/hooks/auth.hooks";
+import { getSafeRedirectPath } from "@/lib/safe-redirect";
 import { GoogleSignInButton } from "./GoogleLoginButton";
 
 type LoginCustomerFormProps = {
   intendedUrl?: string;
 };
 
-function getSafeRedirectUrl(url?: string): string | null {
-  if (!url) {
-    return null;
-  }
-
-  // Hanya izinkan internal URL
-  if (!url.startsWith("/")) {
-    return null;
-  }
-
-  // Cegah protocol-relative URL seperti //evil.com
-  if (url.startsWith("//")) {
-    return null;
-  }
-
-  return url;
-}
 
 export function LoginCustomerForm({ intendedUrl }: LoginCustomerFormProps) {
   const router = useRouter();
-
   const { mutate, isPending, error } = useLoginCustomer();
 
   const form = useForm({
-    initialValues: {
-      email: "",
-      password: "",
-    },
-
+    initialValues: { email: "", password: "" },
     validate: schemaResolver(loginCustomerSchema),
   });
 
   const redirectAfterLogin = (homeUrl: string) => {
-    const safeRedirectUrl = getSafeRedirectUrl(intendedUrl);
-
-    router.replace(safeRedirectUrl ?? homeUrl ?? "/beranda");
+    const safePath = getSafeRedirectPath(intendedUrl ?? null);
+    router.replace(safePath !== "/beranda" ? safePath : homeUrl);
   };
 
   const submit = form.onSubmit((values) => {
     mutate(values, {
-      onSuccess: (data) => {
-        redirectAfterLogin(data.homeUrl);
-      },
+      onSuccess: (data) => redirectAfterLogin(data.homeUrl),
     });
   });
 
@@ -73,11 +49,7 @@ export function LoginCustomerForm({ intendedUrl }: LoginCustomerFormProps) {
   function handleGoogleIdToken(idToken: string) {
     mutateGoogle(
       { idToken },
-      {
-        onSuccess: (data) => {
-          redirectAfterLogin(data.homeUrl);
-        },
-      },
+      { onSuccess: (data) => redirectAfterLogin(data.homeUrl) },
     );
   }
 

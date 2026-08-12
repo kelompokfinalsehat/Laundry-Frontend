@@ -11,7 +11,7 @@ import {
   VerificationPayload,
   VerifyEmailPayload,
 } from "@/types/api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const authApi = new AuthApi();
 
@@ -66,8 +66,22 @@ export function useResetPasswordCustomer() {
 
 export function useCurrentUser() {
   return useQuery({
-    queryKey: ["auth", "me"],
-    queryFn: authApi.me,
+    queryKey: ["auth", "me"],  
+    queryFn: authApi.me,         
     retry: false,
+    staleTime: 5 * 60 * 1000,    
+  });
+}
+
+export function useLogout() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: authApi.logout,
+    onSuccess: () => {
+      // hapus cache /me, supaya AuthGate & komponen lain langsung tahu user sudah logout
+      queryClient.setQueryData(["auth", "me"], null);
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+    },
   });
 }

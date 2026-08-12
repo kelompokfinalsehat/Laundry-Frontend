@@ -73,10 +73,6 @@ export class AuthApi {
 
   async me() {
     const {data}= await api.get<MeResponse>("/auth/me");
-
-    console.log("[AUTH API] response:", data);
-  console.log("[AUTH API] user:", data.data);
-
     return data.data;
   }
 

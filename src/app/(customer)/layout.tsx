@@ -1,14 +1,13 @@
 import { CustomerAppShell } from "@/components/customer/CustomerAppShell";
-import { AuthGate } from "@/lib/auth/AuthGuards";
+import { AuthGate } from "@/lib/auth/AuthGateCustomer";
+import { Container } from "@mantine/core";
 
-export default function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <AuthGate>
-      <CustomerAppShell>{children}</CustomerAppShell>
+      <CustomerAppShell>
+        <Container size="xl" py="sm">{children}</Container>
+      </CustomerAppShell>
     </AuthGate>
   );
 }

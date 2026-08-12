@@ -1,5 +1,5 @@
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
-import { Paper, Title, Text, Stack } from "@mantine/core";
+import { Paper, Stack } from "@mantine/core";
 
 export default function ResetPasswordPage() {
   return (

@@ -1,5 +1,5 @@
 import { BackOfficeAppShell } from "@/components/back-office/shared/BackOfficeAppShell";
-import { requireRole } from "@/lib/auth/AuthGuards";
+import { requireRole } from "@/lib/auth/AuthGateCustomer";
 export default async function Layout({
   children,
 }: {
