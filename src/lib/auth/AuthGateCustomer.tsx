@@ -14,25 +14,25 @@ export function AuthGate({ children }: AuthGateProps) {
 
   const { data: user, isLoading, isError } = useCurrentUser();
 
- useEffect(() => {
-  if (isLoading) return;
+  useEffect(() => {
+    if (isLoading) return;
 
-  if (isError || !user) {
-    const currentPath = window.location.pathname + window.location.search;
-    router.replace(`/login?intended_url=${encodeURIComponent(currentPath)}`);
-    return;
-  }
+    if (isError || !user) {
+      const currentPath = window.location.pathname + window.location.search;
+      router.replace(`/login?intended_url=${encodeURIComponent(currentPath)}`);
+      return;
+    }
 
-  if (!user.isEmailVerified) {
-    router.replace("/login?reason=email-not-verified");
-    return;
-  }
+    if (!user.isEmailVerified) {
+      router.replace("/login?reason=email-not-verified");
+      return;
+    }
 
-  if (user.accountType !== "customer") {
-    router.replace("/login");
-    return;
-  }
-}, [user, isLoading, isError, router]);
+    if (user.accountType !== "customer") {
+      router.replace("/login");
+      return;
+    }
+  }, [user, isLoading, isError, router]);
 
   if (isLoading || !user) {
     return (
@@ -42,7 +42,12 @@ export function AuthGate({ children }: AuthGateProps) {
     );
   }
 
-  if (!user || isError || !user.isEmailVerified || user.accountType !== "customer") {
+  if (
+    !user ||
+    isError ||
+    !user.isEmailVerified ||
+    user.accountType !== "customer"
+  ) {
     return null;
   }
 

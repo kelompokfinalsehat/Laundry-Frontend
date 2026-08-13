@@ -23,16 +23,24 @@ export function useRegisterCustomer() {
 }
 
 export function useLoginCustomer() {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (payload: LoginCustomerSchema) =>
-      authApi.loginCustomer(payload),
+    mutationFn: authApi.loginCustomer,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+    },
   });
 }
 
 export function useLoginWithGoogle() {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (payload: GoogleLoginPayload) =>
-      authApi.loginWithGoogle(payload),
+    mutationFn: authApi.loginWithGoogle,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+    },
   });
 }
 
@@ -66,10 +74,9 @@ export function useResetPasswordCustomer() {
 
 export function useCurrentUser() {
   return useQuery({
-    queryKey: ["auth", "me"],  
-    queryFn: authApi.me,         
+    queryKey: ["auth", "me"], 
+    queryFn: authApi.me,
     retry: false,
-    staleTime: 5 * 60 * 1000,    
   });
 }
 
@@ -79,7 +86,6 @@ export function useLogout() {
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
-      // hapus cache /me, supaya AuthGate & komponen lain langsung tahu user sudah logout
       queryClient.setQueryData(["auth", "me"], null);
       queryClient.invalidateQueries({ queryKey: ["auth"] });
     },

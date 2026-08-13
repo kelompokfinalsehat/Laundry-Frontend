@@ -66,11 +66,7 @@ export async function refreshAccessToken(): Promise<void> {
         withCredentials: true,
       },
     )
-    .then(() => {
-      // Backend mengirim:
-      // Set-Cookie: accessToken=...
-      // Set-Cookie: refreshToken=...
-    })
+    .then(() => {})
     .finally(() => {
       refreshPromise = null;
     });
@@ -121,21 +117,20 @@ api.interceptors.response.use(
      * tertolong oleh refresh.
      */
     const code = error.response?.data?.error?.code;
-
-    if (code === "ACCESS_TOKEN_EXPIRED" || code === "AUTHENTICATION_REQUIRED" && !originalRequest._retry) {
+    if (code === "ACCESS_TOKEN_EXPIRED" && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         await refreshAccessToken();
 
-        // Cookie accessToken baru sudah dikirim backend.
         return api(originalRequest);
       } catch (refreshError) {
-        // Refresh token juga sudah tidak valid — tidak ada jalan lain,
-        // paksa balik ke halaman login.
+        console.error("❌ Refresh gagal:", refreshError);
+
         if (typeof window !== "undefined") {
           window.location.href = "/login";
         }
+
         return Promise.reject(refreshError);
       }
     }

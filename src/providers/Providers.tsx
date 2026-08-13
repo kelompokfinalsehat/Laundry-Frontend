@@ -8,6 +8,7 @@ import { ModalsProvider } from "@mantine/modals";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { theme } from "@/lib/theme/theme";
+import { AuthBootstrap } from "@/components/shared/AuthBootstrap";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -28,7 +29,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <MantineProvider theme={theme} defaultColorScheme="light">
         <ModalsProvider>
           <Notifications position="top-right" />
-          {children}
+          <AuthBootstrap>{children}</AuthBootstrap>
         </ModalsProvider>
       </MantineProvider>
       {process.env.NODE_ENV === "development" && (
