@@ -22,7 +22,7 @@ export default function Header() {
       }}
     >
       <Container size="xl" py="sm">
-        <Flex align="center" justify="space-between" gap="md">
+        <Flex align="center" justify="space-between" gap="md" mih={48}>
           <Flex align="center" gap="xs" style={{ flexShrink: 0 }}>
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
             <Title
