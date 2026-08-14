@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Container, SimpleGrid, Stack, Title } from "@mantine/core";
-import Footer from "@/components/landing-page/Footer";
+import Footer from "@/components/shared/Footer";
 import FeatureCard, {
   FEATURES,
 } from "@/components/landing-page/FeatureSection";
@@ -20,7 +20,7 @@ export default function Page() {
       
       <Header />
 
-      <Container size="xl" py="xl">
+      <Container size="xl">
         <Stack gap="xl">
           {/* Hero section — carousel */}
           <HeroSection />
