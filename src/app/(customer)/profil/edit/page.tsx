@@ -1,8 +1,8 @@
 "use client";
 
-import { EmailChangeForm } from "@/components/profil/emailChangeForm";
-import { ProfileForm } from "@/components/profil/profileForm";
-import { ProfilePhotoUpload } from "@/components/profil/profilePhotoUpload";
+import { EmailChangeForm } from "@/components/customer/profil/emailChangeForm";
+import { ProfileForm } from "@/components/customer/profil/profileForm";
+import { ProfilePhotoUpload } from "@/components/customer/profil/profilePhotoUpload";
 import { Paper, Stack, Divider, Anchor, Group } from "@mantine/core";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { useRouter, useSearchParams } from "next/navigation";
