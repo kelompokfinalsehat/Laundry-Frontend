@@ -34,8 +34,25 @@ export const resetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
+export const acceptInvitationSchema = z
+  .object({
+    password: z.string().min(8, "Password minimal 8 karakter"),
+    confirmPassword: z.string().min(1, "Konfirmasi password wajib diisi"),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    message: "Konfirmasi password tidak cocok",
+    path: ["confirmPassword"],
+  });
+
+export const employeeLoginSchema = z.object({
+  email: z.string().email("Format email tidak valid."),
+  password: z.string().min(1, "Password wajib diisi."),
+});
+
 export type LoginCustomerSchema = z.infer<typeof loginCustomerSchema>;
+export type EmployeeLoginSchema = z.infer<typeof employeeLoginSchema>;
 export type RegisterCustomerSchema = z.infer<typeof registerCustomerSchema>;
 export type EmailVerificationSchema = z.infer<typeof emailVerificationSchema>;
 export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;
+export type AcceptInvitationSchema = z.infer<typeof acceptInvitationSchema>;
