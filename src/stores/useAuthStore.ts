@@ -11,6 +11,7 @@ export type AuthUser = {
   isEmailVerified: boolean;
   profilePhotoUrl?: string | null;
   phone?: string | null;
+  authProvider: string;
 };
 
 type AuthState = {

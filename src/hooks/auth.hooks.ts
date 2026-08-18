@@ -1,12 +1,8 @@
 "use client";
 
 import { AuthApi } from "@/lib/api/authCustomer.api";
+import { RegisterCustomerSchema } from "@/lib/validation/auth.validation";
 import {
-  LoginCustomerSchema,
-  RegisterCustomerSchema,
-} from "@/lib/validation/auth.validation";
-import {
-  GoogleLoginPayload,
   ResetPasswordCustomerPayload,
   VerificationPayload,
   VerifyEmailPayload,
@@ -14,6 +10,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const authApi = new AuthApi();
+export const AUTH_ME_QUERY_KEY = ["auth", "me"];
 
 export function useRegisterCustomer() {
   return useMutation({
@@ -28,7 +25,7 @@ export function useLoginCustomer() {
   return useMutation({
     mutationFn: authApi.loginCustomer,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      await queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
     },
   });
 }
@@ -39,7 +36,7 @@ export function useLoginWithGoogle() {
   return useMutation({
     mutationFn: authApi.loginWithGoogle,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      await queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
     },
   });
 }
@@ -74,7 +71,7 @@ export function useResetPasswordCustomer() {
 
 export function useCurrentUser() {
   return useQuery({
-    queryKey: ["auth", "me"], 
+    queryKey: AUTH_ME_QUERY_KEY,
     queryFn: authApi.me,
     retry: false,
   });
@@ -87,7 +84,7 @@ export function useLogout() {
     mutationFn: authApi.logout,
     onSuccess: () => {
       queryClient.setQueryData(["auth", "me"], null);
-      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
     },
   });
 }
