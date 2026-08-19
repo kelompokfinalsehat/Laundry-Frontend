@@ -15,14 +15,16 @@ import { useRouter } from "next/navigation";
 
 import { loginCustomerSchema } from "@/lib/validation/auth.validation";
 import { ApiError } from "@/lib/api/axios";
-import { useLoginCustomer, useLoginWithGoogle } from "@/hooks/auth.hooks";
+import {
+  useLoginCustomer,
+  useLoginWithGoogle,
+} from "@/hooks/authCustomer.hooks";
 import { getSafeRedirectPath } from "@/lib/safe-redirect";
 import { GoogleSignInButton } from "./GoogleLoginButton";
 
 type LoginCustomerFormProps = {
   intendedUrl?: string;
 };
-
 
 export function LoginCustomerForm({ intendedUrl }: LoginCustomerFormProps) {
   const router = useRouter();

@@ -1,5 +1,5 @@
 import { Paper, Title, Text, Stack, Alert } from "@mantine/core";
-import { LoginCustomerForm } from "@/components/auth/LoginCustomerForm";
+import { LoginCustomerForm } from "@/components/authCustomer/LoginCustomerForm";
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -8,9 +8,7 @@ type LoginPageProps = {
   }>;
 };
 
-export default async function LoginPage({
-  searchParams,
-}: LoginPageProps) {
+export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
 
   const justVerified = params.verified === "1";
@@ -28,10 +26,7 @@ export default async function LoginPage({
     >
       <Stack gap="md">
         <div>
-          <Title
-            order={3}
-            style={{ color: "var(--color-text-primary)" }}
-          >
+          <Title order={3} style={{ color: "var(--color-text-primary)" }}>
             Masuk ke Popo Laundry
           </Title>
 
@@ -51,9 +46,7 @@ export default async function LoginPage({
           </Alert>
         )}
 
-        <LoginCustomerForm
-          intendedUrl={intendedUrl}
-        />
+        <LoginCustomerForm intendedUrl={intendedUrl} />
       </Stack>
     </Paper>
   );

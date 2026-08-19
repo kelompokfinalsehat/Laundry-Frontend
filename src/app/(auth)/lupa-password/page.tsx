@@ -1,4 +1,4 @@
-import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
+import { ForgotPasswordForm } from "@/components/authCustomer/ForgotPasswordForm";
 import { Paper, Title, Text, Stack } from "@mantine/core";
 
 export default function RegisterPage() {
@@ -18,7 +18,8 @@ export default function RegisterPage() {
             Lupa Kata Sandi?
           </Title>
           <Text size="sm" c="var(--color-text-secondary)">
-            Jangan khawatir! Masukkan email kamu di bawah untuk mengatur ulang kata sandi.
+            Jangan khawatir! Masukkan email kamu di bawah untuk mengatur ulang
+            kata sandi.
           </Text>
         </div>
 

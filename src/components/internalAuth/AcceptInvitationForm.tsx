@@ -10,105 +10,78 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm, schemaResolver } from "@mantine/form";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
-import { resetPasswordSchema } from "@/lib/validation/auth.validation";
+import { acceptInvitationSchema } from "@/lib/validation/auth.validation";
 import { ApiError } from "@/lib/api/axios";
-import { useResetPasswordCustomer } from "@/hooks/auth.hooks";
+import { useAcceptEmployeeInvitation } from "@/hooks/authEmployee.hooks";
 
-export function ResetPasswordForm() {
+export function AcceptInvitationForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const token = searchParams.get("token");
 
-  const {
-    mutate,
-    isPending,
-    isSuccess,
-    data,
-    error,
-  } = useResetPasswordCustomer();
+  const { mutate, isPending, isSuccess, data, error } =
+    useAcceptEmployeeInvitation();
 
   const form = useForm({
     initialValues: {
       password: "",
       confirmPassword: "",
     },
-
-    validate: schemaResolver(resetPasswordSchema),
+    validate: schemaResolver(acceptInvitationSchema),
   });
 
   const submit = form.onSubmit((values) => {
-    if (!token) {
-      return;
-    }
+    if (!token) return;
 
     mutate({
       token,
-      newPassword: values.password,
+      password: values.password,
     });
   });
 
   const apiError = error instanceof ApiError ? error : null;
 
-  /*
-   * Token tidak ditemukan di URL
-   */
   if (!token) {
     return (
       <Stack gap="md" align="center" ta="center">
-        <Title
-          order={3}
-          style={{ color: "var(--color-error)" }}
-        >
+        <Title order={3} style={{ color: "var(--color-error)" }}>
           Link tidak valid
         </Title>
 
-        <Text
-          size="sm"
-          c="var(--color-text-secondary)"
-        >
-          Link reset password tidak valid atau tidak lengkap.
-          Silakan minta link reset password baru.
+        <Text size="sm" c="var(--color-text-secondary)">
+          Link undangan tidak valid atau tidak lengkap. Pastikan kamu membuka
+          link persis seperti yang dikirim melalui email.
         </Text>
 
         <Anchor
           component={Link}
-          href="/lupa-password"
+          href="/internal/login"
           c="var(--color-primary-dark)"
         >
-          Minta link reset password
+          Kembali ke Login
         </Anchor>
       </Stack>
     );
   }
 
-  /*
-   * Password berhasil direset
-   */
   if (isSuccess) {
     return (
       <Stack gap="md" align="center" ta="center">
-        <Title
-          order={3}
-          style={{ color: "var(--color-primary)" }}
-        >
-          Password berhasil diubah
+        <Title order={3} style={{ color: "var(--color-success)" }}>
+          Akun berhasil diaktifkan
         </Title>
 
-        <Text
-          size="sm"
-          c="var(--color-text-secondary)"
-        >
+        <Text size="sm" c="var(--color-text-secondary)">
           {data?.message ??
-            "Password berhasil diperbarui. Silakan login dengan password baru."}
+            "Akun kamu berhasil diaktifkan. Silakan login menggunakan password yang baru dibuat."}
         </Text>
 
         <Button
           component={Link}
-          href="/login"
+          href="/internal/login"
           fullWidth
           style={{
             backgroundColor: "var(--color-accent)",
@@ -124,20 +97,12 @@ export function ResetPasswordForm() {
   return (
     <Stack gap="md">
       <div>
-        <Title
-          order={3}
-          style={{
-            color: "var(--color-text-primary)",
-          }}
-        >
-          Reset Password
+        <Title order={3} style={{ color: "var(--color-text-primary)" }}>
+          Aktivasi Akun Internal
         </Title>
 
-        <Text
-          size="sm"
-          c="var(--color-text-secondary)"
-        >
-          Buat password baru untuk akun kamu.
+        <Text size="sm" c="var(--color-text-secondary)">
+          Buat password untuk mengaktifkan akun employee kamu.
         </Text>
       </div>
 
@@ -156,7 +121,7 @@ export function ResetPasswordForm() {
       <form onSubmit={submit}>
         <Stack gap="md">
           <PasswordInput
-            label="Password Baru"
+            label="Password"
             placeholder="Minimal 8 karakter"
             {...form.getInputProps("password")}
           />
@@ -176,7 +141,7 @@ export function ResetPasswordForm() {
               color: "var(--color-text-on-accent)",
             }}
           >
-            Reset Password
+            Aktifkan Akun
           </Button>
         </Stack>
       </form>

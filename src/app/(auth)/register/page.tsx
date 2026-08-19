@@ -1,5 +1,5 @@
 import { Paper, Title, Text, Stack } from "@mantine/core";
-import { RegisterCustomerForm } from "@/components/auth/RegisterCustomerForm";
+import { RegisterCustomerForm } from "@/components/authCustomer/RegisterCustomerForm";
 
 export default function RegisterPage() {
   return (

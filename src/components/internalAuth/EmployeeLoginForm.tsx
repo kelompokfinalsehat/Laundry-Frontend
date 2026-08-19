@@ -19,8 +19,8 @@ import {
   EmployeeLoginSchema,
 } from "@/lib/validation/auth.validation";
 import { ApiError } from "@/lib/api/axios";
-import { useLoginEmployee } from "@/hooks/auth.hooks";
 import { getEmployeeHome } from "@/utils";
+import { useLoginEmployee } from "@/hooks/authEmployee.hooks";
 
 export function EmployeeLoginForm() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export function EmployeeLoginForm() {
   const submit = form.onSubmit((values) => {
     mutate(values, {
       onSuccess: (employee) => {
-        console.log(employee)
+        console.log(employee);
         router.push(getEmployeeHome(employee.role));
       },
     });

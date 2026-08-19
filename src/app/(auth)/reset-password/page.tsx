@@ -1,4 +1,4 @@
-import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
+import { ResetPasswordForm } from "@/components/authCustomer/ResetPasswordForm";
 import { Center, Loader, Paper, Stack } from "@mantine/core";
 import { Suspense } from "react";
 

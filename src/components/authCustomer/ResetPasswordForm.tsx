@@ -15,21 +15,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { resetPasswordSchema } from "@/lib/validation/auth.validation";
 import { ApiError } from "@/lib/api/axios";
-import { useResetPasswordEmployee } from "@/hooks/auth.hooks";
+import { useResetPasswordCustomer } from "@/hooks/authCustomer.hooks";
 
-export function EmployeeResetPasswordForm() {
+export function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const token = searchParams.get("token");
 
-  const {
-    mutate,
-    isPending,
-    isSuccess,
-    data,
-    error,
-  } = useResetPasswordEmployee();
+  const { mutate, isPending, isSuccess, data, error } =
+    useResetPasswordCustomer();
 
   const form = useForm({
     initialValues: {
@@ -59,24 +54,18 @@ export function EmployeeResetPasswordForm() {
   if (!token) {
     return (
       <Stack gap="md" align="center" ta="center">
-        <Title
-          order={3}
-          style={{ color: "var(--color-error)" }}
-        >
+        <Title order={3} style={{ color: "var(--color-error)" }}>
           Link tidak valid
         </Title>
 
-        <Text
-          size="sm"
-          c="var(--color-text-secondary)"
-        >
-          Link reset password tidak valid atau tidak lengkap.
-          Silakan minta link reset password baru.
+        <Text size="sm" c="var(--color-text-secondary)">
+          Link reset password tidak valid atau tidak lengkap. Silakan minta link
+          reset password baru.
         </Text>
 
         <Anchor
           component={Link}
-          href="/internal/forgot-password"
+          href="/lupa-password"
           c="var(--color-primary-dark)"
         >
           Minta link reset password
@@ -91,24 +80,18 @@ export function EmployeeResetPasswordForm() {
   if (isSuccess) {
     return (
       <Stack gap="md" align="center" ta="center">
-        <Title
-          order={3}
-          style={{ color: "var(--color-primary)" }}
-        >
+        <Title order={3} style={{ color: "var(--color-primary)" }}>
           Password berhasil diubah
         </Title>
 
-        <Text
-          size="sm"
-          c="var(--color-text-secondary)"
-        >
+        <Text size="sm" c="var(--color-text-secondary)">
           {data?.message ??
             "Password berhasil diperbarui. Silakan login dengan password baru."}
         </Text>
 
         <Button
           component={Link}
-          href="/internal/login"
+          href="/login"
           fullWidth
           style={{
             backgroundColor: "var(--color-accent)",
@@ -133,10 +116,7 @@ export function EmployeeResetPasswordForm() {
           Reset Password
         </Title>
 
-        <Text
-          size="sm"
-          c="var(--color-text-secondary)"
-        >
+        <Text size="sm" c="var(--color-text-secondary)">
           Buat password baru untuk akun kamu.
         </Text>
       </div>
@@ -183,7 +163,7 @@ export function EmployeeResetPasswordForm() {
 
       <Anchor
         component={Link}
-        href="/internal/login"
+        href="/login"
         ta="center"
         c="var(--color-primary-dark)"
       >
