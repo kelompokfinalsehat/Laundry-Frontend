@@ -64,8 +64,9 @@ export type Me = {
   role: Role;
   accountType: "customer" | "employee";
   phone: string | null;
-  profilePic: string | null;
+  profilePhotoUrl: string | null;
   isEmailVerified: boolean;
+  authProvider: string;
 };
 
 export type MeResponse = {

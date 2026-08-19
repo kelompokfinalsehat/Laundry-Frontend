@@ -70,11 +70,7 @@ export async function refreshAccessToken(): Promise<void> {
         withCredentials: true,
       },
     )
-    .then(() => {
-      // Backend mengirim:
-      // Set-Cookie: accessToken=...
-      // Set-Cookie: refreshToken=...
-    })
+    .then(() => {})
     .finally(() => {
       refreshPromise = null;
     });
@@ -87,26 +83,14 @@ api.interceptors.response.use(
 
   async (error: AxiosError<ErrorEnvelope>) => {
     const originalRequest = error.config as RetryableRequestConfig | undefined;
-
     const status = error.response?.status;
 
-    // Tidak ada request config
     if (!originalRequest) {
       return Promise.reject(error);
     }
 
-    /*
-     * Endpoint authentication/public tidak boleh
-     * memicu refresh access token.
-     *
-     * Contoh:
-     * /auth/verify-email
-     * /auth/forgot-password
-     * /auth/reset-password
-     */
     if (shouldSkipRefresh(originalRequest.url)) {
       const payload = error.response?.data?.error;
-
       return Promise.reject(
         new ApiError(
           payload?.code ?? "UNKNOWN_ERROR",
@@ -116,39 +100,35 @@ api.interceptors.response.use(
       );
     }
 
-    /*
-     * Request selain endpoint public:
-     * kalau access token expired, coba refresh.
-     * Cek code spesifik (bukan cuma status 401) supaya
-     * SESSION_REQUIRED / TOKEN_INVALID tidak ikut memicu
-     * refresh yang percuma — dua kasus itu jelas tidak akan
-     * tertolong oleh refresh.
-     */
     const code = error.response?.data?.error?.code;
 
-    if (code === "ACCESS_TOKEN_EXPIRED" || code === "AUTHENTICATION_REQUIRED" && !originalRequest._retry) {
+    // HANYA coba refresh untuk token yang benar-benar EXPIRED
+    // (pernah login, tokennya basi). Kalau ACCESS_TOKEN_REQUIRED
+    // (belum pernah login sama sekali / tidak ada cookie), refresh
+    // dijamin gagal karena refreshToken juga tidak ada — percuma dicoba.
+    if (code === "ACCESS_TOKEN_EXPIRED" && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         await refreshAccessToken();
-
-        // Cookie accessToken baru sudah dikirim backend.
         return api(originalRequest);
       } catch (refreshError) {
-        // Refresh token juga sudah tidak valid — tidak ada jalan lain,
-        // paksa balik ke halaman login.
-        if (typeof window !== "undefined") {
+        console.error("❌ Refresh gagal:", refreshError);
+
+        // Hindari infinite reload: cuma redirect kalau BELUM di /login,
+        // dan pakai client-side navigation, bukan full reload.
+        if (
+          typeof window !== "undefined" &&
+          !window.location.pathname.startsWith("/login")
+        ) {
           window.location.href = "/login";
         }
+
         return Promise.reject(refreshError);
       }
     }
 
-    /*
-     * Semua error lainnya dikonversi menjadi ApiError.
-     */
     const payload = error.response?.data?.error;
-
     return Promise.reject(
       new ApiError(
         payload?.code ?? "UNKNOWN_ERROR",

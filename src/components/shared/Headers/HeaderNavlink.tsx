@@ -16,7 +16,7 @@ export default function HeaderNav() {
           key={href}
           component={Link}
           href={href}
-          fw={500}
+          fw={700}
           size="md"
           style={{
             color: "var(--color-text-primary)",

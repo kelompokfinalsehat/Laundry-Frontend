@@ -13,12 +13,8 @@ export default async function LoginPage({
 }: LoginPageProps) {
   const params = await searchParams;
 
-  console.log("[LOGIN PAGE] searchParams:", params);
-
   const justVerified = params.verified === "1";
   const intendedUrl = params.intended_url;
-
-  console.log("[LOGIN PAGE] intendedUrl:", intendedUrl);
 
   return (
     <Paper

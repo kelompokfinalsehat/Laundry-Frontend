@@ -1,6 +1,7 @@
 "use client";
 import {Box} from "@mantine/core";
 import Header from "../shared/Headers/Header";
+import Footer from "../shared/Footer";
 
 export function CustomerAppShell({
   children,
@@ -14,6 +15,8 @@ export function CustomerAppShell({
       <Box component="main">
         {children}
       </Box>
+
+      <Footer/>
     </>
   );
 }
