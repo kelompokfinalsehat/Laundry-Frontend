@@ -1,2 +1,10 @@
-import { FeaturePlaceholder } from '@/components/shared/FeaturePlaceholder';
-export default function Page(){return <FeaturePlaceholder title='Dashboard Outlet' description='Ringkasan operasional outlet sendiri.'/>}
+import { DashboardContent } from "@/components/back-office/dashboard/DashboardContent";
+
+export default function Page() {
+  return (
+    <DashboardContent
+      title="Dashboard Outlet"
+      description="Ringkasan operasional outlet."
+    />
+  );
+}

@@ -1,32 +1,23 @@
 "use client";
 
 import {
-  Avatar,
-  Group,
-  Menu,
-  Skeleton,
-  Text,
-  UnstyledButton,
-  Button,
-  Box,
+  Avatar, Group, Menu, Skeleton, Text, UnstyledButton, Button, Box,
 } from "@mantine/core";
 import {
-  IconChevronDown,
-  IconLogout,
-  IconUser,
-  IconPackage,
+  IconChevronDown, IconLogout, IconUser, IconPackage,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCurrentUser } from "@/hooks/auth.hooks";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { useLogout } from "@/hooks/auth.hooks";
 
 export function HeaderProfile() {
-  const { data: user, isLoading } = useCurrentUser();
+  const user = useAuthStore((s) => s.user);
+  const isInitializing = useAuthStore((s) => s.isInitializing);
   const router = useRouter();
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
 
-  if (isLoading) {
+  if (isInitializing) {
     return (
       <Group gap="xs">
         <Skeleton height={36} width={36} radius="xl" />
@@ -36,44 +27,33 @@ export function HeaderProfile() {
   }
 
   if (!user) {
-  return (
-    <Group gap="sm">
-  <Button
-    component={Link}
-    href="/login"
-    variant="subtle"
-    size="sm"
-  >
-    Masuk
-  </Button>
-
-  <Button
-    component={Link}
-    href="/register"
-    size="sm"
-    style={{
-      backgroundColor: "var(--color-accent)",
-      color: "var(--color-text-on-accent)",
-    }}
-  >
-    Daftar
-  </Button>
-</Group>
-  );
-}
+    return (
+      <Group gap="sm">
+        <Button component={Link} href="/login" variant="subtle" size="sm">
+          Masuk
+        </Button>
+        <Button
+          component={Link}
+          href="/register"
+          size="sm"
+          style={{ backgroundColor: "var(--color-accent)", color: "var(--color-text-on-accent)" }}
+        >
+          Daftar
+        </Button>
+      </Group>
+    );
+  }
 
   const initials = user.name
-    ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase()
+    ? user.name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
     : "?";
 
   const handleLogout = () => {
     logout(undefined, {
-      onSuccess: () => router.replace("/login"),
+      onSuccess: () => {
+        useAuthStore.getState().clearUser();
+        router.replace("/login");
+      },
     });
   };
 
@@ -83,24 +63,16 @@ export function HeaderProfile() {
         <UnstyledButton>
           <Group gap="xs">
             <Avatar
+              src={user?.profilePhotoUrl || undefined}
               radius="xl"
-              size={36}
+              size={40}
               style={{ backgroundColor: "var(--color-primary)" }}
             >
               {initials}
             </Avatar>
-            <Text fw={500} size="lg" visibleFrom="sm">
-              {user.name}
-            </Text>
-            <Box
-              visibleFrom="sm"
-              component="span"
-              style={{ display: "inline-flex" }}
-            >
-              <IconChevronDown
-                size={16}
-                style={{ color: "var(--color-text-secondary)" }}
-              />
+            <Text fw={500} size="lg" visibleFrom="sm">{user.name}</Text>
+            <Box visibleFrom="sm" component="span" style={{ display: "inline-flex" }}>
+              <IconChevronDown size={16} style={{ color: "var(--color-text-secondary)" }} />
             </Box>
           </Group>
         </UnstyledButton>
@@ -108,25 +80,13 @@ export function HeaderProfile() {
 
       <Menu.Dropdown>
         <Menu.Label style={{ wordBreak: "break-all" }}>{user.email}</Menu.Label>
-
-        <Menu.Item
-          component={Link}
-          href="/profil"
-          leftSection={<IconUser size={16} />}
-        >
+        <Menu.Item component={Link} href="/profil" leftSection={<IconUser size={16} />}>
           Profil Saya
         </Menu.Item>
-
-        <Menu.Item
-          component={Link}
-          href="/pesanan"
-          leftSection={<IconPackage size={16} />}
-        >
+        <Menu.Item component={Link} href="/pesanan" leftSection={<IconPackage size={16} />}>
           Pesanan Saya
         </Menu.Item>
-
         <Menu.Divider />
-
         <Menu.Item
           color="red"
           leftSection={<IconLogout size={16} />}

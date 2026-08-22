@@ -1,2 +1,5 @@
-import { FeaturePlaceholder } from '@/components/shared/FeaturePlaceholder';
-export default function Page(){return <FeaturePlaceholder title='Tambah Outlet' description='Kelola detail lokasi dan koordinat outlet.'/>}
+import { CreateOutletContent } from "@/components/back-office/outlet/CreateOutletContent";
+
+export default function CreateOutletPage() {
+  return <CreateOutletContent />;
+}

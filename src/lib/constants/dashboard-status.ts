@@ -1,0 +1,15 @@
+export const DASHBOARD_STATUS_LABEL: Record<string, string> = {
+  SCHEDULED: "Terjadwal",
+  WAITING_DRIVER_PICKUP: "Menunggu Driver",
+  ON_THE_WAY_TO_OUTLET: "Menuju Outlet",
+  ARRIVED_AT_OUTLET: "Tiba di Outlet",
+  WASHING: "Pencucian",
+  IRONING: "Penyetrikaan",
+  PACKING: "Pengemasan",
+  WAITING_PAYMENT: "Menunggu Pembayaran",
+  OVERDUE: "Terlambat",
+  READY_FOR_DELIVERY: "Siap Diantar",
+  ON_THE_WAY_TO_CUSTOMER: "Menuju Customer",
+  WAITING_CUSTOMER_CONFIRMATION: "Menunggu Konfirmasi",
+  RECEIVED_BY_CUSTOMER: "Selesai",
+};

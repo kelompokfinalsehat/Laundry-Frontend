@@ -21,6 +21,7 @@ import {
 import { ApiError } from "@/lib/api/axios";
 import { useLoginEmployee } from "@/hooks/auth.hooks";
 import { getEmployeeHome } from "@/utils";
+import { notifications } from "@mantine/notifications";
 
 export function EmployeeLoginForm() {
   const router = useRouter();
@@ -37,7 +38,11 @@ export function EmployeeLoginForm() {
   const submit = form.onSubmit((values) => {
     mutate(values, {
       onSuccess: (employee) => {
-        console.log(employee)
+        notifications.show({
+            title: "Berhasil",
+            message: "Login berhasil.",
+            color: "green"
+        })
         router.push(getEmployeeHome(employee.role));
       },
     });

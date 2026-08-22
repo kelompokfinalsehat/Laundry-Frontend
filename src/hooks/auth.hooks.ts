@@ -9,7 +9,6 @@ import {
 } from "@/lib/validation/auth.validation";
 import {
   AcceptInvitationPayload,
-  GoogleLoginPayload,
   ResetPasswordCustomerPayload,
   VerificationPayload,
   VerifyEmailPayload,
@@ -17,7 +16,8 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const authApi = new AuthApi();
-const authEmployeeApi = new AuthEmployeeApi()
+export const AUTH_ME_QUERY_KEY = ["auth", "me"];
+const authEmployeeApi = new AuthEmployeeApi();
 
 export function useRegisterCustomer() {
   return useMutation({
@@ -27,22 +27,31 @@ export function useRegisterCustomer() {
 }
 
 export function useLoginCustomer() {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (payload: LoginCustomerSchema) =>
-      authApi.loginCustomer(payload),
+    mutationFn: authApi.loginCustomer,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
+    },
   });
 }
 
 export function useLoginEmployee() {
   return useMutation({
-    mutationFn: (payload: EmployeeLoginSchema) => authEmployeeApi.login(payload)
-  })
+    mutationFn: (payload: EmployeeLoginSchema) =>
+      authEmployeeApi.login(payload),
+  });
 }
 
 export function useLoginWithGoogle() {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (payload: GoogleLoginPayload) =>
-      authApi.loginWithGoogle(payload),
+    mutationFn: authApi.loginWithGoogle,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
+    },
   });
 }
 
@@ -74,10 +83,11 @@ export function useForgotPasswordCustomer() {
   });
 }
 
-export function useForgotPasswordEmployee(){
+export function useForgotPasswordEmployee() {
   return useMutation({
-    mutationFn: (payload: VerificationPayload) => authEmployeeApi.forgotPassword(payload)
-  })
+    mutationFn: (payload: VerificationPayload) =>
+      authEmployeeApi.forgotPassword(payload),
+  });
 }
 
 export function useResetPasswordCustomer() {
@@ -87,18 +97,18 @@ export function useResetPasswordCustomer() {
   });
 }
 
-export function useResetPasswordEmployee(){
+export function useResetPasswordEmployee() {
   return useMutation({
-    mutationFn: (payload: ResetPasswordCustomerPayload) => authEmployeeApi.resetPassword(payload)
-  })
+    mutationFn: (payload: ResetPasswordCustomerPayload) =>
+      authEmployeeApi.resetPassword(payload),
+  });
 }
 
 export function useCurrentUser() {
   return useQuery({
-    queryKey: ["auth", "me"],  
-    queryFn: authApi.me,         
+    queryKey: AUTH_ME_QUERY_KEY,
+    queryFn: authApi.me,
     retry: false,
-    staleTime: 5 * 60 * 1000,    
   });
 }
 
@@ -108,9 +118,8 @@ export function useLogout() {
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
-      // hapus cache /me, supaya AuthGate & komponen lain langsung tahu user sudah logout
       queryClient.setQueryData(["auth", "me"], null);
-      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
     },
   });
 }

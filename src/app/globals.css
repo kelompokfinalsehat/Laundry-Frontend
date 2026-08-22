@@ -4,7 +4,7 @@
 
 :root { color-scheme: light; }
 html, body { margin: 0; min-height: 100%; background: #f8fafc; }
-body { font-family: Arial, Helvetica, sans-serif; }
+body { font-family: var(--font-body), sans-serif; }
 a { color: inherit; text-decoration: none; }
 * { box-sizing: border-box; }
 
@@ -16,8 +16,8 @@ a { color: inherit; text-decoration: none; }
  
 :root {
   /* Primary */
-  --color-primary: #92eeff;         /* Rinse Blue — nav, header, elemen struktural */
-  --color-primary-dark: #30afff;    /* hover/active state tombol/link primary */
+  --color-primary: #30afff;;         /* Rinse Blue — nav, header, elemen struktural */
+  --color-primary-dark: #3e83e2;    /* hover/active state tombol/link primary */
   --color-primary-light: #eaf4fb;   /* background lembut, badge, highlight ringan */
  
   /* Accent / CTA */
