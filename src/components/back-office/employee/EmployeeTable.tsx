@@ -1,11 +1,19 @@
 "use client";
 
-import { Badge, Paper, ScrollArea, Table, Text } from "@mantine/core";
+import { ActionIcon, Badge, Group, Table, Text } from "@mantine/core";
+import { IconChevronRight } from "@tabler/icons-react";
+
+import { ServerPagination } from "@/components/ui/ServerPagination";
 
 import type { Employee } from "@/types/api/employee.types";
+import type { PaginationMeta } from "@/types/api/pagination.type";
 
 type Props = {
   data: Employee[];
+  meta: PaginationMeta;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: 10 | 20 | 50) => void;
+  onView: (employeeId: string) => void;
 };
 
 const ROLE_LABEL: Record<Employee["role"], string> = {
@@ -32,10 +40,7 @@ const ACCOUNT_STATUS: Record<
   },
 };
 
-const WORK_STATUS: Record<
-  Employee["workStatus"],
-  { label: string; color: string }
-> = {
+const WORK_STATUS = {
   OFF_DUTY: {
     label: "Off Duty",
     color: "gray",
@@ -48,19 +53,19 @@ const WORK_STATUS: Record<
     label: "Sibuk",
     color: "orange",
   },
-};
+} as const;
 
-export function EmployeeTable({ data }: Props) {
+export function EmployeeTable({
+  data,
+  meta,
+  onPageChange,
+  onPageSizeChange,
+  onView,
+}: Props) {
   return (
-    <Paper
-      withBorder
-      radius="md"
-      style={{
-        backgroundColor: "var(--color-surface)",
-      }}
-    >
-      <ScrollArea>
-        <Table striped highlightOnHover miw={850}>
+    <>
+      <Table.ScrollContainer minWidth={900}>
+        <Table highlightOnHover verticalSpacing="sm">
           <Table.Thead>
             <Table.Tr>
               <Table.Th>Nama</Table.Th>
@@ -69,37 +74,34 @@ export function EmployeeTable({ data }: Props) {
               <Table.Th>Outlet</Table.Th>
               <Table.Th>Status Akun</Table.Th>
               <Table.Th>Status Kerja</Table.Th>
+              <Table.Th ta="right">Aksi</Table.Th>
             </Table.Tr>
           </Table.Thead>
 
           <Table.Tbody>
             {data.map((employee) => {
-              const account = ACCOUNT_STATUS[employee.accountStatus] ?? {
-                label: employee.accountStatus ?? "-",
-                color: "gray",
-              };
+              const account = ACCOUNT_STATUS[employee.accountStatus];
 
-              const work = WORK_STATUS[employee.workStatus] ?? {
-                label: employee.workStatus ?? "-",
-                color: "gray",
-              };
+              const work = employee.workStatus
+                ? WORK_STATUS[employee.workStatus]
+                : null;
 
               return (
                 <Table.Tr key={employee.id}>
                   <Table.Td>
-                    <Text size="sm" fw={600}>
+                    <Text size="sm" fw={600} c="var(--color-text-primary)">
                       {employee.name}
                     </Text>
                   </Table.Td>
 
                   <Table.Td>
-                    <Text size="sm">{employee.email}</Text>
+                    <Text size="sm" c="var(--color-text-secondary)">
+                      {employee.email}
+                    </Text>
                   </Table.Td>
 
                   <Table.Td>
-                    <Text size="sm">
-                      {ROLE_LABEL[employee.role] ?? employee.role}
-                    </Text>
+                    <Text size="sm">{ROLE_LABEL[employee.role]}</Text>
                   </Table.Td>
 
                   <Table.Td>
@@ -113,16 +115,44 @@ export function EmployeeTable({ data }: Props) {
                   </Table.Td>
 
                   <Table.Td>
-                    <Badge variant="light" color={work.color}>
-                      {work.label}
-                    </Badge>
+                    {work ? (
+                      <Badge variant="light" color={work.color}>
+                        {work.label}
+                      </Badge>
+                    ) : (
+                      <Text size="sm" c="var(--color-text-secondary)">
+                        -
+                      </Text>
+                    )}
+                  </Table.Td>
+
+                  <Table.Td ta="right">
+                    <Group gap={4} justify="flex-end">
+                      <ActionIcon
+                        variant="subtle"
+                        color="rinseBlue"
+                        aria-label={`Lihat ${employee.name}`}
+                        onClick={() => onView(employee.id)}
+                      >
+                        <IconChevronRight size={18} />
+                      </ActionIcon>
+                    </Group>
                   </Table.Td>
                 </Table.Tr>
               );
             })}
           </Table.Tbody>
         </Table>
-      </ScrollArea>
-    </Paper>
+      </Table.ScrollContainer>
+
+      <ServerPagination
+        page={meta.page}
+        pageSize={meta.pageSize as 10 | 20 | 50}
+        totalItems={meta.totalItems}
+        totalPages={meta.totalPages}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
+      />
+    </>
   );
 }

@@ -54,10 +54,13 @@ export function EmployeeStatus({
     };
 
   const work =
-    WORK_STATUS[employee.workStatus] ?? {
-      label: employee.workStatus ?? "-",
-      color: "gray",
-    };
+  employee.workStatus &&
+  WORK_STATUS[employee.workStatus]
+    ? WORK_STATUS[employee.workStatus]
+    : {
+        label: "-",
+        color: "gray",
+      };
 
   return (
     <Group grow align="stretch">

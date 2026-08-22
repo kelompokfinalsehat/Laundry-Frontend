@@ -1,18 +1,11 @@
-import {
-  Grid,
-  Group,
-  Paper,
-  Stack,
-  Text,
-  ThemeIcon,
-} from "@mantine/core";
+import { Grid, Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import {
   IconClipboardList,
   IconClock,
   IconCircleCheck,
   IconCash,
 } from "@tabler/icons-react";
-import type { DashboardSummary as DashboardSummaryType } from "@/types/api/dashboard.type";
+import type { DashboardSummary as DashboardSummaryType } from "@/types/api/dashboard.types";
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -27,31 +20,31 @@ export function DashboardSummary({
   summary: DashboardSummaryType;
 }) {
   const items = [
-  {
-    label: "Total Pesanan",
-    value: summary.totalOrders.toLocaleString("id-ID"),
-    icon: IconClipboardList,
-    color: "rinseBlue",
-  },
-  {
-    label: "Pesanan Aktif",
-    value: summary.activeOrders.toLocaleString("id-ID"),
-    icon: IconClock,
-    color: "orange",
-  },
-  {
-    label: "Pesanan Selesai",
-    value: summary.completedOrders.toLocaleString("id-ID"),
-    icon: IconCircleCheck,
-    color: "green",
-  },
-  {
-    label: "Total Pendapatan",
-    value: formatCurrency(summary.totalRevenue),
-    icon: IconCash,
-    color: "teal",
-  },
-];
+    {
+      label: "Total Pesanan",
+      value: summary.totalOrders.toLocaleString("id-ID"),
+      icon: IconClipboardList,
+      color: "rinseBlue",
+    },
+    {
+      label: "Pesanan Aktif",
+      value: summary.activeOrders.toLocaleString("id-ID"),
+      icon: IconClock,
+      color: "orange",
+    },
+    {
+      label: "Pesanan Selesai",
+      value: summary.completedOrders.toLocaleString("id-ID"),
+      icon: IconCircleCheck,
+      color: "green",
+    },
+    {
+      label: "Total Pendapatan",
+      value: formatCurrency(summary.totalRevenue),
+      icon: IconCash,
+      color: "teal",
+    },
+  ];
 
   return (
     <Grid gap="md">
@@ -59,10 +52,7 @@ export function DashboardSummary({
         const Icon = item.icon;
 
         return (
-          <Grid.Col
-            key={item.label}
-            span={{ base: 12, sm: 6, lg: 3 }}
-          >
+          <Grid.Col key={item.label} span={{ base: 12, sm: 6, lg: 3 }}>
             <Paper
               withBorder
               p="lg"
@@ -72,17 +62,9 @@ export function DashboardSummary({
                 backgroundColor: "var(--color-surface)",
               }}
             >
-              <Group
-                justify="space-between"
-                align="flex-start"
-                wrap="nowrap"
-              >
+              <Group justify="space-between" align="flex-start" wrap="nowrap">
                 <Stack gap={6}>
-                  <Text
-                    size="sm"
-                    fw={500}
-                    c="var(--color-text-secondary)"
-                  >
+                  <Text size="sm" fw={500} c="var(--color-text-secondary)">
                     {item.label}
                   </Text>
 

@@ -1,6 +1,6 @@
 import { Badge, Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconAlertTriangle } from "@tabler/icons-react";
-import type { DashboardResponse } from "@/types/api/dashboard.type";
+import type { DashboardResponse } from "@/types/api/dashboard.types";
 import { DASHBOARD_STATUS_LABEL } from "@/lib/constants/dashboard-status";
 
 type Props = {

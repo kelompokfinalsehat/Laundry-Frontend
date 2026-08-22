@@ -17,7 +17,7 @@ export type Employee = {
   email: string;
   role: EmployeeRole;
   accountStatus: AccountStatus;
-  workStatus: WorkStatus;
+  workStatus: WorkStatus | null;
   currentOutletId: string | null;
   currentOutlet: EmployeeOutlet | null;
   createdAt: string;

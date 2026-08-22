@@ -1,12 +1,5 @@
-import {
-  Badge,
-  Paper,
-  ScrollArea,
-  Stack,
-  Table,
-  Text,
-} from "@mantine/core";
-import type { RecentOrderItem } from "@/types/api/dashboard.type";
+import { Badge, Paper, ScrollArea, Stack, Table, Text } from "@mantine/core";
+import type { RecentOrderItem } from "@/types/api/dashboard.types";
 import { DASHBOARD_STATUS_LABEL } from "@/lib/constants/dashboard-status";
 
 const formatDate = (date: string) =>
@@ -15,11 +8,7 @@ const formatDate = (date: string) =>
     timeStyle: "short",
   }).format(new Date(date));
 
-export function RecentOrders({
-  data,
-}: {
-  data: RecentOrderItem[];
-}) {
+export function RecentOrders({ data }: { data: RecentOrderItem[] }) {
   return (
     <Paper
       withBorder
@@ -32,27 +21,17 @@ export function RecentOrders({
     >
       <Stack gap="lg">
         <div>
-          <Text
-            fw={600}
-            c="var(--color-text-primary)"
-          >
+          <Text fw={600} c="var(--color-text-primary)">
             Pesanan Terbaru
           </Text>
 
-          <Text
-            size="sm"
-            c="var(--color-text-secondary)"
-          >
+          <Text size="sm" c="var(--color-text-secondary)">
             5 pesanan yang terakhir dibuat
           </Text>
         </div>
 
         <ScrollArea>
-          <Table
-            highlightOnHover
-            miw={650}
-            verticalSpacing="sm"
-          >
+          <Table highlightOnHover miw={650} verticalSpacing="sm">
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>Kode</Table.Th>
@@ -72,28 +51,17 @@ export function RecentOrders({
                   </Table.Td>
 
                   <Table.Td>
-                    <Text size="sm">
-                      {order.customerName}
-                    </Text>
+                    <Text size="sm">{order.customerName}</Text>
                   </Table.Td>
 
                   <Table.Td>
-                    <Badge
-                      variant="light"
-                      color="rinseBlue"
-                      radius="sm"
-                    >
-                      {DASHBOARD_STATUS_LABEL[
-                        order.status
-                      ] ?? order.status}
+                    <Badge variant="light" color="rinseBlue" radius="sm">
+                      {DASHBOARD_STATUS_LABEL[order.status] ?? order.status}
                     </Badge>
                   </Table.Td>
 
                   <Table.Td>
-                    <Text
-                      size="sm"
-                      c="var(--color-text-secondary)"
-                    >
+                    <Text size="sm" c="var(--color-text-secondary)">
                       {formatDate(order.createdAt)}
                     </Text>
                   </Table.Td>

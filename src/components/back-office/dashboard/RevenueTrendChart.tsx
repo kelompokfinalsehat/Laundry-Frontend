@@ -2,7 +2,7 @@
 
 import { Paper, Stack, Text } from "@mantine/core";
 import { AreaChart } from "@mantine/charts";
-import type { RevenueTrendItem } from "@/types/api/dashboard.type";
+import type { RevenueTrendItem } from "@/types/api/dashboard.types";
 
 interface RevenueTrendChartProps {
   data: RevenueTrendItem[];

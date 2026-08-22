@@ -1,57 +1,56 @@
 "use client";
 
 import type { EmployeeQuery } from "@/types/api/employee.types";
-import {
-  Button,
-  Group,
-  Select,
-  TextInput,
-} from "@mantine/core";
-import {
-  IconSearch,
-  IconX,
-} from "@tabler/icons-react";
+
+import { Button, Group, Select, TextInput } from "@mantine/core";
+
+import { IconSearch, IconX } from "@tabler/icons-react";
 
 type EmployeeFiltersState = Pick<
   EmployeeQuery,
-  | "search"
-  | "role"
-  | "accountStatus"
-  | "workStatus"
-  | "outletId"
+  "search" | "role" | "accountStatus" | "workStatus" | "outletId"
 >;
 
 type Props = {
   filters: EmployeeFiltersState;
+
+  sortBy: NonNullable<EmployeeQuery["sortBy"]>;
+
+  sortOrder: NonNullable<EmployeeQuery["sortOrder"]>;
+
   outlets: {
     id: string;
     name: string;
   }[];
-  onChange: (
-    key: keyof EmployeeFiltersState,
-    value: string | null,
-  ) => void;
+
+  onChange: (key: keyof EmployeeFiltersState, value: string | null) => void;
+
+  onSortByChange: (value: NonNullable<EmployeeQuery["sortBy"]>) => void;
+
+  onSortOrderChange: (value: NonNullable<EmployeeQuery["sortOrder"]>) => void;
+
   onReset: () => void;
 };
 
 export function EmployeeFilters({
   filters,
+  sortBy,
+  sortOrder,
   outlets,
   onChange,
+  onSortByChange,
+  onSortOrderChange,
   onReset,
 }: Props) {
   return (
-    <Group align="end">
+    <Group align="end" wrap="wrap" gap="sm">
       <TextInput
         label="Cari"
         placeholder="Nama atau email"
         leftSection={<IconSearch size={16} />}
         value={filters.search ?? ""}
         onChange={(event) =>
-          onChange(
-            "search",
-            event.currentTarget.value || null,
-          )
+          onChange("search", event.currentTarget.value || null)
         }
       />
 
@@ -74,9 +73,7 @@ export function EmployeeFilters({
           },
         ]}
         value={filters.role ?? null}
-        onChange={(value) =>
-          onChange("role", value)
-        }
+        onChange={(value) => onChange("role", value)}
       />
 
       <Select
@@ -98,9 +95,7 @@ export function EmployeeFilters({
           },
         ]}
         value={filters.accountStatus ?? null}
-        onChange={(value) =>
-          onChange("accountStatus", value)
-        }
+        onChange={(value) => onChange("accountStatus", value)}
       />
 
       <Select
@@ -122,9 +117,7 @@ export function EmployeeFilters({
           },
         ]}
         value={filters.workStatus ?? null}
-        onChange={(value) =>
-          onChange("workStatus", value)
-        }
+        onChange={(value) => onChange("workStatus", value)}
       />
 
       <Select
@@ -137,9 +130,65 @@ export function EmployeeFilters({
           label: outlet.name,
         }))}
         value={filters.outletId ?? null}
-        onChange={(value) =>
-          onChange("outletId", value)
-        }
+        onChange={(value) => onChange("outletId", value)}
+      />
+
+      <Select
+        label="Urutkan Berdasarkan"
+        value={sortBy}
+        data={[
+          {
+            value: "createdAt",
+            label: "Tanggal dibuat",
+          },
+          {
+            value: "name",
+            label: "Nama",
+          },
+          {
+            value: "email",
+            label: "Email",
+          },
+          {
+            value: "role",
+            label: "Role",
+          },
+          {
+            value: "accountStatus",
+            label: "Status akun",
+          },
+        ]}
+        onChange={(value) => {
+          if (
+            value === "name" ||
+            value === "email" ||
+            value === "role" ||
+            value === "accountStatus" ||
+            value === "createdAt"
+          ) {
+            onSortByChange(value);
+          }
+        }}
+      />
+
+      <Select
+        label="Urutkan"
+        value={sortOrder}
+        data={[
+          {
+            value: "desc",
+            label: "Terbaru",
+          },
+          {
+            value: "asc",
+            label: "Terlama",
+          },
+        ]}
+        onChange={(value) => {
+          if (value === "asc" || value === "desc") {
+            onSortOrderChange(value);
+          }
+        }}
       />
 
       <Button

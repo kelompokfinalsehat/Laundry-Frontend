@@ -20,11 +20,8 @@ import {
 } from "@/lib/validation/auth.validation";
 import { ApiError } from "@/lib/api/axios";
 import { getEmployeeHome } from "@/utils";
-<<<<<<< HEAD:src/components/auth/EmployeeLoginForm.tsx
 import { notifications } from "@mantine/notifications";
-=======
 import { useLoginEmployee } from "@/hooks/authEmployee.hooks";
->>>>>>> origin/feat/internal/auth:src/components/internalAuth/EmployeeLoginForm.tsx
 
 export function EmployeeLoginForm() {
   const router = useRouter();
@@ -41,15 +38,12 @@ export function EmployeeLoginForm() {
   const submit = form.onSubmit((values) => {
     mutate(values, {
       onSuccess: (employee) => {
-<<<<<<< HEAD:src/components/auth/EmployeeLoginForm.tsx
         notifications.show({
             title: "Berhasil",
             message: "Login berhasil.",
             color: "green"
         })
-=======
         console.log(employee);
->>>>>>> origin/feat/internal/auth:src/components/internalAuth/EmployeeLoginForm.tsx
         router.push(getEmployeeHome(employee.role));
       },
     });

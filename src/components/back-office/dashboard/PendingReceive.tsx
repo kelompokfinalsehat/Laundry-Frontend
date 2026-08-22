@@ -1,13 +1,6 @@
-import {
-  Badge,
-  Group,
-  Paper,
-  Stack,
-  Text,
-  ThemeIcon,
-} from "@mantine/core";
+import { Badge, Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconTruckDelivery } from "@tabler/icons-react";
-import type { DashboardResponse } from "@/types/api/dashboard.type";
+import type { DashboardResponse } from "@/types/api/dashboard.types";
 
 type Props = {
   data: DashboardResponse["pendingReceive"];
@@ -25,11 +18,7 @@ export function PendingReceive({ data }: Props) {
       }}
     >
       <Stack gap="lg">
-        <Group
-          justify="space-between"
-          align="flex-start"
-          wrap="nowrap"
-        >
+        <Group justify="space-between" align="flex-start" wrap="nowrap">
           <Group gap="sm" wrap="nowrap">
             <ThemeIcon
               size={40}
@@ -42,36 +31,23 @@ export function PendingReceive({ data }: Props) {
             </ThemeIcon>
 
             <div>
-              <Text
-                fw={600}
-                c="var(--color-text-primary)"
-              >
+              <Text fw={600} c="var(--color-text-primary)">
                 Menunggu Penerimaan
               </Text>
 
-              <Text
-                size="sm"
-                c="var(--color-text-secondary)"
-              >
+              <Text size="sm" c="var(--color-text-secondary)">
                 Laundry sedang menuju outlet
               </Text>
             </div>
           </Group>
 
-          <Badge
-            color="orange"
-            variant="light"
-            radius="sm"
-          >
+          <Badge color="orange" variant="light" radius="sm">
             {data.total}
           </Badge>
         </Group>
 
         {data.items.length === 0 ? (
-          <Text
-            size="sm"
-            c="var(--color-text-secondary)"
-          >
+          <Text size="sm" c="var(--color-text-secondary)">
             Tidak ada pesanan yang perlu diterima.
           </Text>
         ) : (
@@ -86,18 +62,11 @@ export function PendingReceive({ data }: Props) {
                   backgroundColor: "var(--color-surface)",
                 }}
               >
-                <Text
-                  size="sm"
-                  fw={600}
-                  c="var(--color-text-primary)"
-                >
+                <Text size="sm" fw={600} c="var(--color-text-primary)">
                   {item.orderCode}
                 </Text>
 
-                <Text
-                  size="sm"
-                  c="var(--color-text-secondary)"
-                >
+                <Text size="sm" c="var(--color-text-secondary)">
                   {item.customerName}
                 </Text>
               </Paper>

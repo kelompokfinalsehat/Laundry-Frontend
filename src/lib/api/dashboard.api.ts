@@ -1,5 +1,5 @@
 import { api } from "./axios";
-import { DashboardQuery, DashboardResponse } from "@/types/api/dashboard.type";
+import { DashboardQuery, DashboardResponse } from "@/types/api/dashboard.types";
 
 export class DashboardApi {
   async getDashboard(params?: DashboardQuery): Promise<DashboardResponse> {
