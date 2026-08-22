@@ -1,7 +1,7 @@
 import {
   UpdatePhotoResponse,
   UpdateProfileResponse,
-} from "@/types/api/profile.types";
+} from "@/types/api/profile.type";
 import {
   MAX_PHOTO_SIZE_BYTES,
   profilePhotoSchema,

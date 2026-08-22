@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Center, Loader } from "@mantine/core";
-import { useCurrentUser } from "@/hooks/auth.hooks";
+import { useCurrentUser } from "@/hooks/authCustomer.hooks";
 
 type AuthGateProps = {
   children: React.ReactNode;

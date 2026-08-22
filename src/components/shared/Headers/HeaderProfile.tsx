@@ -9,7 +9,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useLogout } from "@/hooks/auth.hooks";
+import { useLogout } from "@/hooks/authCustomer.hooks";
 
 export function HeaderProfile() {
   const user = useAuthStore((s) => s.user);
@@ -36,7 +36,10 @@ export function HeaderProfile() {
           component={Link}
           href="/register"
           size="sm"
-          style={{ backgroundColor: "var(--color-accent)", color: "var(--color-text-on-accent)" }}
+          style={{
+            backgroundColor: "var(--color-accent)",
+            color: "var(--color-text-on-accent)",
+          }}
         >
           Daftar
         </Button>
@@ -80,10 +83,18 @@ export function HeaderProfile() {
 
       <Menu.Dropdown>
         <Menu.Label style={{ wordBreak: "break-all" }}>{user.email}</Menu.Label>
-        <Menu.Item component={Link} href="/profil" leftSection={<IconUser size={16} />}>
+        <Menu.Item
+          component={Link}
+          href="/profil"
+          leftSection={<IconUser size={16} />}
+        >
           Profil Saya
         </Menu.Item>
-        <Menu.Item component={Link} href="/pesanan" leftSection={<IconPackage size={16} />}>
+        <Menu.Item
+          component={Link}
+          href="/pesanan"
+          leftSection={<IconPackage size={16} />}
+        >
           Pesanan Saya
         </Menu.Item>
         <Menu.Divider />

@@ -14,7 +14,7 @@ import {
   Anchor,
 } from "@mantine/core";
 import { useForm, schemaResolver } from "@mantine/form";
-import { useVerifyCustomerEmail } from "@/hooks/auth.hooks";
+import { useVerifyCustomerEmail } from "@/hooks/authCustomer.hooks";
 import { ApiError } from "@/lib/api/axios";
 import { emailVerificationSchema } from "@/lib/validation/auth.validation";
 

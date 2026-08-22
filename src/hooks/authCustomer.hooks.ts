@@ -1,14 +1,10 @@
 "use client";
 
 import { AuthApi } from "@/lib/api/authCustomer.api";
-import { AuthEmployeeApi } from "@/lib/api/authEmployee.api";
 import {
-  EmployeeLoginSchema,
-  LoginCustomerSchema,
   RegisterCustomerSchema,
 } from "@/lib/validation/auth.validation";
 import {
-  AcceptInvitationPayload,
   ResetPasswordCustomerPayload,
   VerificationPayload,
   VerifyEmailPayload,
@@ -16,8 +12,8 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const authApi = new AuthApi();
+
 export const AUTH_ME_QUERY_KEY = ["auth", "me"];
-const authEmployeeApi = new AuthEmployeeApi();
 
 export function useRegisterCustomer() {
   return useMutation({
@@ -34,13 +30,6 @@ export function useLoginCustomer() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
     },
-  });
-}
-
-export function useLoginEmployee() {
-  return useMutation({
-    mutationFn: (payload: EmployeeLoginSchema) =>
-      authEmployeeApi.login(payload),
   });
 }
 
@@ -62,13 +51,6 @@ export function useVerifyCustomerEmail() {
   });
 }
 
-export function useAcceptEmployeeInvitation() {
-  return useMutation({
-    mutationFn: (payload: AcceptInvitationPayload) =>
-      authEmployeeApi.acceptInvitation(payload),
-  });
-}
-
 export function useResendCustomerVerification() {
   return useMutation({
     mutationFn: (payload: VerificationPayload) =>
@@ -83,24 +65,10 @@ export function useForgotPasswordCustomer() {
   });
 }
 
-export function useForgotPasswordEmployee() {
-  return useMutation({
-    mutationFn: (payload: VerificationPayload) =>
-      authEmployeeApi.forgotPassword(payload),
-  });
-}
-
 export function useResetPasswordCustomer() {
   return useMutation({
     mutationFn: (payload: ResetPasswordCustomerPayload) =>
       authApi.resetPasswordCustomer(payload),
-  });
-}
-
-export function useResetPasswordEmployee() {
-  return useMutation({
-    mutationFn: (payload: ResetPasswordCustomerPayload) =>
-      authEmployeeApi.resetPassword(payload),
   });
 }
 

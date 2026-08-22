@@ -27,7 +27,7 @@ const ACCOUNT_STATUS = {
     label: "Tidak Aktif",
     color: "gray",
   },
-};
+} as const;
 
 const WORK_STATUS = {
   OFF_DUTY: {
@@ -42,16 +42,22 @@ const WORK_STATUS = {
     label: "Sibuk",
     color: "orange",
   },
-};
+} as const;
 
 export function EmployeeStatus({
   employee,
 }: Props) {
   const account =
-    ACCOUNT_STATUS[employee.accountStatus];
+    ACCOUNT_STATUS[employee.accountStatus] ?? {
+      label: employee.accountStatus ?? "-",
+      color: "gray",
+    };
 
   const work =
-    WORK_STATUS[employee.workStatus];
+    WORK_STATUS[employee.workStatus] ?? {
+      label: employee.workStatus ?? "-",
+      color: "gray",
+    };
 
   return (
     <Group grow align="stretch">

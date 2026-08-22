@@ -10,42 +10,47 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm, schemaResolver } from "@mantine/form";
-import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
-import { acceptInvitationSchema } from "@/lib/validation/auth.validation";
+import { resetPasswordSchema } from "@/lib/validation/auth.validation";
 import { ApiError } from "@/lib/api/axios";
-import { useAcceptEmployeeInvitation } from "@/hooks/auth.hooks";
+import { useResetPasswordEmployee } from "@/hooks/authEmployee.hooks";
 
-export function AcceptInvitationForm() {
+export function EmployeeResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const token = searchParams.get("token");
 
   const { mutate, isPending, isSuccess, data, error } =
-    useAcceptEmployeeInvitation();
+    useResetPasswordEmployee();
 
   const form = useForm({
     initialValues: {
       password: "",
       confirmPassword: "",
     },
-    validate: schemaResolver(acceptInvitationSchema),
+
+    validate: schemaResolver(resetPasswordSchema),
   });
 
   const submit = form.onSubmit((values) => {
-    if (!token) return;
+    if (!token) {
+      return;
+    }
 
-    mutate(
-      {
-        token,
-        password: values.password
-      },
-    );
+    mutate({
+      token,
+      newPassword: values.password,
+    });
   });
 
   const apiError = error instanceof ApiError ? error : null;
 
+  /*
+   * Token tidak ditemukan di URL
+   */
   if (!token) {
     return (
       <Stack gap="md" align="center" ta="center">
@@ -54,34 +59,34 @@ export function AcceptInvitationForm() {
         </Title>
 
         <Text size="sm" c="var(--color-text-secondary)">
-          Link undangan tidak valid atau tidak lengkap. Pastikan kamu membuka
-          link persis seperti yang dikirim melalui email.
+          Link reset password tidak valid atau tidak lengkap. Silakan minta link
+          reset password baru.
         </Text>
 
         <Anchor
           component={Link}
-          href="/internal/login"
+          href="/internal/forgot-password"
           c="var(--color-primary-dark)"
         >
-          Kembali ke Login
+          Minta link reset password
         </Anchor>
       </Stack>
     );
   }
 
+  /*
+   * Password berhasil direset
+   */
   if (isSuccess) {
     return (
       <Stack gap="md" align="center" ta="center">
-        <Title
-          order={3}
-          style={{ color: "var(--color-success)" }}
-        >
-          Akun berhasil diaktifkan
+        <Title order={3} style={{ color: "var(--color-primary)" }}>
+          Password berhasil diubah
         </Title>
 
         <Text size="sm" c="var(--color-text-secondary)">
           {data?.message ??
-            "Akun kamu berhasil diaktifkan. Silakan login menggunakan password yang baru dibuat."}
+            "Password berhasil diperbarui. Silakan login dengan password baru."}
         </Text>
 
         <Button
@@ -104,13 +109,15 @@ export function AcceptInvitationForm() {
       <div>
         <Title
           order={3}
-          style={{ color: "var(--color-text-primary)" }}
+          style={{
+            color: "var(--color-text-primary)",
+          }}
         >
-          Aktivasi Akun Internal
+          Reset Password
         </Title>
 
         <Text size="sm" c="var(--color-text-secondary)">
-          Buat password untuk mengaktifkan akun employee kamu.
+          Buat password baru untuk akun kamu.
         </Text>
       </div>
 
@@ -129,7 +136,7 @@ export function AcceptInvitationForm() {
       <form onSubmit={submit}>
         <Stack gap="md">
           <PasswordInput
-            label="Password"
+            label="Password Baru"
             placeholder="Minimal 8 karakter"
             {...form.getInputProps("password")}
           />
@@ -149,14 +156,14 @@ export function AcceptInvitationForm() {
               color: "var(--color-text-on-accent)",
             }}
           >
-            Aktifkan Akun
+            Reset Password
           </Button>
         </Stack>
       </form>
 
       <Anchor
         component={Link}
-        href="/login"
+        href="/internal/login"
         ta="center"
         c="var(--color-primary-dark)"
       >

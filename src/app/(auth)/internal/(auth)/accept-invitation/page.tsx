@@ -1,7 +1,7 @@
 import { Center, Loader, Paper, Stack } from "@mantine/core";
 import { Suspense } from "react";
 
-import { AcceptInvitationForm } from "@/components/auth/AcceptInvitationForm";
+import { AcceptInvitationForm } from "@/components/internalAuth/AcceptInvitationForm";
 
 export default function AcceptInvitationPage() {
   return (

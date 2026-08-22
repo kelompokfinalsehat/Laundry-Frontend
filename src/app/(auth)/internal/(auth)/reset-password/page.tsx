@@ -1,7 +1,7 @@
 import { Center, Loader, Paper, Stack } from "@mantine/core";
 import { Suspense } from "react";
 
-import { EmployeeResetPasswordForm } from "@/components/auth/EmployeeResetPasswordForm";
+import { EmployeeResetPasswordForm } from "@/components/internalAuth/EmployeeResetPasswordForm";
 
 export default function EmployeeResetPasswordPage() {
   return (
@@ -12,14 +12,7 @@ export default function EmployeeResetPasswordPage() {
         </Center>
       }
     >
-      <Paper
-        maw={420}
-        mx="auto"
-        mt={64}
-        p={32}
-        radius="md"
-        withBorder
-      >
+      <Paper maw={420} mx="auto" mt={64} p={32} radius="md" withBorder>
         <Stack gap="md">
           <EmployeeResetPasswordForm />
         </Stack>
