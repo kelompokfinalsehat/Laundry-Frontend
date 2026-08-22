@@ -9,14 +9,20 @@ export function CustomerAppShell({
   children: React.ReactNode;
 }) {
   return (
-    <>
+      <Box
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+      }}
+    >
       <Header />
 
-      <Box component="main">
+      <Box component="main" style={{ flex: 1 }}>
         {children}
       </Box>
 
-      <Footer/>
-    </>
+      <Footer />
+    </Box>
   );
 }

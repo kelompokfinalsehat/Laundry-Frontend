@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod"
  
 export const createAddressSchema = z.object({
   label: z.string().max(50).optional().or(z.literal("")),
