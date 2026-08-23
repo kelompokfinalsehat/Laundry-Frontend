@@ -15,7 +15,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { resetPasswordSchema } from "@/lib/validation/auth.validation";
 import { ApiError } from "@/lib/api/axios";
-import { useResetPasswordCustomer } from "@/hooks/auth.hooks";
+import { useResetPasswordCustomer } from "@/hooks/authCustomer.hooks";
 
 export function ResetPasswordForm() {
   const router = useRouter();
@@ -23,13 +23,8 @@ export function ResetPasswordForm() {
 
   const token = searchParams.get("token");
 
-  const {
-    mutate,
-    isPending,
-    isSuccess,
-    data,
-    error,
-  } = useResetPasswordCustomer();
+  const { mutate, isPending, isSuccess, data, error } =
+    useResetPasswordCustomer();
 
   const form = useForm({
     initialValues: {
@@ -59,19 +54,13 @@ export function ResetPasswordForm() {
   if (!token) {
     return (
       <Stack gap="md" align="center" ta="center">
-        <Title
-          order={3}
-          style={{ color: "var(--color-error)" }}
-        >
+        <Title order={3} style={{ color: "var(--color-error)" }}>
           Link tidak valid
         </Title>
 
-        <Text
-          size="sm"
-          c="var(--color-text-secondary)"
-        >
-          Link reset password tidak valid atau tidak lengkap.
-          Silakan minta link reset password baru.
+        <Text size="sm" c="var(--color-text-secondary)">
+          Link reset password tidak valid atau tidak lengkap. Silakan minta link
+          reset password baru.
         </Text>
 
         <Anchor
@@ -91,17 +80,11 @@ export function ResetPasswordForm() {
   if (isSuccess) {
     return (
       <Stack gap="md" align="center" ta="center">
-        <Title
-          order={3}
-          style={{ color: "var(--color-primary)" }}
-        >
+        <Title order={3} style={{ color: "var(--color-primary)" }}>
           Password berhasil diubah
         </Title>
 
-        <Text
-          size="sm"
-          c="var(--color-text-secondary)"
-        >
+        <Text size="sm" c="var(--color-text-secondary)">
           {data?.message ??
             "Password berhasil diperbarui. Silakan login dengan password baru."}
         </Text>
@@ -133,10 +116,7 @@ export function ResetPasswordForm() {
           Reset Password
         </Title>
 
-        <Text
-          size="sm"
-          c="var(--color-text-secondary)"
-        >
+        <Text size="sm" c="var(--color-text-secondary)">
           Buat password baru untuk akun kamu.
         </Text>
       </div>

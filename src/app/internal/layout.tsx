@@ -1,9 +1,12 @@
-// import { requirezRole } from "@/lib/auth/AuthGate";
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  // await requireRole(["WORKER", "DRIVER", "OUTLET_ADMIN", "SUPER_ADMIN"]);
-  return children;
+import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
+import { Container } from "@mantine/core";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthGateEmployee allowedRoles={["DRIVER","OUTLET_ADMIN","SUPER_ADMIN","WORKER"]}>
+      <Container size="xl" pt={50}>
+        {children}
+      </Container>
+    </AuthGateEmployee>
+  );
 }

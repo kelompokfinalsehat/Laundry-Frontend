@@ -26,11 +26,23 @@ export type LoginCustomerResponse = {
   homeUrl: string;
 };
 
+export type EmployeeLoginResponse = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
+
 export type VerifyEmailPayload = {
   token: string;
   name: string;
   password: string;
 };
+
+export type AcceptInvitationPayload = {
+  token: string;
+  password: string
+}
 
 export type VerificationPayload = {
   email: string;
@@ -106,6 +118,12 @@ export interface ListQuery {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
   filters?: Record<string, string | number | boolean | undefined>;
+}
+
+export interface ApiResponse<T>{
+  success: boolean
+  message: string
+  data: T
 }
 
 export interface PaginatedResponse<T> {

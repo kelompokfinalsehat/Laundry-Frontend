@@ -2,7 +2,7 @@
 
 import { ProfileApi } from "@/lib/api/profileCustomer.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AUTH_ME_QUERY_KEY } from "./auth.hooks";
+import { AUTH_ME_QUERY_KEY } from "./authCustomer.hooks";
 
 const profileApi = new ProfileApi();
 

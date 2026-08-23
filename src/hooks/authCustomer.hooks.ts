@@ -1,7 +1,9 @@
 "use client";
 
-import { AuthApi } from "@/lib/api/authCustomer.api";
-import { RegisterCustomerSchema } from "@/lib/validation/auth.validation";
+import { AuthApi } from "@/lib/api/auth.api";
+import {
+  RegisterCustomerSchema,
+} from "@/lib/validation/auth.validation";
 import {
   ResetPasswordCustomerPayload,
   VerificationPayload,
@@ -10,6 +12,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const authApi = new AuthApi();
+
 export const AUTH_ME_QUERY_KEY = ["auth", "me"];
 
 export function useRegisterCustomer() {

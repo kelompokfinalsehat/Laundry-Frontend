@@ -1,8 +1,9 @@
-import { ResetPasswordForm } from "@/components/authCustomer/ResetPasswordForm";
 import { Center, Loader, Paper, Stack } from "@mantine/core";
 import { Suspense } from "react";
 
-export default function ResetPasswordPage() {
+import { AcceptInvitationForm } from "@/components/internalAuth/AcceptInvitationForm";
+
+export default function AcceptInvitationPage() {
   return (
     <Suspense
       fallback={
@@ -18,10 +19,12 @@ export default function ResetPasswordPage() {
         p={32}
         radius="md"
         withBorder
-        style={{ backgroundColor: "var(--color-surface)" }}
+        style={{
+          backgroundColor: "var(--color-surface)",
+        }}
       >
         <Stack gap="md">
-          <ResetPasswordForm />
+          <AcceptInvitationForm />
         </Stack>
       </Paper>
     </Suspense>

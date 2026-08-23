@@ -1,4 +1,5 @@
 import { BackOfficeAppShell } from "@/components/back-office/shared/BackOfficeAppShell";
+import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
 // import { requireRole } from "@/lib/auth/AuthGateCustomer";
 export default async function Layout({
   children,
@@ -6,5 +7,9 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   // await requireRole(["SUPER_ADMIN"]);
-  return <BackOfficeAppShell role="SUPER_ADMIN">{children}</BackOfficeAppShell>;
+  return (
+    <AuthGateEmployee allowedRoles={["SUPER_ADMIN"]}>
+      <BackOfficeAppShell role="SUPER_ADMIN">{children}</BackOfficeAppShell>
+    </AuthGateEmployee>
+  );
 }

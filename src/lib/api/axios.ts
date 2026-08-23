@@ -38,6 +38,10 @@ let refreshPromise: Promise<void> | null = null;
 
 const NO_REFRESH_ENDPOINTS = [
   "/auth/login",
+  "/auth/employee/login",
+  "/auth/employee/accept-invitation",
+  "/auth/employee/forgot-password",
+  "/auth/employee/reset-password",
   "/auth/register",
   "/auth/verify-email",
   "/auth/resend-verification",
