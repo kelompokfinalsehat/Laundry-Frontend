@@ -1,4 +1,5 @@
 import { FieldOpsAppShell } from "@/components/field-ops/shared/FieldOpsAppShell";
+import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
 // import { requireRole } from "@/lib/auth/AuthGateCustomer";
 export default async function Layout({
   children,
@@ -6,5 +7,9 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   // await requireRole(["WORKER"]);
-  return <FieldOpsAppShell role="Worker">{children}</FieldOpsAppShell>;
+  return (
+    <AuthGateEmployee allowedRoles={["WORKER"]}>
+      <FieldOpsAppShell role="Worker">{children}</FieldOpsAppShell>
+    </AuthGateEmployee>
+  );
 }

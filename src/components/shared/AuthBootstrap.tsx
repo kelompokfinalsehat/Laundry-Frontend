@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { AuthApi } from "@/lib/api/authCustomer.api";
+import { AuthApi } from "@/lib/api/auth.api";
 
 const authApi = new AuthApi();
 

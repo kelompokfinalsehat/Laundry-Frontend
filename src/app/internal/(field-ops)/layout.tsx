@@ -1,9 +1,10 @@
-// import { requireRole } from "@/lib/auth/AuthGateCustomer";
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  // await requireRole(["WORKER", "DRIVER"]);
-  return children;
+import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
+import { Container } from "@mantine/core";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthGateEmployee allowedRoles={["DRIVER", "WORKER"]}>
+      {children}
+    </AuthGateEmployee>
+  );
 }
