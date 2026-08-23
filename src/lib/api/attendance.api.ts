@@ -22,6 +22,7 @@ type ListResponse<T> = {
     page: number;
     pageSize: number;
     totalItems: number;
+    totalPages: number;
     hasNextPage: boolean;
     hasPreviousPage: boolean;
   };
@@ -32,34 +33,23 @@ const BASE_PATH = "/internal/attendance";
 
 export class AttendanceApi {
   async clockIn() {
-    const { data } = await api.post<SingleResponse<ClockInResponse>>(
-      `${BASE_PATH}/clock-in`,
-      {},
-    );
+    const { data } = await api.post<SingleResponse<ClockInResponse>>(`${BASE_PATH}/clock-in`, {});
     return data.data;
   }
 
   async clockOut() {
-    const { data } = await api.post<SingleResponse<ClockOutResponse>>(
-      `${BASE_PATH}/clock-out`,
-      {},
-    );
+    const { data } = await api.post<SingleResponse<ClockOutResponse>>(`${BASE_PATH}/clock-out`, {});
     return data.data;
   }
 
   async getStatus() {
-    const { data } = await api.get<SingleResponse<AttendanceStatusResponse>>(
-      `${BASE_PATH}/status`,
-    );
+    const { data } = await api.get<SingleResponse<AttendanceStatusResponse>>(`${BASE_PATH}/status`);
     return data.data;
   }
   async getHistory(query: AttendanceHistoryQuery) {
-    const { data } = await api.get<ListResponse<AttendanceHistoryItem>>(
-      `${BASE_PATH}/history`,
-      {
-        params: query,
-      },
-    );
+    const { data } = await api.get<ListResponse<AttendanceHistoryItem>>(`${BASE_PATH}/history`, {
+      params: query,
+    });
     return { data: data.data, meta: data.meta };
   }
 }

@@ -21,8 +21,8 @@ export type ClockOutResponse = {
 export type AttendanceHistoryItem = {
   id: string;
   attendanceDate: string;
-  clockInAt: string;
-  clockOutAt: string;
+  clockInAt: string | null;
+  clockOutAt: string | null;
   employeeId: string;
   outletId: string;
   createdAt: string;
