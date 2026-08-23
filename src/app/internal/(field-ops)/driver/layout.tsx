@@ -6,5 +6,9 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   // await requireRole(["DRIVER"]);
-  return <FieldOpsAppShell role="Driver">{children}</FieldOpsAppShell>;
+  return (
+    <FieldOpsAppShell role="Driver" basePath="/internal/driver">
+      {children}
+    </FieldOpsAppShell>
+  );
 }

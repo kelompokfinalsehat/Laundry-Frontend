@@ -6,5 +6,9 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   // await requireRole(["WORKER"]);
-  return <FieldOpsAppShell role="Worker">{children}</FieldOpsAppShell>;
+  return (
+    <FieldOpsAppShell role="Worker" basePath="/internal/worker">
+      {children}
+    </FieldOpsAppShell>
+  );
 }

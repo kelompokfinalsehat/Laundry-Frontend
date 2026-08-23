@@ -1,2 +1,15 @@
-import { FeaturePlaceholder } from '@/components/shared/FeaturePlaceholder';
-export default function Page(){return <FeaturePlaceholder title='Home Worker' description='Absen, availability, tugas aktif, dan assignment otomatis.'/>}
+import { FieldOpsHome } from "@/components/field-ops/shared/FieldOpsHome";
+
+export default function Page() {
+  return (
+    <FieldOpsHome
+      name="Budi"
+      cariTugasHref="/internal/worker/tugas"
+      lihatTugasHref="/internal/worker/tugas/aktif"
+      activeTask={{
+        badgeLabel: "Washing",
+        orderCode: "Order #ORD-00231",
+      }}
+    />
+  );
+}

@@ -1,2 +1,5 @@
-import { FeaturePlaceholder } from '@/components/shared/FeaturePlaceholder';
-export default function Page(){return <FeaturePlaceholder title='Tugas Driver' description='Pickup/delivery dengan bukti foto wajib.'/>}
+import { DriverPreClaim } from "@/components/field-ops/driver/DriverPreClaim";
+
+export default function Page() {
+  return <DriverPreClaim taskTypeLabel="Pickup" orderCode="Order #ORD-00240" />;
+}

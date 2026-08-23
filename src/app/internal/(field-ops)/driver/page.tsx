@@ -1,2 +1,16 @@
-import { FeaturePlaceholder } from '@/components/shared/FeaturePlaceholder';
-export default function Page(){return <FeaturePlaceholder title='Home Driver' description='Absen, availability, dan satu tugas pickup/delivery aktif.'/>}
+import { FieldOpsHome } from "@/components/field-ops/shared/FieldOpsHome";
+
+export default function Page() {
+  return (
+    <FieldOpsHome
+      name="Rudi"
+      cariTugasHref="/internal/driver/tugas"
+      lihatTugasHref="/internal/driver/tugas/aktif"
+      activeTask={{
+        badgeLabel: "Pickup",
+        orderCode: "#ORD-00240",
+        statusLabel: "Menuju lokasi penjemputan",
+      }}
+    />
+  );
+}
