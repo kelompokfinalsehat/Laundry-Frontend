@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Divider, Group, Loader, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Badge, Button, Card, Divider, Group, Loader, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconAlertTriangle, IconCalendar, IconFingerprint, IconRefresh } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -10,6 +10,8 @@ import timezone from "dayjs/plugin/timezone";
 
 import { AttendanceApi } from "@/lib/api/attendance.api";
 import { formatFieldOpsDate, formatFieldOpsTime } from "@/utils/fieldops.date";
+import type { WorkStatus } from "@/types/api/attendance.types";
+import { ErrorState } from "@/components/ui/ErrorState";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -30,6 +32,16 @@ function isDateToday(value: DateValue): boolean {
   return date.tz(FIELD_OPS_TIMEZONE).isSame(dayjs().tz(FIELD_OPS_TIMEZONE), "day");
 }
 
+function getWorkStatusBadge(workStatus: WorkStatus | null) {
+  if (workStatus === "AVAILABLE") {
+    return { color: "green", label: "Tersedia" };
+  }
+  if (workStatus === "BUSY") {
+    return { color: "yellow", label: "Sedang Bertugas" };
+  }
+  return { color: "blue", label: "Tidak Bertugas" };
+}
+
 export function AttendanceStatus() {
   const queryClient = useQueryClient();
 
@@ -44,6 +56,7 @@ export function AttendanceStatus() {
       notifications.show({
         title: "Absensi berhasil",
         message: "Absen masuk berhasil.",
+        color: "lime",
       });
       await queryClient.invalidateQueries({ queryKey: ATTENDANCE_QUERY_KEY });
     },
@@ -62,6 +75,7 @@ export function AttendanceStatus() {
       notifications.show({
         title: "Absensi berhasil",
         message: "Absen pulang berhasil.",
+        color: "lime",
       });
       await queryClient.invalidateQueries({ queryKey: ATTENDANCE_QUERY_KEY });
     },
@@ -88,14 +102,17 @@ export function AttendanceStatus() {
     return (
       <Card withBorder shadow="sm" radius="lg" p="lg">
         <Stack gap="md">
-          <Text fw={600} size="lg">
-            Status Absensi
-          </Text>
+          <Group justify="space-between">
+            <Text fw={600} size="lg">
+              Status Absensi
+            </Text>
+          </Group>
 
           <Divider />
 
           <Text size="sm" c="dimmed">
             {statusQuery.error.message}
+            
           </Text>
 
           <Button
@@ -111,18 +128,23 @@ export function AttendanceStatus() {
     );
   }
 
-  const { attendanceDate, clockInAt, clockOutAt, canClockIn, canClockOut } = statusQuery.data;
+  const { workStatus, attendanceDate, clockInAt, clockOutAt, canClockIn, canClockOut } = statusQuery.data;
   console.log({ attendanceDate, clockInAt, clockOutAt, canClockIn, canClockOut });
 
   const isCarryOverAttendance = !isDateToday(attendanceDate) && !!clockInAt && !clockOutAt;
+  const workStatusBadge = getWorkStatusBadge(workStatus);
 
   return (
     <Card withBorder shadow="sm" radius="lg" p="lg">
       <Stack gap="md">
-        <Text fw={600} size="lg">
-          Status Absensi
-        </Text>
-
+        <Group justify="space-between">
+          <Text fw={600} size="lg">
+            Status Absensi
+          </Text>
+          <Badge color={workStatusBadge.color} variant="light" size="lg">
+            {workStatusBadge.label}
+          </Badge>
+        </Group>
         <Divider />
 
         {isCarryOverAttendance && (
@@ -182,10 +204,10 @@ export function AttendanceStatus() {
 
         {canClockIn && (
           <Button
-            type="button"
             fullWidth
             leftSection={<IconFingerprint size={18} />}
             loading={clockInMutation.isPending}
+            disabled={clockInMutation.isPending || clockOutMutation.isPending}
             onClick={() => clockInMutation.mutate()}
           >
             Absen Masuk
@@ -194,16 +216,25 @@ export function AttendanceStatus() {
 
         {canClockOut && (
           <Button
-            type="button"
             fullWidth
-            variant={isCarryOverAttendance ? "outline" : "filled"}
-            color={isCarryOverAttendance ? "yellow" : undefined}
             leftSection={<IconFingerprint size={18} />}
             loading={clockOutMutation.isPending}
+            disabled={clockInMutation.isPending || clockOutMutation.isPending}
             onClick={() => clockOutMutation.mutate()}
           >
-            {isCarryOverAttendance ? "Absen Pulang (Kemarin)" : "Absen Pulang"}
+            Absen Pulang
           </Button>
+        )}
+
+        {!canClockIn && !canClockOut && (
+          <Stack gap={4}>
+            <Button fullWidth disabled leftSection={<IconFingerprint size={18} />}>
+              Absensi
+            </Button>
+            <Text size="xs" c="dimmed" ta="center">
+              Belum bisa melakukan absensi saat ini.
+            </Text>
+          </Stack>
         )}
       </Stack>
     </Card>
