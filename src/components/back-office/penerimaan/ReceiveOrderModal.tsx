@@ -1,31 +1,16 @@
 "use client";
 
 import {
-  ActionIcon,
   Button,
   Group,
   Modal,
-  NumberInput,
-  Select,
   Stack,
   Text,
 } from "@mantine/core";
 
-import { IconPlus, IconTrash } from "@tabler/icons-react";
-
-import { useEffect, useState } from "react";
-
-import { useLaundryItems } from "@/hooks/laundry-item.hooks";
-
 import type {
-  CreateOrderPayload,
   OrderListItem,
 } from "@/types/api/order.types";
-
-type FormItem = {
-  laundryItemId: string;
-  quantity: number;
-};
 
 type Props = {
   opened: boolean;
@@ -33,47 +18,16 @@ type Props = {
   isLoading: boolean;
 
   onClose: () => void;
-
-  onSubmit: (payload: CreateOrderPayload) => void;
+  onConfirm: () => void;
 };
 
-const INITIAL_ITEM: FormItem = {
-  laundryItemId: "",
-  quantity: 1,
-};
-
-export function CreateOrderModal({
+export function ReceiveOrderModal({
   opened,
   order,
   isLoading,
   onClose,
-  onSubmit,
+  onConfirm,
 }: Props) {
-  const [weightKg, setWeightKg] = useState<number | string>("");
-
-  const [items, setItems] = useState<FormItem[]>([INITIAL_ITEM]);
-
-  const { data: laundryItemsData, isLoading: isLaundryItemsLoading } =
-    useLaundryItems({
-      page: 1,
-      pageSize: 100,
-    });
-
-  const resetForm = () => {
-    setWeightKg("");
-    setItems([
-      {
-        ...INITIAL_ITEM,
-      },
-    ]);
-  };
-
-  useEffect(() => {
-    if (!opened) {
-      resetForm();
-    }
-  }, [opened]);
-
   const handleClose = () => {
     if (isLoading) {
       return;
@@ -82,182 +36,61 @@ export function CreateOrderModal({
     onClose();
   };
 
-  const handleAddItem = () => {
-    setItems((previous) => [
-      ...previous,
-      {
-        ...INITIAL_ITEM,
-      },
-    ]);
-  };
-
-  const handleRemoveItem = (index: number) => {
-    setItems((previous) =>
-      previous.filter((_, itemIndex) => itemIndex !== index),
-    );
-  };
-
-  const handleLaundryItemChange = (index: number, value: string | null) => {
-    setItems((previous) =>
-      previous.map((item, itemIndex) => {
-        if (itemIndex !== index) {
-          return item;
-        }
-
-        return {
-          ...item,
-          laundryItemId: value ?? "",
-        };
-      }),
-    );
-  };
-
-  const handleQuantityChange = (index: number, value: string | number) => {
-    const quantity = typeof value === "number" ? value : Number(value);
-
-    setItems((previous) =>
-      previous.map((item, itemIndex) => {
-        if (itemIndex !== index) {
-          return item;
-        }
-
-        return {
-          ...item,
-          quantity: Number.isInteger(quantity) && quantity > 0 ? quantity : 1,
-        };
-      }),
-    );
-  };
-
-  const handleSubmit = () => {
-    if (typeof weightKg !== "number" || weightKg <= 0) {
-      return;
-    }
-
-    const hasInvalidItem = items.some(
-      (item) =>
-        !item.laundryItemId ||
-        !Number.isInteger(item.quantity) ||
-        item.quantity <= 0,
-    );
-
-    if (hasInvalidItem) {
-      return;
-    }
-
-    onSubmit({
-      weightKg,
-      items,
-    });
-  };
-
-  const laundryItems = laundryItemsData?.data ?? [];
-
-  const getOptions = (currentItemId: string) => {
-    const selectedIds = items
-      .filter((item) => item.laundryItemId !== currentItemId)
-      .map((item) => item.laundryItemId);
-
-    return laundryItems
-      .filter((item) => !selectedIds.includes(item.id))
-      .map((item) => ({
-        value: item.id,
-        label: item.name,
-      }));
-  };
-
   return (
-    <Modal opened={opened} onClose={handleClose} title="Buat Order" centered>
+    <Modal
+      opened={opened}
+      onClose={handleClose}
+      title="Terima Pesanan"
+      centered
+    >
       <Stack gap="lg">
         {order && (
-          <Stack gap={2}>
-            <Text size="sm" fw={600}>
-              {order.orderCode}
+          <Stack gap={4}>
+            <Text size="sm">
+              Pesanan berikut akan diterima di outlet:
             </Text>
 
-            <Text size="sm" c="var(--color-text-secondary)">
-              {order.customer.name}
+            <Stack gap={2}>
+              <Text
+                size="sm"
+                fw={600}
+                c="var(--color-text-primary)"
+              >
+                {order.orderCode}
+              </Text>
+
+              <Text
+                size="sm"
+                c="var(--color-text-secondary)"
+              >
+                {order.customer.name}
+              </Text>
+            </Stack>
+
+            <Text
+              size="sm"
+              c="var(--color-text-secondary)"
+            >
+              Setelah dikonfirmasi, pesanan akan
+              dipindahkan ke tahap siap dibuatkan order.
             </Text>
           </Stack>
         )}
 
-        <NumberInput
-          label="Berat Laundry"
-          placeholder="Masukkan berat laundry"
-          suffix=" kg"
-          min={0.1}
-          step={0.1}
-          decimalScale={2}
-          value={weightKg}
-          onChange={setWeightKg}
-          required
-        />
-
-        <Stack gap="sm">
-          <Group justify="space-between">
-            <Text size="sm" fw={600}>
-              Item Laundry
-            </Text>
-
-            <Button
-              variant="subtle"
-              size="xs"
-              leftSection={<IconPlus size={16} />}
-              onClick={handleAddItem}
-              disabled={isLaundryItemsLoading}
-            >
-              Tambah Item
-            </Button>
-          </Group>
-
-          {items.map((item, index) => (
-            <Group key={index} align="flex-end" wrap="nowrap">
-              <Select
-                label={index === 0 ? "Layanan" : undefined}
-                placeholder="Pilih layanan"
-                data={getOptions(item.laundryItemId)}
-                value={item.laundryItemId}
-                onChange={(value) => handleLaundryItemChange(index, value)}
-                searchable
-                disabled={isLaundryItemsLoading || isLoading}
-                style={{ flex: 1 }}
-                required
-              />
-
-              <NumberInput
-                label={index === 0 ? "Jumlah" : undefined}
-                min={1}
-                step={1}
-                allowDecimal={false}
-                value={item.quantity}
-                onChange={(value) => handleQuantityChange(index, value)}
-                disabled={isLoading}
-                w={100}
-                required
-              />
-
-              {items.length > 1 && (
-                <ActionIcon
-                  variant="subtle"
-                  color="red"
-                  aria-label="Hapus item"
-                  onClick={() => handleRemoveItem(index)}
-                  disabled={isLoading}
-                >
-                  <IconTrash size={18} />
-                </ActionIcon>
-              )}
-            </Group>
-          ))}
-        </Stack>
-
         <Group justify="flex-end">
-          <Button variant="default" onClick={handleClose} disabled={isLoading}>
+          <Button
+            variant="default"
+            onClick={handleClose}
+            disabled={isLoading}
+          >
             Batal
           </Button>
 
-          <Button onClick={handleSubmit} loading={isLoading}>
-            Buat Order
+          <Button
+            onClick={onConfirm}
+            loading={isLoading}
+          >
+            Terima Pesanan
           </Button>
         </Group>
       </Stack>

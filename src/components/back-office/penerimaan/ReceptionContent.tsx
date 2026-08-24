@@ -14,6 +14,7 @@ import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import {
   useCreateOrder,
   useOrders,
+  useReceiveOrder,
 } from "@/hooks/order.hooks";
 
 import type {
@@ -23,9 +24,12 @@ import type {
   OrderQuery,
 } from "@/types/api/order.types";
 
-import { CreateOrderModal } from "./CreateOrderModal";
+import {
+  CreateOrderModal,
+} from "./CreateOrderModal";
 import { ReceptionFilters } from "./ReceptionFilters";
 import { ReceptionTable } from "./ReceptionTable";
+import { ReceiveOrderModal } from "./ReceiveOrderModal";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -51,6 +55,13 @@ export function ReceptionContent() {
     useState<ReceptionStage>(
       "WAITING_RECEIPT",
     );
+
+  const [
+    selectedOrderToReceive,
+    setSelectedOrderToReceive,
+  ] = useState<OrderListItem | null>(
+    null,
+  );
 
   const [
     selectedOrderToCreate,
@@ -81,6 +92,9 @@ export function ReceptionContent() {
     error,
     refetch,
   } = useOrders(query);
+
+  const receiveOrderMutation =
+    useReceiveOrder();
 
   const createOrderMutation =
     useCreateOrder();
@@ -151,10 +165,19 @@ export function ReceptionContent() {
   const handleReceive = (
     order: OrderListItem,
   ) => {
-    console.log(
-      "Receive order:",
-      order.id,
+    setSelectedOrderToReceive(order);
+  };
+
+  const handleReceiveConfirm = async () => {
+    if (!selectedOrderToReceive) {
+      return;
+    }
+
+    await receiveOrderMutation.mutateAsync(
+      selectedOrderToReceive.id,
     );
+
+    setSelectedOrderToReceive(null);
   };
 
   const handleCreateOrder = (
@@ -249,6 +272,20 @@ export function ReceptionContent() {
           )}
         </AsyncStateView>
       </Stack>
+
+      <ReceiveOrderModal
+        opened={
+          selectedOrderToReceive !== null
+        }
+        order={selectedOrderToReceive}
+        isLoading={
+          receiveOrderMutation.isPending
+        }
+        onClose={() =>
+          setSelectedOrderToReceive(null)
+        }
+        onConfirm={handleReceiveConfirm}
+      />
 
       <CreateOrderModal
         opened={
