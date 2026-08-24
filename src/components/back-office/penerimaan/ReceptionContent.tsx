@@ -33,10 +33,12 @@ import {
 import {
   ReceptionTable,
 } from "./ReceptionTable";
+import { useRouter } from "next/navigation";
 
 const DEFAULT_PAGE_SIZE = 10;
 
 export function ReceptionContent() {
+  const router = useRouter();
   const [
     query,
     setQuery,
@@ -146,11 +148,12 @@ export function ReceptionContent() {
   };
 
   const handleView = (
-    orderId: string,
-  ) => {
-    // nanti sesuaikan dengan router/navigation
-    console.log(orderId);
-  };
+  orderId: string,
+) => {
+  router.push(
+    `/internal/outlet-admin/pesanan/${orderId}`,
+  );
+};
 
   return (
     <>
