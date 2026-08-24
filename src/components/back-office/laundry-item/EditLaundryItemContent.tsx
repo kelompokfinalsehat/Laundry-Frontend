@@ -90,7 +90,7 @@ export function EditLaundryItemContent() {
 
       <LaundryItemForm
         initialValues={{
-          name: laundryItem.data.name,
+          name: laundryItem.name,
         }}
         onSubmit={handleSubmit}
         isSubmitting={updateLaundryItem.isPending}

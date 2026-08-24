@@ -12,16 +12,16 @@ import { useDeleteOutlet, useOutlets } from "@/hooks/outlet.hooks";
 
 import { OutletFilters } from "./OutletFilters";
 import { OutletTable } from "./OutletTable";
-import { Outlet } from "@/types/api/outlet.types";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { notifications } from "@mantine/notifications";
+import type { Outlet } from "@/types/api/outlet.types";
 
 export function OutletContent() {
   const router = useRouter();
 
   const [page, setPage] = useState(1);
 
-  const [pageSize, setPageSize] = useState<10 | 20 | 50>(20);
+  const [pageSize, setPageSize] = useState<10 | 20 | 50>(10);
 
   const [search, setSearch] = useState("");
 
@@ -41,6 +41,31 @@ export function OutletContent() {
   const [selectedOutlet, setSelectedOutlet] = useState<Outlet | null>(null);
 
   const deleteOutlet = useDeleteOutlet();
+
+  const handleDeactivate = async () => {
+    if (!selectedOutlet) return null;
+    await deleteOutlet.mutateAsync(selectedOutlet.id, {
+      onSuccess: () => {
+        notifications.show({
+          title: "Berhasil",
+          message: "Outlet berhasil dinonaktifkan.",
+          color: "green",
+        });
+
+        setSelectedOutlet(null);
+      },
+      onError: (error) => {
+        notifications.show({
+          title: "Gagal",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Gagal menonaktifkan outlet.",
+          color: "red",
+        });
+      },
+    });
+  };
 
   return (
     <Stack gap="lg">
@@ -120,30 +145,7 @@ export function OutletContent() {
         confirmLabel="Nonaktifkan"
         loading={deleteOutlet.isPending}
         onClose={() => setSelectedOutlet(null)}
-        onConfirm={async () => {
-          if (!selectedOutlet) return;
-
-          try {
-            await deleteOutlet.mutateAsync(selectedOutlet.id);
-
-            notifications.show({
-              title: "Berhasil",
-              message: "Outlet berhasil dinonaktifkan.",
-              color: "green",
-            });
-
-            setSelectedOutlet(null);
-          } catch (error) {
-            notifications.show({
-              title: "Gagal",
-              message:
-                error instanceof Error
-                  ? error.message
-                  : "Gagal menonaktifkan outlet.",
-              color: "red",
-            });
-          }
-        }}
+        onConfirm={handleDeactivate}
       />
     </Stack>
   );

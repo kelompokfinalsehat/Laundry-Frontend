@@ -2,9 +2,9 @@
 
 import type { EmployeeQuery } from "@/types/api/employee.types";
 
-import { Button, Group, Select, TextInput } from "@mantine/core";
+import { ActionIcon, Button, Group, Select, TextInput, Tooltip } from "@mantine/core";
 
-import { IconSearch, IconX } from "@tabler/icons-react";
+import { IconRefresh, IconSearch, IconX } from "@tabler/icons-react";
 
 type EmployeeFiltersState = Pick<
   EmployeeQuery,
@@ -190,14 +190,16 @@ export function EmployeeFilters({
           }
         }}
       />
-
-      <Button
-        variant="default"
-        leftSection={<IconX size={16} />}
-        onClick={onReset}
-      >
-        Reset
-      </Button>
+      <Tooltip label="Reset filter">
+        <ActionIcon
+          variant="default"
+          size="input-sm"
+          onClick={onReset}
+          aria-label="Reset filter"
+        >
+          <IconRefresh size={16} />
+        </ActionIcon>
+      </Tooltip>
     </Group>
   );
 }

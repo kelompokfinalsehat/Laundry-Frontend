@@ -23,12 +23,3 @@ export type CreateLaundryItemPayload = {
 export type UpdateLaundryItemPayload = {
   name: string;
 };
-
-export type LaundryItemListResponse = {
-  data: LaundryItem[];
-  meta: PaginationMeta;
-};
-
-export type LaundryItemResponse = {
-  data: LaundryItem;
-};

@@ -1,8 +1,8 @@
+import { PaginatedResponse } from "@/types/api";
 import { api } from "./axios";
 import type {
   AssignEmployeePayload,
   Employee,
-  EmployeeListResponse,
   EmployeeQuery,
   InviteEmployeePayload,
   UpdateEmployeePayload,
@@ -11,8 +11,8 @@ import type {
 export class EmployeeApi {
   async getEmployees(
     params?: EmployeeQuery,
-  ): Promise<EmployeeListResponse> {
-    const response = await api.get(
+  ): Promise<PaginatedResponse<Employee>> {
+    const response = await api.get<PaginatedResponse<Employee>>(
       "/internal/employees",
       {
         params,

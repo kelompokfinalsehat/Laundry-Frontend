@@ -36,11 +36,6 @@ export type EmployeeQuery = {
   sortOrder?: "asc" | "desc";
 };
 
-export type EmployeeListResponse = {
-  data: Employee[];
-  meta: PaginationMeta;
-};
-
 export type InviteEmployeePayload = {
   name: string;
   email: string;

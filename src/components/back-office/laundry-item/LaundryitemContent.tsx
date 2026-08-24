@@ -1,29 +1,22 @@
 "use client";
 
 import { useState } from "react";
-
 import { Button, Paper, Stack } from "@mantine/core";
-
 import { notifications } from "@mantine/notifications";
-
 import { useDebouncedValue } from "@mantine/hooks";
-
 import { IconPlus } from "@tabler/icons-react";
-
 import { useRouter } from "next/navigation";
 
 import { PageHeader } from "@/components/ui/PageHeader";
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { LaundryItemFilters } from "./LaundryItemFilters";
+import { LaundryItemTable } from "./LaundryItemTable";
 
 import {
   useDeactivateLaundryItem,
   useLaundryItems,
 } from "@/hooks/laundry-item.hooks";
-
-import { LaundryItemFilters } from "./LaundryItemFilters";
-
-import { LaundryItemTable } from "./LaundryItemTable";
 
 import type {
   LaundryItem,
@@ -34,20 +27,13 @@ type LaundryItemFiltersState = Pick<LaundryItemQuery, "search">;
 
 export function LaundryItemContent() {
   const router = useRouter();
-
   const [page, setPage] = useState(1);
-
   const [pageSize, setPageSize] = useState<10 | 20 | 50>(10);
-
   const [filters, setFilters] = useState<LaundryItemFiltersState>({});
-
   const [selectedItem, setSelectedItem] = useState<LaundryItem | null>(null);
-
   const [debouncedSearch] = useDebouncedValue(filters.search ?? "", 400);
-
   const [sortBy, setSortBy] =
     useState<NonNullable<LaundryItemQuery["sortBy"]>>("createdAt");
-
   const [sortOrder, setSortOrder] =
     useState<NonNullable<LaundryItemQuery["sortOrder"]>>("desc");
 
@@ -88,27 +74,27 @@ export function LaundryItemContent() {
     if (!selectedItem) {
       return;
     }
+    await deactivateLaundryItem.mutateAsync(selectedItem.id, {
+      onSuccess: () => {
+        notifications.show({
+          title: "Berhasil",
+          message: "Item laundry berhasil dinonaktifkan.",
+          color: "green",
+        });
 
-    try {
-      await deactivateLaundryItem.mutateAsync(selectedItem.id);
-
-      notifications.show({
-        title: "Berhasil",
-        message: "Item laundry berhasil dinonaktifkan.",
-        color: "green",
-      });
-
-      setSelectedItem(null);
-    } catch (error) {
-      notifications.show({
-        title: "Gagal",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Gagal menonaktifkan item laundry.",
-        color: "red",
-      });
-    }
+        setSelectedItem(null);
+      },
+      onError: (error) => {
+        notifications.show({
+          title: "Gagal",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Gagal menonaktifkan item laundry.",
+          color: "red",
+        });
+      },
+    });
   };
 
   return (

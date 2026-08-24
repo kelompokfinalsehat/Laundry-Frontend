@@ -1,12 +1,13 @@
-import { ActionIcon, Badge, Table, Text, Group } from "@mantine/core";
+import { ActionIcon, Badge, Table, Text, Group, Menu } from "@mantine/core";
 
-import { IconEdit, IconTrash } from "@tabler/icons-react";
+import { IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons-react";
 
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ServerPagination } from "@/components/ui/ServerPagination";
 
 import type { Outlet } from "@/types/api/outlet.types";
-import { PaginationMeta } from "@/types/api/pagination.type";
+import type { PaginationMeta } from "@/types/api/pagination.type";
+import { formatDate } from "@/utils/dateFormatter";
 
 interface OutletTableProps {
   data: Outlet[];
@@ -20,14 +21,6 @@ interface OutletTableProps {
 
   onDelete: (outlet: Outlet) => void;
 }
-
-const formatDate = (date: string) =>
-  new Intl.DateTimeFormat("id-ID", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(date));
-
 export function OutletTable({
   data,
   meta,
@@ -83,24 +76,30 @@ export function OutletTable({
 
                 <Table.Td ta="right">
                   <Group gap={4} justify="flex-end">
-                    <ActionIcon
-                      variant="subtle"
-                      color="rinseBlue"
-                      aria-label={`Edit ${outlet.name}`}
-                      onClick={() => onEdit(outlet.id)}
-                    >
-                      <IconEdit size={18} />
-                    </ActionIcon>
-                    {outlet.isActive && (
-                      <ActionIcon
-                        variant="subtle"
-                        color="red"
-                        aria-label={`Nonaktifkan ${outlet.name}`}
-                        onClick={() => onDelete(outlet)}
-                      >
-                        <IconTrash size={18} />
-                      </ActionIcon>
-                    )}
+                    <Menu shadow="md" width={160} position="bottom-end">
+                      <Menu.Target>
+                        <ActionIcon variant="subtle" aria-label="Aksi item">
+                          <IconDotsVertical size={18} />
+                        </ActionIcon>
+                      </Menu.Target>
+                      <Menu.Dropdown>
+                        <Menu.Item
+                          leftSection={<IconEdit size={16} />}
+                          onClick={() => onEdit(outlet.id)}
+                        >
+                          Edit
+                        </Menu.Item>
+                        {outlet.isActive && (
+                          <Menu.Item
+                            color="red"
+                            leftSection={<IconTrash size={16} />}
+                            onClick={() => onDelete(outlet)}
+                          >
+                            Nonaktifkan
+                          </Menu.Item>
+                        )}
+                      </Menu.Dropdown>
+                    </Menu>
                   </Group>
                 </Table.Td>
               </Table.Tr>

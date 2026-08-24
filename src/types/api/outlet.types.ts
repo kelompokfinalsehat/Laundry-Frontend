@@ -1,5 +1,3 @@
-import { PaginationMeta } from "./pagination.type";
-
 export type Outlet = {
   id: string;
   name: string;
@@ -17,11 +15,6 @@ export type OutletQuery = {
   search?: string;
   sortBy?: "name" | "createdAt";
   sortOrder?: "asc" | "desc";
-};
-
-export type OutletListResponse = {
-  data: Outlet[];
-  meta: PaginationMeta;
 };
 export type CreateOutletPayload = {
   name: string;

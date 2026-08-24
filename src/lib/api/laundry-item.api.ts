@@ -1,10 +1,10 @@
+import { ApiResponse, PaginatedResponse } from "@/types/api";
 import { api } from "./axios";
 
 import type {
   CreateLaundryItemPayload,
-  LaundryItemListResponse,
+  LaundryItem,
   LaundryItemQuery,
-  LaundryItemResponse,
   UpdateLaundryItemPayload,
 } from "@/types/api/laundry-item.types";
 
@@ -13,45 +13,45 @@ const BASE_URL = "/internal/laundry-items";
 export class LaundryItemApi {
   async getLaundryItems(
     params?: LaundryItemQuery,
-  ): Promise<LaundryItemListResponse> {
-    const response = await api.get<LaundryItemListResponse>(BASE_URL, {
+  ): Promise<PaginatedResponse<LaundryItem>> {
+    const response = await api.get<PaginatedResponse<LaundryItem>>(BASE_URL, {
       params,
     });
 
     return response.data;
   }
 
-  async getLaundryItemById(id: string): Promise<LaundryItemResponse> {
-    const response = await api.get<LaundryItemResponse>(`${BASE_URL}/${id}`);
+  async getLaundryItemById(id: string): Promise<LaundryItem> {
+    const response = await api.get<ApiResponse<LaundryItem>>(`${BASE_URL}/${id}`);
 
-    return response.data;
+    return response.data.data;
   }
 
   async createLaundryItem(
     payload: CreateLaundryItemPayload,
-  ): Promise<LaundryItemResponse> {
-    const response = await api.post<LaundryItemResponse>(BASE_URL, payload);
+  ): Promise<LaundryItem> {
+    const response = await api.post<ApiResponse<LaundryItem>>(BASE_URL, payload);
 
-    return response.data;
+    return response.data.data;
   }
 
   async updateLaundryItem(
     id: string,
     payload: UpdateLaundryItemPayload,
-  ): Promise<LaundryItemResponse> {
-    const response = await api.patch<LaundryItemResponse>(
+  ): Promise<LaundryItem> {
+    const response = await api.patch(
       `${BASE_URL}/${id}`,
       payload,
     );
 
-    return response.data;
+    return response.data.data;
   }
 
-  async deactivateLaundryItem(id: string): Promise<LaundryItemResponse> {
-    const response = await api.patch<LaundryItemResponse>(
+  async deactivateLaundryItem(id: string): Promise<LaundryItem> {
+    const response = await api.patch<ApiResponse<LaundryItem>>(
       `${BASE_URL}/${id}/deactivate`,
     );
 
-    return response.data;
+    return response.data.data;
   }
 }

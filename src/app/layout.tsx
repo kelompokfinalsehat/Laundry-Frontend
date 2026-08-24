@@ -1,5 +1,7 @@
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import "@mantine/dates/styles.css";
+import '@mantine/charts/styles.css';
 import './globals.css';
 import { Providers } from '@/providers/Providers';
 import { Baloo_2, Plus_Jakarta_Sans } from 'next/font/google';
