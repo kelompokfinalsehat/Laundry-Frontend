@@ -37,10 +37,13 @@ export function ReceiveOrderModal({
       onClose={onClose}
       title="Terima Pesanan"
       centered
+      closeOnClickOutside={!isLoading}
+      closeOnEscape={!isLoading}
     >
       <Stack gap="md">
         <Text size="sm">
-          Apakah Anda yakin ingin menerima pesanan ini?
+          Apakah Anda yakin ingin menerima
+          pesanan ini?
         </Text>
 
         {order && (
@@ -54,21 +57,20 @@ export function ReceiveOrderModal({
 
             <Text
               size="sm"
-              c="dimmed"
+              c="var(--color-text-secondary)"
             >
-              Pelanggan: {order.customer.name}
+              {order.customer.name}
             </Text>
           </Stack>
         )}
 
         <Text
-          size="xs"
-          c="dimmed"
+          size="sm"
+          c="var(--color-text-secondary)"
         >
-          Setelah pesanan diterima, status pesanan
-          akan berubah menjadi tiba di outlet dan
-          dapat dilanjutkan ke proses pembuatan
-          pesanan laundry.
+          Setelah pesanan diterima,
+          status pesanan akan diperbarui
+          menjadi tiba di outlet.
         </Text>
 
         <Group

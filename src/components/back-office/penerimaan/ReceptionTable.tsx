@@ -24,6 +24,7 @@ import type {
 
 type Props = {
   data: OrderListItem[];
+
   meta: PaginationMeta;
 
   onPageChange: (
@@ -63,7 +64,7 @@ export function ReceptionTable({
 }: Props) {
   return (
     <>
-      <Table.ScrollContainer minWidth={850}>
+      <Table.ScrollContainer minWidth={800}>
         <Table
           highlightOnHover
           verticalSpacing="sm"

@@ -2,12 +2,15 @@
 
 import { Stack } from "@mantine/core";
 
-import { notifications } from "@mantine/notifications";
+import {
+  useDisclosure,
+} from "@mantine/hooks";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { AsyncStateView } from "@/components/ui/AsyncStateView";
+import {
+  AsyncStateView,
+} from "@/components/ui/AsyncStateView";
 
 import {
   useOrders,
@@ -19,16 +22,25 @@ import type {
   OrderQuery,
 } from "@/types/api/order.types";
 
-import { ReceptionFilters } from "./ReceptionFilters";
-import { ReceiveOrderModal } from "./ReceiveOrderModal";
-import { ReceptionTable } from "./ReceptionTable";
+import {
+  ReceiveOrderModal,
+} from "./ReceiveOrderModal";
+
+import {
+  ReceptionFilters,
+} from "./ReceptionFilters";
+
+import {
+  ReceptionTable,
+} from "./ReceptionTable";
 
 const DEFAULT_PAGE_SIZE = 10;
 
 export function ReceptionContent() {
-  const router = useRouter();
-
-  const [query, setQuery] = useState<OrderQuery>({
+  const [
+    query,
+    setQuery,
+  ] = useState<OrderQuery>({
     page: 1,
     pageSize: DEFAULT_PAGE_SIZE,
     customerStatus: "ON_THE_WAY_TO_OUTLET",
@@ -36,8 +48,20 @@ export function ReceptionContent() {
     sortOrder: "asc",
   });
 
-  const [selectedOrder, setSelectedOrder] =
-    useState<OrderListItem | null>(null);
+  const [
+    selectedOrder,
+    setSelectedOrder,
+  ] = useState<OrderListItem | null>(
+    null,
+  );
+
+  const [
+    opened,
+    {
+      open,
+      close,
+    },
+  ] = useDisclosure(false);
 
   const {
     data,
@@ -47,7 +71,8 @@ export function ReceptionContent() {
     refetch,
   } = useOrders(query);
 
-  const receiveOrder = useReceiveOrder();
+  const receiveOrder =
+    useReceiveOrder();
 
   const handleQueryChange = <
     Key extends keyof OrderQuery,
@@ -85,7 +110,8 @@ export function ReceptionContent() {
     setQuery({
       page: 1,
       pageSize: DEFAULT_PAGE_SIZE,
-      customerStatus: "ON_THE_WAY_TO_OUTLET",
+      customerStatus:
+        "ON_THE_WAY_TO_OUTLET",
       sortBy: "pickupScheduledAt",
       sortOrder: "asc",
     });
@@ -95,13 +121,15 @@ export function ReceptionContent() {
     order: OrderListItem,
   ) => {
     setSelectedOrder(order);
+    open();
   };
 
-  const handleCloseReceiveModal = () => {
+  const handleCloseModal = () => {
     if (receiveOrder.isPending) {
       return;
     }
 
+    close();
     setSelectedOrder(null);
   };
 
@@ -110,37 +138,18 @@ export function ReceptionContent() {
       return;
     }
 
-    try {
-      await receiveOrder.mutateAsync(
-        selectedOrder.id,
-      );
+    await receiveOrder.mutateAsync(
+      selectedOrder.id,
+    );
 
-      notifications.show({
-        title: "Berhasil",
-        message:
-          "Pesanan berhasil diterima.",
-        color: "green",
-      });
-
-      setSelectedOrder(null);
-    } catch (error) {
-      notifications.show({
-        title: "Gagal menerima pesanan",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Terjadi kesalahan. Silakan coba lagi.",
-        color: "red",
-      });
-    }
+    handleCloseModal();
   };
 
   const handleView = (
     orderId: string,
   ) => {
-    router.push(
-      `/internal/outlet-admin/pesanan/${orderId}`,
-    );
+    // nanti sesuaikan dengan router/navigation
+    console.log(orderId);
   };
 
   return (
@@ -174,9 +183,7 @@ export function ReceptionContent() {
             result.data.length === 0
           }
           emptyTitle="Tidak ada pesanan"
-          emptyDescription={
-            "Belum ada pesanan yang sedang dalam perjalanan ke outlet."
-          }
+          emptyDescription="Tidak ada pesanan yang sedang dalam proses penerimaan."
         >
           {(result) => (
             <ReceptionTable
@@ -188,7 +195,9 @@ export function ReceptionContent() {
               onPageSizeChange={
                 handlePageSizeChange
               }
-              onReceive={handleReceive}
+              onReceive={
+                handleReceive
+              }
               onView={handleView}
             />
           )}
@@ -196,12 +205,12 @@ export function ReceptionContent() {
       </Stack>
 
       <ReceiveOrderModal
-        opened={Boolean(selectedOrder)}
+        opened={opened}
         order={selectedOrder}
-        isLoading={receiveOrder.isPending}
-        onClose={
-          handleCloseReceiveModal
+        isLoading={
+          receiveOrder.isPending
         }
+        onClose={handleCloseModal}
         onConfirm={
           handleConfirmReceive
         }
