@@ -18,8 +18,7 @@ export type ClockOutResponse = {
   outletId: string;
 };
 
-export type AttendanceHistoryItem = {
-  id: string;
+export type AttendanceHistoryItem = {  id: string;
   attendanceDate: string;
   clockInAt: string | null;
   clockOutAt: string | null;
@@ -41,4 +40,5 @@ export type AttendanceStatusResponse = {
   clockOutAt: string | null;
   canClockIn: boolean;
   canClockOut: boolean;
+  isCarryOver : boolean;
 };

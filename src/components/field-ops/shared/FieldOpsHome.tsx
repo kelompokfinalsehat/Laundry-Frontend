@@ -1,6 +1,7 @@
 "use client";
 
 import { Stack, Text, Card, Badge, Group, Button } from "@mantine/core";
+import { AttendanceStatus } from "./AttendanceStatus";
 
 // ── UI KOSONGAN — data dummy, belum disambungkan hooks/API ──────────
 
@@ -29,14 +30,7 @@ export function FieldOpsHome({
       </Text>
 
       {/* ── Kartu status attendance (ringkas) ── */}
-      <Card withBorder radius="lg" p="md">
-        <Badge color="teal" variant="light">
-          Sedang Bertugas
-        </Badge>
-        <Text size="xs" c="dimmed" mt={6}>
-          Absen masuk 07:02
-        </Text>
-      </Card>
+      <AttendanceStatus />
 
       {/* ── Kartu tugas aktif ── */}
       {activeTask ? (
@@ -51,13 +45,7 @@ export function FieldOpsHome({
             {activeTask.orderCode}
             {activeTask.statusLabel ? ` · ${activeTask.statusLabel}` : ""}
           </Text>
-          <Button
-            component="a"
-            href={lihatTugasHref}
-            variant="light"
-            size="xs"
-            mt="sm"
-          >
+          <Button component="a" href={lihatTugasHref} variant="light" size="xs" mt="sm">
             Lihat Tugas
           </Button>
         </Card>
@@ -66,14 +54,7 @@ export function FieldOpsHome({
           <Text size="sm" c="dimmed" ta="center">
             Tidak ada tugas aktif saat ini
           </Text>
-          <Button
-            component="a"
-            href={cariTugasHref}
-            variant="subtle"
-            size="xs"
-            mt="sm"
-            fullWidth
-          >
+          <Button component="a" href={cariTugasHref} variant="subtle" size="xs" mt="sm" fullWidth>
             Cari Tugas Tersedia
           </Button>
         </Card>
