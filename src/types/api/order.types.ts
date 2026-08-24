@@ -79,7 +79,7 @@ export type OrderCustomer = {
   id: string;
   name: string;
   email: string;
-  phoneNumber: string | null;
+  phone: string | null;
 };
 
 export type OrderOutlet = {

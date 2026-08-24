@@ -5,7 +5,6 @@ import {
   Stack,
   Table,
   Text,
-  Title,
 } from "@mantine/core";
 
 import type {
@@ -24,12 +23,11 @@ export function OrderItemsSection({
       withBorder
       p="lg"
       radius="md"
-      h="100%"
     >
-      <Stack gap="lg">
-        <Title order={4}>
+      <Stack gap="md">
+        <Text fw={600}>
           Item Laundry
-        </Title>
+        </Text>
 
         {orderItems.length === 0 ? (
           <Text
@@ -46,6 +44,7 @@ export function OrderItemsSection({
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>Item</Table.Th>
+
                 <Table.Th ta="right">
                   Jumlah
                 </Table.Th>

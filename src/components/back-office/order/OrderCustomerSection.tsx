@@ -74,7 +74,7 @@ export function OrderCustomerSection({
             </Text>
 
             <Text size="sm" fw={500}>
-              {customer.phoneNumber ?? "-"}
+              {customer.phone ?? "-"}
             </Text>
           </Stack>
         </SimpleGrid>
