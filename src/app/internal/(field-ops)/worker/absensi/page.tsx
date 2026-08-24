@@ -1,5 +1,11 @@
-import { AttendanceView } from "@/components/field-ops/shared/AttendanceView";
+"use client";
+import { Stack } from "@mantine/core";
+import { AttendanceStatus } from "../../../../../components/field-ops/shared/AttendanceStatus";
 
 export default function Page() {
-  return <AttendanceView />;
+  return (
+    <Stack>
+      <AttendanceStatus />
+    </Stack>
+  );
 }

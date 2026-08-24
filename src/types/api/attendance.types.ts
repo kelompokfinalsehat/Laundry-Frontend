@@ -35,7 +35,6 @@ export interface AttendanceHistoryQuery extends Pick<ListQuery, "page" | "pageSi
 }
 
 export type AttendanceStatusResponse = {
-  workStatus: WorkStatus | null;
   attendanceDate: string | null;
   clockInAt: string | null;
   clockOutAt: string | null;

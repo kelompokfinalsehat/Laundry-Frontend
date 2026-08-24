@@ -1,5 +1,5 @@
 "use client";
-import { AppShell, Group, Text } from "@mantine/core";
+import { AppShell, Group, Text, Title } from "@mantine/core";
 import { BottomNav } from "./BottomNav";
 
 export function FieldOpsAppShell({
@@ -12,14 +12,12 @@ export function FieldOpsAppShell({
   basePath: string;
 }) {
   return (
-    <AppShell
-      header={{ height: 56 }}
-      footer={{ height: 64 }}
-      padding="md"
-    >
+    <AppShell header={{ height: 56 }} footer={{ height: 64 }} padding="md">
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
-          <Text fw={800}>Popo Laundry</Text>
+          <Title order={3} style={{ color: "var(--color-primary-dark)", letterSpacing: -0.5 }}>
+            Popo Laundry
+          </Title>
           <Text size="sm">{role}</Text>
         </Group>
       </AppShell.Header>
