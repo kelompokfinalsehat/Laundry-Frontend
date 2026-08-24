@@ -22,7 +22,7 @@ import type {
   OrderListItem,
 } from "@/types/api/order.types";
 
-type FormItem = {
+type CreateOrderItemForm = {
   laundryItemId: string;
   quantity: number;
 };
@@ -30,63 +30,46 @@ type FormItem = {
 type Props = {
   opened: boolean;
   order: OrderListItem | null;
-  isLoading: boolean;
+  isSubmitting: boolean;
 
   onClose: () => void;
 
-  onSubmit: (payload: CreateOrderPayload) => void;
-};
-
-const INITIAL_ITEM: FormItem = {
-  laundryItemId: "",
-  quantity: 1,
+  onSubmit: (orderId: string, payload: CreateOrderPayload) => Promise<void>;
 };
 
 export function CreateOrderModal({
   opened,
   order,
-  isLoading,
+  isSubmitting,
   onClose,
   onSubmit,
 }: Props) {
   const [weightKg, setWeightKg] = useState<number | string>("");
 
-  const [items, setItems] = useState<FormItem[]>([INITIAL_ITEM]);
+  const [items, setItems] = useState<CreateOrderItemForm[]>([
+    {
+      laundryItemId: "",
+      quantity: 1,
+    },
+  ]);
 
-  const { data: laundryItemsData, isLoading: isLaundryItemsLoading } =
+  const { data: laundryItems, isLoading: isLaundryItemsLoading } =
     useLaundryItems({
       page: 1,
       pageSize: 100,
     });
 
-  const resetForm = () => {
-    setWeightKg("");
-    setItems([
-      {
-        ...INITIAL_ITEM,
-      },
-    ]);
-  };
-
-  useEffect(() => {
-    if (!opened) {
-      resetForm();
-    }
-  }, [opened]);
-
-  const handleClose = () => {
-    if (isLoading) {
-      return;
-    }
-
-    onClose();
+  const INITIAL_ITEM: CreateOrderItemForm = {
+    laundryItemId: "",
+    quantity: 1,
   };
 
   const handleAddItem = () => {
     setItems((previous) => [
       ...previous,
       {
-        ...INITIAL_ITEM,
+        laundryItemId: "",
+        quantity: 1,
       },
     ]);
   };
@@ -97,7 +80,11 @@ export function CreateOrderModal({
     );
   };
 
-  const handleLaundryItemChange = (index: number, value: string | null) => {
+  const handleItemChange = (
+    index: number,
+    key: keyof CreateOrderItemForm,
+    value: string | number | null,
+  ) => {
     setItems((previous) =>
       previous.map((item, itemIndex) => {
         if (itemIndex !== index) {
@@ -106,69 +93,69 @@ export function CreateOrderModal({
 
         return {
           ...item,
-          laundryItemId: value ?? "",
+          [key]: value,
         };
       }),
     );
   };
 
-  const handleQuantityChange = (index: number, value: string | number) => {
-    const quantity = typeof value === "number" ? value : Number(value);
-
-    setItems((previous) =>
-      previous.map((item, itemIndex) => {
-        if (itemIndex !== index) {
-          return item;
-        }
-
-        return {
-          ...item,
-          quantity: Number.isInteger(quantity) && quantity > 0 ? quantity : 1,
-        };
-      }),
-    );
+  const resetForm = () => {
+    setWeightKg("");
+    setItems([
+      {
+        ...INITIAL_ITEM,
+      },
+    ]);
   };
 
-  const handleSubmit = () => {
+  const handleClose = () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    onClose();
+  };
+
+  const handleSubmit = async () => {
+    if (!order) {
+      return;
+    }
+
     if (typeof weightKg !== "number" || weightKg <= 0) {
       return;
     }
 
-    const hasInvalidItem = items.some(
-      (item) =>
-        !item.laundryItemId ||
-        !Number.isInteger(item.quantity) ||
-        item.quantity <= 0,
-    );
+    const payload: CreateOrderPayload = {
+      weightKg,
+      items: items
+        .filter((item) => item.laundryItemId !== "" && item.quantity > 0)
+        .map((item) => ({
+          laundryItemId: item.laundryItemId,
+          quantity: item.quantity,
+        })),
+    };
 
-    if (hasInvalidItem) {
+    if (payload.items.length === 0) {
       return;
     }
 
-    onSubmit({
-      weightKg,
-      items,
-    });
+    await onSubmit(order.id, payload);
   };
 
-  const laundryItems = laundryItemsData?.data ?? [];
+  const laundryItemOptions =
+    laundryItems?.data.map((item) => ({
+      value: item.id,
+      label: item.name,
+    })) ?? [];
 
-  const getOptions = (currentItemId: string) => {
-    const selectedIds = items
-      .filter((item) => item.laundryItemId !== currentItemId)
-      .map((item) => item.laundryItemId);
-
-    return laundryItems
-      .filter((item) => !selectedIds.includes(item.id))
-      .map((item) => ({
-        value: item.id,
-        label: item.name,
-      }));
-  };
-
+  useEffect(() => {
+    if (!opened) {
+      resetForm();
+    }
+  }, [opened]);
   return (
     <Modal opened={opened} onClose={handleClose} title="Buat Order" centered>
-      <Stack gap="lg">
+      <Stack gap="md">
         {order && (
           <Stack gap={2}>
             <Text size="sm" fw={600}>
@@ -183,17 +170,18 @@ export function CreateOrderModal({
 
         <NumberInput
           label="Berat Laundry"
-          placeholder="Masukkan berat laundry"
-          suffix=" kg"
+          description="Masukkan total berat laundry dalam kilogram."
+          placeholder="Contoh: 3"
           min={0.1}
           step={0.1}
           decimalScale={2}
+          suffix=" kg"
           value={weightKg}
           onChange={setWeightKg}
           required
         />
 
-        <Stack gap="sm">
+        <Stack gap="xs">
           <Group justify="space-between">
             <Text size="sm" fw={600}>
               Item Laundry
@@ -204,7 +192,6 @@ export function CreateOrderModal({
               size="xs"
               leftSection={<IconPlus size={16} />}
               onClick={handleAddItem}
-              disabled={isLaundryItemsLoading}
             >
               Tambah Item
             </Button>
@@ -214,12 +201,14 @@ export function CreateOrderModal({
             <Group key={index} align="flex-end" wrap="nowrap">
               <Select
                 label={index === 0 ? "Layanan" : undefined}
-                placeholder="Pilih layanan"
-                data={getOptions(item.laundryItemId)}
+                placeholder="Pilih item laundry"
+                data={laundryItemOptions}
                 value={item.laundryItemId}
-                onChange={(value) => handleLaundryItemChange(index, value)}
+                onChange={(value) =>
+                  handleItemChange(index, "laundryItemId", value)
+                }
                 searchable
-                disabled={isLaundryItemsLoading || isLoading}
+                disabled={isLaundryItemsLoading}
                 style={{ flex: 1 }}
                 required
               />
@@ -227,11 +216,14 @@ export function CreateOrderModal({
               <NumberInput
                 label={index === 0 ? "Jumlah" : undefined}
                 min={1}
-                step={1}
-                allowDecimal={false}
                 value={item.quantity}
-                onChange={(value) => handleQuantityChange(index, value)}
-                disabled={isLoading}
+                onChange={(value) =>
+                  handleItemChange(
+                    index,
+                    "quantity",
+                    typeof value === "number" ? value : 1,
+                  )
+                }
                 w={100}
                 required
               />
@@ -242,7 +234,6 @@ export function CreateOrderModal({
                   color="red"
                   aria-label="Hapus item"
                   onClick={() => handleRemoveItem(index)}
-                  disabled={isLoading}
                 >
                   <IconTrash size={18} />
                 </ActionIcon>
@@ -252,11 +243,15 @@ export function CreateOrderModal({
         </Stack>
 
         <Group justify="flex-end">
-          <Button variant="default" onClick={handleClose} disabled={isLoading}>
+          <Button
+            variant="default"
+            onClick={handleClose}
+            disabled={isSubmitting}
+          >
             Batal
           </Button>
 
-          <Button onClick={handleSubmit} loading={isLoading}>
+          <Button onClick={handleSubmit} loading={isSubmitting}>
             Buat Order
           </Button>
         </Group>
