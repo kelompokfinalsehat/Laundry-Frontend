@@ -1,84 +1,64 @@
 "use client";
 
-import { Stack } from "@mantine/core";
-
-import {
-  useDisclosure,
-} from "@mantine/hooks";
+import { Stack, Tabs } from "@mantine/core";
 
 import { useState } from "react";
 
-import {
-  AsyncStateView,
-} from "@/components/ui/AsyncStateView";
+import { AsyncStateView } from "@/components/ui/AsyncStateView";
 
-import {
-  useOrders,
-  useReceiveOrder,
-} from "@/hooks/order.hooks";
+import { useOrders } from "@/hooks/order.hooks";
 
 import type {
+  CustomerStatus,
   OrderListItem,
   OrderQuery,
 } from "@/types/api/order.types";
 
-import {
-  ReceiveOrderModal,
-} from "./ReceiveOrderModal";
-
-import {
-  ReceptionFilters,
-} from "./ReceptionFilters";
-
-import {
-  ReceptionTable,
-} from "./ReceptionTable";
+import { ReceptionFilters } from "./ReceptionFilters";
+import { ReceptionTable } from "./ReceptionTable";
 import { useRouter } from "next/navigation";
 
 const DEFAULT_PAGE_SIZE = 10;
 
+type ReceptionStage = "WAITING_RECEIPT" | "READY_TO_CREATE";
+
+const STAGE_STATUS: Record<ReceptionStage, CustomerStatus> = {
+  WAITING_RECEIPT: "ON_THE_WAY_TO_OUTLET",
+
+  READY_TO_CREATE: "ARRIVED_AT_OUTLET",
+};
+
 export function ReceptionContent() {
   const router = useRouter();
-  const [
-    query,
-    setQuery,
-  ] = useState<OrderQuery>({
+  const [stage, setStage] = useState<ReceptionStage>("WAITING_RECEIPT");
+
+  const [query, setQuery] = useState<OrderQuery>({
     page: 1,
     pageSize: DEFAULT_PAGE_SIZE,
-    customerStatus: "ON_THE_WAY_TO_OUTLET",
+    customerStatus: STAGE_STATUS.WAITING_RECEIPT,
     sortBy: "pickupScheduledAt",
     sortOrder: "asc",
   });
 
-  const [
-    selectedOrder,
-    setSelectedOrder,
-  ] = useState<OrderListItem | null>(
-    null,
-  );
+  const tableMode = stage === "WAITING_RECEIPT" ? "RECEIVE" : "CREATE_ORDER";
 
-  const [
-    opened,
-    {
-      open,
-      close,
-    },
-  ] = useDisclosure(false);
+  const { data, isLoading, isError, error, refetch } = useOrders(query);
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useOrders(query);
+  const handleStageChange = (value: string | null) => {
+    if (value !== "WAITING_RECEIPT" && value !== "READY_TO_CREATE") {
+      return;
+    }
 
-  const receiveOrder =
-    useReceiveOrder();
+    setStage(value);
 
-  const handleQueryChange = <
-    Key extends keyof OrderQuery,
-  >(
+    setQuery((previous) => ({
+      ...previous,
+      page: 1,
+      customerStatus: STAGE_STATUS[value],
+    }));
+  };
+
+  const handleQueryChange = <Key extends keyof OrderQuery>(
     key: Key,
     value: OrderQuery[Key],
   ) => {
@@ -89,18 +69,14 @@ export function ReceptionContent() {
     }));
   };
 
-  const handlePageChange = (
-    page: number,
-  ) => {
+  const handlePageChange = (page: number) => {
     setQuery((previous) => ({
       ...previous,
       page,
     }));
   };
 
-  const handlePageSizeChange = (
-    pageSize: 10 | 20 | 50,
-  ) => {
+  const handlePageSizeChange = (pageSize: 10 | 20 | 50) => {
     setQuery((previous) => ({
       ...previous,
       page: 1,
@@ -112,112 +88,63 @@ export function ReceptionContent() {
     setQuery({
       page: 1,
       pageSize: DEFAULT_PAGE_SIZE,
-      customerStatus:
-        "ON_THE_WAY_TO_OUTLET",
+      customerStatus: STAGE_STATUS[stage],
       sortBy: "pickupScheduledAt",
       sortOrder: "asc",
     });
   };
 
-  const handleReceive = (
-    order: OrderListItem,
-  ) => {
-    setSelectedOrder(order);
-    open();
+  const handleReceive = (order: OrderListItem) => {
+    console.log("Receive order:", order.id);
   };
 
-  const handleCloseModal = () => {
-    if (receiveOrder.isPending) {
-      return;
-    }
-
-    close();
-    setSelectedOrder(null);
+  const handleCreateOrder = (order: OrderListItem) => {
+    console.log("Create order:", order.id);
   };
 
-  const handleConfirmReceive = async () => {
-    if (!selectedOrder) {
-      return;
-    }
-
-    await receiveOrder.mutateAsync(
-      selectedOrder.id,
-    );
-
-    handleCloseModal();
+  const handleView = (orderId: string) => {
+    router.push(`/internal/outlet-admin/pesanan/${orderId}`);
   };
-
-  const handleView = (
-  orderId: string,
-) => {
-  router.push(
-    `/internal/outlet-admin/pesanan/${orderId}`,
-  );
-};
 
   return (
-    <>
-      <Stack gap="lg">
-        <ReceptionFilters
-          query={query}
-          onChange={handleQueryChange}
-          onSortByChange={(value) =>
-            handleQueryChange(
-              "sortBy",
-              value,
-            )
-          }
-          onSortOrderChange={(value) =>
-            handleQueryChange(
-              "sortOrder",
-              value,
-            )
-          }
-          onReset={handleReset}
-        />
+    <Stack gap="lg">
+      <Tabs value={stage} onChange={handleStageChange}>
+        <Tabs.List>
+          <Tabs.Tab value="WAITING_RECEIPT">Menunggu Diterima</Tabs.Tab>
 
-        <AsyncStateView
-          isLoading={isLoading}
-          isError={isError}
-          error={error}
-          data={data}
-          onRetry={refetch}
-          isEmpty={(result) =>
-            result.data.length === 0
-          }
-          emptyTitle="Tidak ada pesanan"
-          emptyDescription="Tidak ada pesanan yang sedang dalam proses penerimaan."
-        >
-          {(result) => (
-            <ReceptionTable
-              data={result.data}
-              meta={result.meta}
-              onPageChange={
-                handlePageChange
-              }
-              onPageSizeChange={
-                handlePageSizeChange
-              }
-              onReceive={
-                handleReceive
-              }
-              onView={handleView}
-            />
-          )}
-        </AsyncStateView>
-      </Stack>
+          <Tabs.Tab value="READY_TO_CREATE">Siap Dibuatkan Order</Tabs.Tab>
+        </Tabs.List>
+      </Tabs>
 
-      <ReceiveOrderModal
-        opened={opened}
-        order={selectedOrder}
-        isLoading={
-          receiveOrder.isPending
-        }
-        onClose={handleCloseModal}
-        onConfirm={
-          handleConfirmReceive
-        }
+      <ReceptionFilters
+        query={query}
+        onChange={handleQueryChange}
+        onSortByChange={(value) => handleQueryChange("sortBy", value)}
+        onSortOrderChange={(value) => handleQueryChange("sortOrder", value)}
+        onReset={handleReset}
       />
-    </>
+
+      <AsyncStateView
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
+        data={data}
+        onRetry={refetch}
+        isEmpty={(result) => result.data.length === 0}
+      >
+        {(result) => (
+          <ReceptionTable
+            data={result.data}
+            meta={result.meta}
+            mode={tableMode}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            onReceive={handleReceive}
+            onCreateOrder={handleCreateOrder}
+            onView={handleView}
+          />
+        )}
+      </AsyncStateView>
+    </Stack>
   );
 }

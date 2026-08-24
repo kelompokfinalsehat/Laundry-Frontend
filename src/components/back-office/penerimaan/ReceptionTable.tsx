@@ -22,10 +22,15 @@ import type {
   PaginationMeta,
 } from "@/types/api/pagination.type";
 
+type ReceptionTableMode =
+  | "RECEIVE"
+  | "CREATE_ORDER";
+
 type Props = {
   data: OrderListItem[];
-
   meta: PaginationMeta;
+
+  mode: ReceptionTableMode;
 
   onPageChange: (
     page: number,
@@ -36,6 +41,10 @@ type Props = {
   ) => void;
 
   onReceive: (
+    order: OrderListItem,
+  ) => void;
+
+  onCreateOrder: (
     order: OrderListItem,
   ) => void;
 
@@ -57,9 +66,11 @@ function formatDateTime(value: string) {
 export function ReceptionTable({
   data,
   meta,
+  mode,
   onPageChange,
   onPageSizeChange,
   onReceive,
+  onCreateOrder,
   onView,
 }: Props) {
   return (
@@ -90,75 +101,97 @@ export function ReceptionTable({
           </Table.Thead>
 
           <Table.Tbody>
-            {data.map((order) => (
-              <Table.Tr key={order.id}>
-                <Table.Td>
-                  <Text
-                    size="sm"
-                    fw={600}
-                    c="var(--color-text-primary)"
-                  >
-                    {order.orderCode}
-                  </Text>
-                </Table.Td>
+            {data.map((order) => {
+              const canCreateOrder =
+                order.customerStatus ===
+                  "ARRIVED_AT_OUTLET" &&
+                order.receivedAt !== null &&
+                order.bill === null;
 
-                <Table.Td>
-                  <Text
-                    size="sm"
-                    fw={600}
-                    c="var(--color-text-primary)"
-                  >
-                    {order.customer.name}
-                  </Text>
+              return (
+                <Table.Tr key={order.id}>
+                  <Table.Td>
+                    <Text
+                      size="sm"
+                      fw={600}
+                      c="var(--color-text-primary)"
+                    >
+                      {order.orderCode}
+                    </Text>
+                  </Table.Td>
 
-                  <Text
-                    size="xs"
-                    c="var(--color-text-secondary)"
-                  >
-                    {order.customer.email}
-                  </Text>
-                </Table.Td>
+                  <Table.Td>
+                    <Text
+                      size="sm"
+                      fw={600}
+                      c="var(--color-text-primary)"
+                    >
+                      {order.customer.name}
+                    </Text>
 
-                <Table.Td>
-                  <Text
-                    size="sm"
-                    c="var(--color-text-secondary)"
-                  >
-                    {formatDateTime(
-                      order.pickupScheduledAt,
-                    )}
-                  </Text>
-                </Table.Td>
-
-                <Table.Td ta="right">
-                  <Group
-                    gap="xs"
-                    justify="flex-end"
-                    wrap="nowrap"
-                  >
-                    <Button
+                    <Text
                       size="xs"
-                      onClick={() =>
-                        onReceive(order)
-                      }
+                      c="var(--color-text-secondary)"
                     >
-                      Terima
-                    </Button>
+                      {order.customer.email}
+                    </Text>
+                  </Table.Td>
 
-                    <ActionIcon
-                      variant="subtle"
-                      color="rinseBlue"
-                      aria-label={`Lihat pesanan ${order.orderCode}`}
-                      onClick={() =>
-                        onView(order.id)
-                      }
+                  <Table.Td>
+                    <Text
+                      size="sm"
+                      c="var(--color-text-secondary)"
                     >
-                      <IconChevronRight size={18} />
-                    </ActionIcon>
-                  </Group>
-                </Table.Td>
-              </Table.Tr>
-            ))}
+                      {formatDateTime(
+                        order.pickupScheduledAt,
+                      )}
+                    </Text>
+                  </Table.Td>
+
+                  <Table.Td ta="right">
+                    <Group
+                      gap="xs"
+                      justify="flex-end"
+                      wrap="nowrap"
+                    >
+                      {mode === "RECEIVE" && (
+                        <Button
+                          size="xs"
+                          onClick={() =>
+                            onReceive(order)
+                          }
+                        >
+                          Terima
+                        </Button>
+                      )}
+
+                      {mode === "CREATE_ORDER" &&
+                        canCreateOrder && (
+                          <Button
+                            size="xs"
+                            onClick={() =>
+                              onCreateOrder(order)
+                            }
+                          >
+                            Buat Order
+                          </Button>
+                        )}
+
+                      <ActionIcon
+                        variant="subtle"
+                        color="rinseBlue"
+                        aria-label={`Lihat pesanan ${order.orderCode}`}
+                        onClick={() =>
+                          onView(order.id)
+                        }
+                      >
+                        <IconChevronRight size={18} />
+                      </ActionIcon>
+                    </Group>
+                  </Table.Td>
+                </Table.Tr>
+              );
+            })}
           </Table.Tbody>
         </Table>
       </Table.ScrollContainer>
