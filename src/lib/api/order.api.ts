@@ -37,9 +37,9 @@ export class OrderApi {
 
   async receiveOrder(
     orderId: string,
-  ): Promise<OrderListItem> {
+  ): Promise<OrderDetail> {
     const res = await api.post<
-      ApiResponse<OrderListItem>
+      ApiResponse<OrderDetail>
     >(`/internal/orders/${orderId}/receive`);
 
     return res.data.data;
@@ -48,9 +48,9 @@ export class OrderApi {
   async createOrder(
     orderId: string,
     payload: CreateOrderPayload,
-  ): Promise<OrderListItem> {
+  ): Promise<OrderDetail> {
     const res = await api.post<
-      ApiResponse<OrderListItem>
+      ApiResponse<OrderDetail>
     >(
       `/internal/orders/${orderId}/create-order`,
       payload,
