@@ -9,7 +9,6 @@ import {
   Paper,
   Stack,
   Text,
-  Title,
 } from "@mantine/core";
 
 import {
@@ -72,15 +71,20 @@ const COMPLAINT_STATUS: Record<
   },
 };
 
-function formatDateTime(value: string | null) {
+function formatDateTime(
+  value: string | null,
+) {
   if (!value) {
     return "-";
   }
 
-  return new Intl.DateTimeFormat("id-ID", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
+  return new Intl.DateTimeFormat(
+    "id-ID",
+    {
+      dateStyle: "medium",
+      timeStyle: "short",
+    },
+  ).format(new Date(value));
 }
 
 export function OrderComplaintSection({
@@ -96,10 +100,10 @@ export function OrderComplaintSection({
         p="lg"
         radius="md"
       >
-        <Stack gap="lg">
-          <Title order={4}>
+        <Stack gap="md">
+          <Text fw={600}>
             Komplain
-          </Title>
+          </Text>
 
           <Text
             size="sm"
@@ -129,15 +133,16 @@ export function OrderComplaintSection({
         p="lg"
         radius="md"
       >
-        <Stack gap="lg">
+        <Stack gap="md">
           <Group
             justify="space-between"
             align="flex-start"
+            wrap="wrap"
           >
-            <Stack gap={4}>
-              <Title order={4}>
+            <Stack gap={2}>
+              <Text fw={600}>
                 Komplain
-              </Title>
+              </Text>
 
               <Text
                 size="xs"
@@ -180,7 +185,7 @@ export function OrderComplaintSection({
             </Text>
           </Stack>
 
-          <Stack gap="xs">
+          <Stack gap={4}>
             <Text
               size="xs"
               c="var(--color-text-secondary)"
