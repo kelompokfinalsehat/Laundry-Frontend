@@ -2,7 +2,7 @@
 
 import { Badge, Button, Card, Divider, Group, Paper, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
 import { IconAlertTriangle, IconCalendar, IconFingerprint } from "@tabler/icons-react";
-import { useAttendance } from "@/hooks/attendance.hooks";
+import { useAttendanceStatus, useClockIn, useClockOut } from "@/hooks/attendance.hooks";
 import { formatFieldOpsDate, formatFieldOpsTime } from "@/utils/fieldops.date";
 import type { WorkStatus } from "@/types/api/attendance.types";
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
@@ -18,7 +18,9 @@ function getWorkStatusBadge(workStatus: WorkStatus | null) {
 }
 
 export function AttendanceStatus() {
-  const { statusQuery, clockInMutation, clockOutMutation } = useAttendance();
+  const statusQuery = useAttendanceStatus();
+  const clockInMutation = useClockIn();
+  const clockOutMutation = useClockOut();
 
   return (
     <AsyncStateView
@@ -26,7 +28,7 @@ export function AttendanceStatus() {
       isError={statusQuery.isError}
       error={statusQuery.error}
       data={statusQuery.data}
-      isEmpty={() => false} // status absensi selalu berupa objek tunggal, tidak pernah "kosong"
+      isEmpty={() => false}
       onRetry={() => statusQuery.refetch()}
       skeleton={
         <Card withBorder shadow="sm" radius="lg" p="lg">
@@ -35,12 +37,16 @@ export function AttendanceStatus() {
               <Skeleton height={20} width="40%" />
               <Skeleton height={24} width={90} radius="xl" />
             </Group>
+
             <Divider />
+
             <Skeleton height={16} width="60%" />
+
             <SimpleGrid cols={2} spacing="md">
               <Skeleton height={64} radius="md" />
               <Skeleton height={64} radius="md" />
             </SimpleGrid>
+
             <Skeleton height={40} radius="md" />
           </Stack>
         </Card>
@@ -48,6 +54,7 @@ export function AttendanceStatus() {
     >
       {(data) => {
         const { workStatus, attendanceDate, clockInAt, clockOutAt, canClockIn, canClockOut, isCarryOver } = data;
+
         const workStatusBadge = getWorkStatusBadge(workStatus);
 
         return (
@@ -57,20 +64,31 @@ export function AttendanceStatus() {
                 <Text fw={600} size="lg">
                   Status Absensi
                 </Text>
+
                 <Badge color={workStatusBadge.color} variant="light" size="lg">
                   {workStatusBadge.label}
                 </Badge>
               </Group>
+
               <Divider />
 
               {isCarryOver && (
                 <Paper withBorder radius="md" p="md" bg="var(--mantine-color-yellow-0)">
                   <Group gap="xs" align="flex-start">
-                    <IconAlertTriangle size={18} color="var(--mantine-color-yellow-7)" style={{ flexShrink: 0, marginTop: 2 }} />
+                    <IconAlertTriangle
+                      size={18}
+                      color="var(--mantine-color-yellow-7)"
+                      style={{
+                        flexShrink: 0,
+                        marginTop: 2,
+                      }}
+                    />
+
                     <Stack gap={2}>
                       <Text size="sm" fw={600} c="yellow.8">
                         Absen pulang kemarin belum tercatat
                       </Text>
+
                       <Text size="xs" c="dimmed">
                         Selesaikan absen pulang terlebih dahulu. Setelah itu kamu bisa absen masuk hari ini dan klaim pekerjaan.
                       </Text>
@@ -82,8 +100,10 @@ export function AttendanceStatus() {
               {attendanceDate && (
                 <Group gap="xs" c="dimmed">
                   <IconCalendar size={18} stroke={1.8} />
+
                   <Text size="sm">
                     {formatFieldOpsDate(attendanceDate)}
+
                     {isCarryOver && (
                       <Text span size="xs" c="yellow.7" ml={6}>
                         (kemarin)
@@ -99,6 +119,7 @@ export function AttendanceStatus() {
                     <Text size="xs" fw={700} c="dimmed" tt="uppercase">
                       Masuk
                     </Text>
+
                     <Text size="md">{formatFieldOpsTime(clockInAt)}</Text>
                   </Stack>
                 </Paper>
@@ -108,6 +129,7 @@ export function AttendanceStatus() {
                     <Text size="xs" fw={700} c="dimmed" tt="uppercase">
                       Pulang
                     </Text>
+
                     <Text size="md">{formatFieldOpsTime(clockOutAt)}</Text>
                   </Stack>
                 </Paper>
@@ -142,6 +164,7 @@ export function AttendanceStatus() {
                   <Button fullWidth disabled leftSection={<IconFingerprint size={18} />}>
                     Absensi
                   </Button>
+
                   <Text size="xs" c="dimmed" ta="center">
                     Belum bisa melakukan absensi saat ini.
                   </Text>

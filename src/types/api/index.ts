@@ -113,7 +113,7 @@ export interface SessionUser {
 
 export interface ListQuery {
   page: number;
-  pageSize: 10 | 20 | 50;
+  pageSize: 10 | 20 | 50 | number;
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
