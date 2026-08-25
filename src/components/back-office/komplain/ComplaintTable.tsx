@@ -74,7 +74,7 @@ export function ComplaintTable({
         <Table highlightOnHover verticalSpacing="sm">
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>Pesanan</Table.Th>
+              <Table.Th>Kode Pesanan</Table.Th>
 
               <Table.Th>Pelanggan</Table.Th>
 

@@ -1,6 +1,13 @@
 "use client";
 
-import { Button, Group, Select, TextInput } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  Group,
+  Select,
+  TextInput,
+  Tooltip,
+} from "@mantine/core";
 
 import { IconRefresh, IconSearch } from "@tabler/icons-react";
 
@@ -90,7 +97,7 @@ export function ComplaintFilters({
   onSortByChange,
   onSortOrderChange,
   onReset,
-  onCategoryChange
+  onCategoryChange,
 }: Props) {
   return (
     <Group align="flex-end">
@@ -148,13 +155,16 @@ export function ComplaintFilters({
         }}
       />
 
-      <Button
-        variant="default"
-        leftSection={<IconRefresh size={16} />}
-        onClick={onReset}
-      >
-        Reset
-      </Button>
+      <Tooltip label="Reset filter">
+        <ActionIcon
+          variant="default"
+          size="input-sm"
+          onClick={onReset}
+          aria-label="Reset filter"
+        >
+          <IconRefresh size={16} />
+        </ActionIcon>
+      </Tooltip>
     </Group>
   );
 }
