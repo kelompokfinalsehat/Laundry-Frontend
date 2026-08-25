@@ -1,4 +1,4 @@
-// constants/order-status-group.const.ts
+
 export const ORDER_STATUS_GROUPS = {
   BELUM_BAYAR: ["WAITING_PAYMENT", "OVERDUE"],
   SEDANG_DIPROSES: [

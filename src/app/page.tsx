@@ -20,7 +20,7 @@ export default function Page() {
       
       <Header />
 
-      <Container size="xl">
+      <Container size="lg" pt={40}>
         <Stack gap="xl">
           {/* Hero section — carousel */}
           <HeroSection />

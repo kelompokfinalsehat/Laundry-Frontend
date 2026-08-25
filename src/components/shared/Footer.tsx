@@ -4,13 +4,12 @@ export default function Footer() {
   return (
     <Box
       component="footer"
-      mt={80}
       style={{
         backgroundColor: "var(--color-text-primary)",
         color: "var(--color-background)",
       }}
     >
-      <Container size="xl" py={40} px={{ base: 20, sm: 40 }}>
+      <Container size="lg" py={40} px={{ base: 20}}>
         <Flex
           direction={{ base: "column", sm: "row" }}
           justify="space-between"

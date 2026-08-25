@@ -74,7 +74,6 @@ export default function HeroSection() {
         <Button
           radius="md"
           size="md"
-          visibleFrom="sm"
           component={Link}
           href="/request-pickup"
           style={{
