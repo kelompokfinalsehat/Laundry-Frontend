@@ -29,6 +29,7 @@ import { ShippingRateModal } from "./ShippingRateModal";
 import { ShippingRateTable } from "./ShippingRateTable";
 import { DeactivateShippingRateModal } from "./DeactivateShippingRateModal";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { notifications } from "@mantine/notifications";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -132,7 +133,25 @@ export function ShippingRateContent() {
   };
 
   const handleCreate = async (payload: CreateShippingRatePayload) => {
-    await createShippingRate.mutateAsync(payload);
+    await createShippingRate.mutateAsync(payload, {
+      onSuccess: () => {
+        notifications.show({
+          title: "Berhasil",
+          message: "Tarif shipping berhasil dibuat.",
+          color: "green",
+        });
+      },
+      onError: (err) => {
+        notifications.show({
+          title: "Gagal",
+          message:
+            err instanceof Error
+              ? err.message
+              : "Gagal membuat tarif shipping baru.",
+          color: "red",
+        });
+      },
+    });
 
     handleModalClose();
   };
@@ -141,10 +160,31 @@ export function ShippingRateContent() {
     shippingRateId: string,
     payload: UpdateShippingRatePayload,
   ) => {
-    await updateShippingRate.mutateAsync({
-      shippingRateId,
-      payload,
-    });
+    await updateShippingRate.mutateAsync(
+      {
+        shippingRateId,
+        payload,
+      },
+      {
+        onSuccess: () => {
+          notifications.show({
+            title: "Berhasil",
+            message: "Tarif shipping diupdate.",
+            color: "green",
+          });
+        },
+        onError: (err) => {
+          notifications.show({
+            title: "Gagal",
+            message:
+              err instanceof Error
+                ? err.message
+                : "Gagal update tarif shipping.",
+            color: "red",
+          });
+        },
+      },
+    );
 
     handleModalClose();
   };
@@ -156,7 +196,21 @@ export function ShippingRateContent() {
   };
 
   const handleDeactivateConfirm = async (shippingRate: ShippingRate) => {
-    await deactivateShippingRate.mutateAsync(shippingRate.id);
+    await deactivateShippingRate.mutateAsync(shippingRate.id, {
+        onSuccess: () => {
+            notifications.show({
+                title: "Berhasil",
+                message: "Berhasil menonaktifkan tarif shipping.",
+                color: "green"
+            })
+        }, onError: (err) => {
+            notifications.show({
+                title: "Gagal",
+                message: err instanceof Error ? err.message : "Gagal menonaktifkan tarif shipping",
+                color: "red"
+            })
+        }
+    });
 
     setDeactivateModalOpened(false);
 
@@ -181,7 +235,7 @@ export function ShippingRateContent() {
         action={
           <Button
             leftSection={<IconPlus size={16} />}
-            onClick={() => handleCreateClick}
+            onClick={handleCreateClick}
           >
             Tambah Tarif
           </Button>

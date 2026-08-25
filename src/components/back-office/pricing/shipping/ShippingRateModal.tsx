@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Button,
-  Group,
-  Modal,
-  NumberInput,
-  Stack,
-} from "@mantine/core";
+import { Button, Group, Modal, NumberInput, Stack } from "@mantine/core";
 
 import { useEffect, useState } from "react";
 
@@ -25,9 +19,7 @@ type Props = {
 
   onClose: () => void;
 
-  onCreate: (
-    payload: CreateShippingRatePayload,
-  ) => Promise<void>;
+  onCreate: (payload: CreateShippingRatePayload) => Promise<void>;
 
   onUpdate: (
     shippingRateId: string,
@@ -43,11 +35,11 @@ export function ShippingRateModal({
   onCreate,
   onUpdate,
 }: Props) {
-  const [maxDistanceMeters, setMaxDistanceMeters] =
-    useState<number | string>("");
+  const [maxDistanceMeters, setMaxDistanceMeters] = useState<number | string>(
+    "",
+  );
 
-  const [price, setPrice] =
-    useState<number | string>("");
+  const [price, setPrice] = useState<number | string>("");
 
   const isEditMode = shippingRate !== null;
 
@@ -57,13 +49,9 @@ export function ShippingRateModal({
     }
 
     if (shippingRate) {
-      setMaxDistanceMeters(
-        shippingRate.maxDistanceMeters,
-      );
+      setMaxDistanceMeters(shippingRate.maxDistanceMeters);
 
-      setPrice(
-        Number(shippingRate.price),
-      );
+      setPrice(Number(shippingRate.price));
 
       return;
     }
@@ -81,28 +69,19 @@ export function ShippingRateModal({
   };
 
   const handleSubmit = async () => {
-    if (
-      typeof maxDistanceMeters !== "number" ||
-      maxDistanceMeters <= 0
-    ) {
+    if (typeof maxDistanceMeters !== "number" || maxDistanceMeters <= 0) {
       return;
     }
 
-    if (
-      typeof price !== "number" ||
-      price <= 0
-    ) {
+    if (typeof price !== "number" || price <= 0) {
       return;
     }
 
     if (isEditMode) {
-      await onUpdate(
-        shippingRate.id,
-        {
-          maxDistanceMeters,
-          price,
-        },
-      );
+      await onUpdate(shippingRate.id, {
+        maxDistanceMeters,
+        price,
+      });
 
       return;
     }
@@ -117,11 +96,7 @@ export function ShippingRateModal({
     <Modal
       opened={opened}
       onClose={handleClose}
-      title={
-        isEditMode
-          ? "Ubah Tarif Pengiriman"
-          : "Tambah Tarif Pengiriman"
-      }
+      title={isEditMode ? "Ubah Tarif Pengiriman" : "Tambah Tarif Pengiriman"}
       centered
     >
       <Stack gap="md">
@@ -162,13 +137,8 @@ export function ShippingRateModal({
             Batal
           </Button>
 
-          <Button
-            onClick={handleSubmit}
-            loading={isSubmitting}
-          >
-            {isEditMode
-              ? "Simpan Perubahan"
-              : "Tambah Tarif"}
+          <Button onClick={handleSubmit} loading={isSubmitting}>
+            {isEditMode ? "Simpan Perubahan" : "Tambah Tarif"}
           </Button>
         </Group>
       </Stack>
