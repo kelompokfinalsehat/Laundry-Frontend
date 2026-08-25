@@ -19,7 +19,6 @@ type Props = {
   onDeactivate: (item: LaundryItem) => void;
 };
 
-
 export function LaundryItemTable({
   data,
   meta,
@@ -44,23 +43,16 @@ export function LaundryItemTable({
             {data.map((item) => (
               <Table.Tr key={item.id}>
                 <Table.Td>
-  <Text
-    size="sm"
-    fw={600}
-    c="var(--color-text-primary)"
-  >
-    {item.name}
-  </Text>
-</Table.Td>
+                  <Text size="sm" fw={600} c="var(--color-text-primary)">
+                    {item.name}
+                  </Text>
+                </Table.Td>
 
-<Table.Td>
-  <Text
-    size="sm"
-    c="var(--color-text-secondary)"
-  >
-    {formatDate(item.createdAt)}
-  </Text>
-</Table.Td>
+                <Table.Td>
+                  <Text size="sm" c="var(--color-text-secondary)">
+                    {formatDate(item.createdAt)}
+                  </Text>
+                </Table.Td>
 
                 <Table.Td>
                   <Group justify="flex-end" gap={4}>

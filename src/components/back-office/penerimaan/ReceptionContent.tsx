@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack, Tabs } from "@mantine/core";
+import { Paper, Stack, Tabs } from "@mantine/core";
 
 import { useState } from "react";
 
@@ -26,6 +26,7 @@ import { ReceptionFilters } from "./ReceptionFilters";
 import { ReceptionTable } from "./ReceptionTable";
 import { ReceiveOrderModal } from "./ReceiveOrderModal";
 import { notifications } from "@mantine/notifications";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -186,6 +187,10 @@ export function ReceptionContent() {
   return (
     <>
       <Stack gap="lg">
+        <PageHeader
+          title="Penerimaan Pesanan"
+          description="Kelola pesanan menunggu penerimaan dalam sistem."
+        />
         <Tabs value={stage} onChange={handleStageChange}>
           <Tabs.List>
             <Tabs.Tab value="WAITING_RECEIPT">Menunggu Diterima</Tabs.Tab>
@@ -194,37 +199,47 @@ export function ReceptionContent() {
           </Tabs.List>
         </Tabs>
 
-        <ReceptionFilters
-          query={query}
-          onChange={handleQueryChange}
-          onSortByChange={(value) => handleQueryChange("sortBy", value)}
-          onSortOrderChange={(value) => handleQueryChange("sortOrder", value)}
-          onReset={handleReset}
-        />
-
-        <AsyncStateView
-          isLoading={isLoading}
-          isError={isError}
-          error={error}
-          data={data}
-          onRetry={refetch}
-          isEmpty={(result) => result.data.length === 0}
+        <Paper
+          withBorder
+          radius="md"
+          p="md"
+          style={{
+            backgroundColor: "var(--color-surface)",
+          }}
         >
-          {(result) => (
-            <ReceptionTable
-              data={result.data}
-              meta={result.meta}
-              mode={tableMode}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-              onReceive={handleReceive}
-              onCreateOrder={handleCreateOrder}
-              onView={handleView}
-            />
-          )}
-        </AsyncStateView>
-      </Stack>
+          <Stack gap="md">
+          <ReceptionFilters
+            query={query}
+            onChange={handleQueryChange}
+            onSortByChange={(value) => handleQueryChange("sortBy", value)}
+            onSortOrderChange={(value) => handleQueryChange("sortOrder", value)}
+            onReset={handleReset}
+          />
 
+          <AsyncStateView
+            isLoading={isLoading}
+            isError={isError}
+            error={error}
+            data={data}
+            onRetry={refetch}
+            isEmpty={(result) => result.data.length === 0}
+          >
+            {(result) => (
+              <ReceptionTable
+                data={result.data}
+                meta={result.meta}
+                mode={tableMode}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+                onReceive={handleReceive}
+                onCreateOrder={handleCreateOrder}
+                onView={handleView}
+              />
+            )}
+          </AsyncStateView>
+          </Stack>
+        </Paper>
+      </Stack>
       <ReceiveOrderModal
         opened={selectedOrderToReceive !== null}
         order={selectedOrderToReceive}
