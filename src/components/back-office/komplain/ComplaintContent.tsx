@@ -6,21 +6,24 @@ import { useState } from "react";
 
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
 
-import { useComplaints, useDecideComplaint } from "@/hooks/complaint.hooks";
+import {
+  useComplaints,
+  useDecideComplaint,
+} from "@/hooks/complaint.hooks";
 
 import type {
+  ComplaintCategory,
   ComplaintListItem,
   ComplaintQuery,
   ComplaintSortBy,
   ComplaintStatus,
+  DecideComplaintPayload,
   SortOrder,
 } from "@/types/api/complaint.types";
 
-import { ComplaintTable } from "./ComplaintTable";
-
 import { ComplaintDecisionModal } from "./ComplaintDecisionModal";
-import { ComplaintCategory } from "@/types/api/order.types";
 import { ComplaintFilters } from "./ComplaintFilters";
+import { ComplaintTable } from "./ComplaintTable";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -35,24 +38,36 @@ export function ComplaintContent() {
   const [selectedComplaint, setSelectedComplaint] =
     useState<ComplaintListItem | null>(null);
 
-  const [decisionModalOpened, setDecisionModalOpened] = useState(false);
+  const [decisionModalOpened, setDecisionModalOpened] =
+    useState(false);
 
-  const { data, isLoading, isError, error, refetch } = useComplaints(query);
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useComplaints(query);
 
-  const decideComplaint = useDecideComplaint();
+  const decideComplaint =
+    useDecideComplaint();
 
-  const handleQueryChange = <Key extends keyof ComplaintQuery>(
+  const handleQueryChange = <
+    Key extends keyof ComplaintQuery,
+  >(
     key: Key,
     value: ComplaintQuery[Key],
   ) => {
     setQuery((previous) => ({
       ...previous,
-      [key]: value || undefined,
+      [key]: value,
       page: 1,
     }));
   };
 
-  const handleStatusChange = (value: ComplaintStatus | null) => {
+  const handleStatusChange = (
+    value: ComplaintStatus | null,
+  ) => {
     setQuery((previous) => ({
       ...previous,
       status: value ?? undefined,
@@ -60,7 +75,19 @@ export function ComplaintContent() {
     }));
   };
 
-  const handleSortByChange = (value: ComplaintSortBy) => {
+  const handleCategoryChange = (
+    value: ComplaintCategory | null,
+  ) => {
+    setQuery((previous) => ({
+      ...previous,
+      category: value ?? undefined,
+      page: 1,
+    }));
+  };
+
+  const handleSortByChange = (
+    value: ComplaintSortBy,
+  ) => {
     setQuery((previous) => ({
       ...previous,
       sortBy: value,
@@ -68,7 +95,9 @@ export function ComplaintContent() {
     }));
   };
 
-  const handleSortOrderChange = (value: SortOrder) => {
+  const handleSortOrderChange = (
+    value: SortOrder,
+  ) => {
     setQuery((previous) => ({
       ...previous,
       sortOrder: value,
@@ -76,26 +105,22 @@ export function ComplaintContent() {
     }));
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (
+    page: number,
+  ) => {
     setQuery((previous) => ({
       ...previous,
       page,
     }));
   };
 
-  const handlePageSizeChange = (pageSize: 10 | 20 | 50) => {
+  const handlePageSizeChange = (
+    pageSize: 10 | 20 | 50,
+  ) => {
     setQuery((previous) => ({
       ...previous,
       page: 1,
       pageSize,
-    }));
-  };
-
-  const handleCategoryChange = (value: ComplaintCategory | null) => {
-    setQuery((previous) => ({
-      ...previous,
-      category: value ?? undefined,
-      page: 1,
     }));
   };
 
@@ -108,7 +133,9 @@ export function ComplaintContent() {
     });
   };
 
-  const handleDecide = (complaint: ComplaintListItem) => {
+  const handleDecide = (
+    complaint: ComplaintListItem,
+  ) => {
     setSelectedComplaint(complaint);
     setDecisionModalOpened(true);
   };
@@ -122,9 +149,26 @@ export function ComplaintContent() {
     setSelectedComplaint(null);
   };
 
+  const handleDecisionSubmit = async (
+    payload: DecideComplaintPayload,
+  ) => {
+    if (!selectedComplaint) {
+      return;
+    }
+
+    await decideComplaint.mutateAsync({
+      complaintId: selectedComplaint.id,
+      payload,
+    });
+
+    handleDecisionModalClose();
+  };
+
   return (
     <Stack gap="lg">
-      <Title order={2}>Keluhan Pelanggan</Title>
+      <Title order={2}>
+        Keluhan Pelanggan
+      </Title>
 
       <ComplaintFilters
         query={query}
@@ -142,14 +186,18 @@ export function ComplaintContent() {
         error={error}
         data={data}
         onRetry={refetch}
-        isEmpty={(result) => result.data.length === 0}
+        isEmpty={(result) =>
+          result.data.length === 0
+        }
       >
         {(result) => (
           <ComplaintTable
             data={result.data}
             meta={result.meta}
             onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
+            onPageSizeChange={
+              handlePageSizeChange
+            }
             onDecide={handleDecide}
           />
         )}
@@ -158,20 +206,11 @@ export function ComplaintContent() {
       <ComplaintDecisionModal
         opened={decisionModalOpened}
         complaint={selectedComplaint}
-        isSubmitting={decideComplaint.isPending}
+        isSubmitting={
+          decideComplaint.isPending
+        }
         onClose={handleDecisionModalClose}
-        onSubmit={async (payload) => {
-          if (!selectedComplaint) {
-            return;
-          }
-
-          await decideComplaint.mutateAsync({
-            complaintId: selectedComplaint.id,
-            payload,
-          });
-
-          handleDecisionModalClose();
-        }}
+        onSubmit={handleDecisionSubmit}
       />
     </Stack>
   );
