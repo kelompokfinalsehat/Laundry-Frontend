@@ -61,6 +61,7 @@ export function useClockOut() {
 }
 type PeriodFilter = AttendancePeriod | "ALL";
 const HISTORY_PAGE_SIZE = 5;
+
 export function useHistoryList() {
   const [page, setPage] = useState(1);
   const [period, setPeriod] = useState<PeriodFilter>("ALL");
@@ -72,6 +73,7 @@ export function useHistoryList() {
     sortOrder,
     ...(period !== "ALL" && { period }),
   };
+
   const historyQuery = useQuery({
     queryKey: [...ATTENDANCE_QUERY_KEY, "history", query],
     queryFn: () => attendanceApi.getHistory(query),
@@ -87,13 +89,23 @@ export function useHistoryList() {
     setSortOrder((current) => (current === "desc" ? "asc" : "desc"));
     setPage(1);
   }
+
   return {
-    historyQuery,
+    // Bentuk asli historyQuery.data itu { data, meta } (nested), jadi
+    // dari komponen akan kebaca historyQuery.data.data yang membingungkan.
+    // Di sini sudah "dibongkar" jadi nama yang jelas: items & meta,
+    // supaya komponen tinggal pakai items.map(...) langsung.
+    items: historyQuery.data?.data ?? [],
+    meta: historyQuery.data?.meta,
+    isPending: historyQuery.isPending,
+    isError: historyQuery.isError,
+    error: historyQuery.error,
+    refetch: historyQuery.refetch,
 
     page,
     period,
     sortOrder,
-    
+
     setPage,
     handlePeriodChange,
     handleSortChange,
