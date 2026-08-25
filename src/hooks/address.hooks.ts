@@ -53,3 +53,35 @@ export function useSetPrimaryAddress() {
       queryClient.invalidateQueries({ queryKey: ADDRESSES_QUERY_KEY }),
   });
 }
+
+export function useProvinces() {
+  return useQuery({
+    queryKey: ["regions", "provinces"],
+    queryFn: addressApi.getProvince,
+    staleTime: Infinity,
+  });
+}
+
+export function useCities(provinceId: string | null) {
+  return useQuery({
+    queryKey: ["regions", "cities", provinceId],
+    queryFn: () => addressApi.getCities(provinceId),
+    enabled: !!provinceId,
+  });
+}
+
+export function useDistrict(cityId: string | null) {
+  return useQuery({
+    queryKey: ["regions", "districts", cityId],
+    queryFn: () => addressApi.getDistrict(cityId),
+    enabled: !!cityId,
+  });
+}
+
+export function useSubDistrict(districtsId: string | null) {
+  return useQuery({
+    queryKey: ["regions", "subDistricts", districtsId],
+    queryFn: () => addressApi.getSubDistricts(districtsId),
+    enabled: !!districtsId,
+  });
+}

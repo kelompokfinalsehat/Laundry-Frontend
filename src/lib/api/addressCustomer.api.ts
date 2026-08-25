@@ -1,4 +1,4 @@
-import { Address } from "@/types/api/address.types";
+import { Address, Region } from "@/types/api/address.types";
 import {
   CreateAddressSchema,
   UpdateAddressSchema,
@@ -32,6 +32,32 @@ export class AddressApi {
   async setPrimaryAddress(id: string) {
     const { data } = await api.patch<{ data: string }>(
       `/address/${id}/set-primary`,
+    );
+    return data.data;
+  }
+
+  async getProvince() {
+    const { data } = await api.get<{ data: Region[] }>("/regions/provinces");
+    return data.data;
+  }
+
+  async getCities(provinceId: string | null) {
+    const { data } = await api.get<{ data: Region[] }>(
+      `regions/cities/${provinceId}`,
+    );
+    return data.data;
+  }
+
+  async getDistrict(cityId: string | null) {
+    const { data } = await api.get<{ data: Region[] }>(
+      `regions/districts/${cityId}`,
+    );
+    return data.data;
+  }
+
+  async getSubDistricts(districtsId: string | null) {
+    const { data } = await api.get<{ data: Region[] }>(
+      `regions/sub-districts/${districtsId}`,
     );
     return data.data;
   }
