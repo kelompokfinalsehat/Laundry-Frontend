@@ -17,6 +17,8 @@ type Props = {
   data: ComplaintListItem[];
   meta: PaginationMeta;
 
+  canDecide: boolean;
+
   onPageChange: (page: number) => void;
 
   onPageSizeChange: (pageSize: 10 | 20 | 50) => void;
@@ -64,6 +66,7 @@ function getCategoryLabel(category: ComplaintListItem["category"]) {
 export function ComplaintTable({
   data,
   meta,
+  canDecide,
   onPageChange,
   onPageSizeChange,
   onDecide,
@@ -84,7 +87,7 @@ export function ComplaintTable({
 
               <Table.Th>Dibuat Pada</Table.Th>
 
-              <Table.Th ta="right">Aksi</Table.Th>
+              {canDecide && <Table.Th ta="right">Aksi</Table.Th>}
             </Table.Tr>
           </Table.Thead>
 
@@ -128,20 +131,20 @@ export function ComplaintTable({
                   </Text>
                 </Table.Td>
 
-                <Table.Td ta="right">
-                  <Group justify="flex-end" gap="xs" wrap="nowrap">
+                {canDecide && (
+                  <Table.Td ta="right">
                     {complaint.status === "OPEN" && (
                       <ActionIcon
                         variant="subtle"
                         color="rinseBlue"
-                        aria-label={`Tangani komplain ${complaint.order.orderCode}`}
+                        aria-label={`Tangani komplain ${complaint.id}`}
                         onClick={() => onDecide(complaint)}
                       >
                         <IconEdit size={18} />
                       </ActionIcon>
                     )}
-                  </Group>
-                </Table.Td>
+                  </Table.Td>
+                )}
               </Table.Tr>
             ))}
           </Table.Tbody>

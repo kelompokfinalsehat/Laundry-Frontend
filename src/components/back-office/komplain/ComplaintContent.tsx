@@ -25,7 +25,8 @@ import { PageHeader } from "@/components/ui/PageHeader";
 
 const DEFAULT_PAGE_SIZE = 10;
 
-export function ComplaintContent() {
+export function ComplaintContent({ role }: { role: string }) {
+  const canDecideComplaint = role === "OUTLET_ADMIN";
   const [query, setQuery] = useState<ComplaintQuery>({
     page: 1,
     pageSize: DEFAULT_PAGE_SIZE,
@@ -173,6 +174,7 @@ export function ComplaintContent() {
               <ComplaintTable
                 data={result.data}
                 meta={result.meta}
+                canDecide={canDecideComplaint}
                 onPageChange={handlePageChange}
                 onPageSizeChange={handlePageSizeChange}
                 onDecide={handleDecide}

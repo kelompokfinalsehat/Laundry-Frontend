@@ -2,6 +2,6 @@ import { ComplaintContent } from "@/components/back-office/komplain/ComplaintCon
 import { ListPageScaffold } from "@/components/shared/ListPageScaffold";
 export default function Page() {
   return (
-    <ComplaintContent />
+    <ComplaintContent role="SUPER_ADMIN" />
   );
 }
