@@ -100,71 +100,77 @@ export function ComplaintFilters({
   onCategoryChange,
 }: Props) {
   return (
-    <Group align="flex-end">
-      <TextInput
-        label="Cari"
-        placeholder="Cari kode pesanan atau pelanggan"
-        leftSection={<IconSearch size={16} />}
-        value={query.search ?? ""}
-        onChange={(event) => onChange("search", event.currentTarget.value)}
-      />
+    <>
+      <Group align="flex-end">
+        <TextInput
+          label="Cari"
+          placeholder="Cari kode pesanan atau pelanggan"
+          leftSection={<IconSearch size={16} />}
+          value={query.search ?? ""}
+          onChange={(event) => onChange("search", event.currentTarget.value)}
+          style={{ flex: 1, minWidth: 280 }}
+        />
 
-      <Select
-        label="Status"
-        placeholder="Semua status"
-        clearable
-        data={STATUS_OPTIONS}
-        value={query.status ?? null}
-        onChange={(value) => onStatusChange(value as ComplaintStatus | null)}
-      />
+        <Select
+          label="Urutkan"
+          data={SORT_BY_OPTIONS}
+          value={query.sortBy ?? "createdAt"}
+          onChange={(value) => {
+            if (!value) {
+              return;
+            }
 
-      <Select
-        label="Kategori"
-        placeholder="Semua kategori"
-        clearable
-        data={CATEGORY_OPTIONS}
-        value={query.category ?? null}
-        onChange={(value) =>
-          onCategoryChange(value as ComplaintCategory | null)
-        }
-      />
+            onSortByChange(value as ComplaintSortBy);
+          }}
+          w={180}
+        />
 
-      <Select
-        label="Urutkan"
-        data={SORT_BY_OPTIONS}
-        value={query.sortBy ?? "createdAt"}
-        onChange={(value) => {
-          if (!value) {
-            return;
+        <Select
+          label="Urutan"
+          data={SORT_ORDER_OPTIONS}
+          value={query.sortOrder ?? "desc"}
+          onChange={(value) => {
+            if (!value) {
+              return;
+            }
+
+            onSortOrderChange(value as SortOrder);
+          }}
+          w={180}
+        />
+
+        <Tooltip label="Reset filter">
+          <ActionIcon
+            variant="default"
+            size="input-sm"
+            onClick={onReset}
+            aria-label="Reset filter"
+          >
+            <IconRefresh size={16} />
+          </ActionIcon>
+        </Tooltip>
+      </Group>
+      <Group align="flex-end">
+        <Select
+          label="Status"
+          placeholder="Semua status"
+          clearable
+          data={STATUS_OPTIONS}
+          value={query.status ?? null}
+          onChange={(value) => onStatusChange(value as ComplaintStatus | null)}
+        />
+
+        <Select
+          label="Kategori"
+          placeholder="Semua kategori"
+          clearable
+          data={CATEGORY_OPTIONS}
+          value={query.category ?? null}
+          onChange={(value) =>
+            onCategoryChange(value as ComplaintCategory | null)
           }
-
-          onSortByChange(value as ComplaintSortBy);
-        }}
-      />
-
-      <Select
-        label="Urutan"
-        data={SORT_ORDER_OPTIONS}
-        value={query.sortOrder ?? "desc"}
-        onChange={(value) => {
-          if (!value) {
-            return;
-          }
-
-          onSortOrderChange(value as SortOrder);
-        }}
-      />
-
-      <Tooltip label="Reset filter">
-        <ActionIcon
-          variant="default"
-          size="input-sm"
-          onClick={onReset}
-          aria-label="Reset filter"
-        >
-          <IconRefresh size={16} />
-        </ActionIcon>
-      </Tooltip>
-    </Group>
+        />
+      </Group>
+    </>
   );
 }

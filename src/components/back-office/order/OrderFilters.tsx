@@ -1,23 +1,12 @@
 "use client";
 
-import {
-  ActionIcon,
-  Group,
-  Select,
-  TextInput,
-  Tooltip,
-} from "@mantine/core";
+import { ActionIcon, Group, Select, TextInput, Tooltip } from "@mantine/core";
 
-import {DateInput} from"@mantine/dates"
+import { DateInput } from "@mantine/dates";
 
-import {
-  IconRefresh,
-  IconSearch,
-} from "@tabler/icons-react";
+import { IconRefresh, IconSearch } from "@tabler/icons-react";
 
-import type {
-  OrderQuery,
-} from "@/types/api/order.types";
+import type { OrderQuery } from "@/types/api/order.types";
 
 type OrderFiltersState = Pick<
   OrderQuery,
@@ -43,18 +32,11 @@ type Props = {
 
   showOutletFilter: boolean;
 
-  onChange: (
-    key: keyof OrderFiltersState,
-    value: string | null,
-  ) => void;
+  onChange: (key: keyof OrderFiltersState, value: string | null) => void;
 
-  onSortByChange: (
-    value: NonNullable<OrderQuery["sortBy"]>,
-  ) => void;
+  onSortByChange: (value: NonNullable<OrderQuery["sortBy"]>) => void;
 
-  onSortOrderChange: (
-    value: NonNullable<OrderQuery["sortOrder"]>,
-  ) => void;
+  onSortOrderChange: (value: NonNullable<OrderQuery["sortOrder"]>) => void;
 
   onReset: () => void;
 };
@@ -152,19 +134,69 @@ export function OrderFilters({
   onReset,
 }: Props) {
   return (
-    <Group align="end" wrap="wrap" gap="sm">
-      <TextInput
-        label="Cari"
-        placeholder="Kode pesanan atau pelanggan"
-        leftSection={<IconSearch size={16} />}
-        value={filters.search ?? ""}
-        onChange={(event) =>
-          onChange(
-            "search",
-            event.currentTarget.value || null,
-          )
-        }
-      />
+    <>
+      <Group align="end" wrap="wrap" gap="sm">
+        <TextInput
+          label="Cari"
+          placeholder="Kode pesanan atau pelanggan"
+          leftSection={<IconSearch size={16} />}
+          value={filters.search ?? ""}
+          onChange={(event) =>
+            onChange("search", event.currentTarget.value || null)
+          }
+          style={{ flex: 1, minWidth: 220 }}
+        />
+
+        <Select
+          label="Urutkan"
+          value={sortBy}
+          data={SORT_OPTIONS}
+          onChange={(value) => {
+            if (
+              value === "createdAt" ||
+              value === "pickupScheduledAt" ||
+              value === "orderCode"
+            ) {
+              onSortByChange(value);
+            }
+          }}
+          w={180}
+        />
+
+        <Select
+          label="Urutan"
+          value={sortOrder}
+          data={[
+            {
+              value: "desc",
+              label: "Menurun",
+            },
+            {
+              value: "asc",
+              label: "Menaik",
+            },
+          ]}
+          onChange={(value) => {
+            if (value === "asc" || value === "desc") {
+              onSortOrderChange(value);
+            }
+          }}
+          w={180}
+        />
+
+      <Tooltip label="Reset filter">
+        <ActionIcon
+          variant="default"
+          size="input-sm"
+          onClick={onReset}
+          aria-label="Reset filter"
+        >
+          <IconRefresh size={16} />
+        </ActionIcon>
+      </Tooltip>
+      </Group>
+
+      <Group align="flex-end" wrap="wrap">
 
       <Select
         label="Status Pesanan"
@@ -172,9 +204,7 @@ export function OrderFilters({
         clearable
         data={CUSTOMER_STATUS_OPTIONS}
         value={filters.customerStatus ?? null}
-        onChange={(value) =>
-          onChange("customerStatus", value)
-        }
+        onChange={(value) => onChange("customerStatus", value)}
       />
 
       <Select
@@ -183,9 +213,7 @@ export function OrderFilters({
         clearable
         data={PAYMENT_STATUS_OPTIONS}
         value={filters.paymentStatus ?? null}
-        onChange={(value) =>
-          onChange("paymentStatus", value)
-        }
+        onChange={(value) => onChange("paymentStatus", value)}
       />
 
       {showOutletFilter && (
@@ -199,9 +227,7 @@ export function OrderFilters({
             label: outlet.name,
           }))}
           value={filters.outletId ?? null}
-          onChange={(value) =>
-            onChange("outletId", value)
-          }
+          onChange={(value) => onChange("outletId", value)}
         />
       )}
       <DateInput
@@ -210,9 +236,7 @@ export function OrderFilters({
         clearable
         value={filters.startDate ?? null}
         valueFormat="DD MMM YYYY"
-        onChange={(value) =>
-          onChange("startDate", value)
-        }
+        onChange={(value) => onChange("startDate", value)}
       />
 
       <DateInput
@@ -221,56 +245,10 @@ export function OrderFilters({
         clearable
         value={filters.endDate ?? null}
         valueFormat="DD MMM YYYY"
-        onChange={(value) =>
-          onChange("endDate", value)
-        }
+        onChange={(value) => onChange("endDate", value)}
       />
 
-      <Select
-        label="Urutkan"
-        value={sortBy}
-        data={SORT_OPTIONS}
-        onChange={(value) => {
-          if (
-            value === "createdAt" ||
-            value === "pickupScheduledAt" ||
-            value === "orderCode"
-          ) {
-            onSortByChange(value);
-          }
-        }}
-      />
-
-      <Select
-        label="Urutan"
-        value={sortOrder}
-        data={[
-          {
-            value: "desc",
-            label: "Menurun",
-          },
-          {
-            value: "asc",
-            label: "Menaik",
-          },
-        ]}
-        onChange={(value) => {
-          if (value === "asc" || value === "desc") {
-            onSortOrderChange(value);
-          }
-        }}
-      />
-
-      <Tooltip label="Reset filter">
-        <ActionIcon
-          variant="default"
-          size="input-sm"
-          onClick={onReset}
-          aria-label="Reset filter"
-        >
-          <IconRefresh size={16} />
-        </ActionIcon>
-      </Tooltip>
-    </Group>
+      </Group>
+    </>
   );
 }

@@ -51,80 +51,85 @@ export function ReceptionFilters({
   onReset,
 }: Props) {
   return (
-    <Group align="end" wrap="wrap" gap="sm">
-      <TextInput
-        label="Cari"
-        placeholder="Kode pesanan atau pelanggan"
-        leftSection={<IconSearch size={16} />}
-        value={query.search ?? ""}
-        onChange={(event) =>
-          onChange("search", event.currentTarget.value || undefined)
-        }
-      />
-
-      <DateInput
-        label="Dari Tanggal"
-        placeholder="Pilih tanggal"
-        clearable
-        value={query.startDate ?? null}
-        valueFormat="DD MMM YYYY"
-        onChange={(value) => onChange("startDate", value ?? undefined)}
-      />
-
-      <DateInput
-        label="Sampai Tanggal"
-        placeholder="Pilih tanggal"
-        clearable
-        value={query.endDate ?? null}
-        valueFormat="DD MMM YYYY"
-        onChange={(value) => onChange("endDate", value ?? undefined)}
-      />
-
-      <Select
-        label="Urutkan"
-        value={query.sortBy ?? "pickupScheduledAt"}
-        data={SORT_OPTIONS}
-        onChange={(value) => {
-          if (
-            value === "createdAt" ||
-            value === "pickupScheduledAt" ||
-            value === "orderCode"
-          ) {
-            onSortByChange(value);
+    <>
+      <Group align="end" wrap="wrap" gap="sm">
+        <TextInput
+          label="Cari"
+          placeholder="Kode pesanan atau pelanggan"
+          leftSection={<IconSearch size={16} />}
+          value={query.search ?? ""}
+          onChange={(event) =>
+            onChange("search", event.currentTarget.value || undefined)
           }
-        }}
-      />
+          style={{ flex:1, minWidth: 280 }}
+        />
+        <Select
+          label="Urutkan"
+          value={query.sortBy ?? "pickupScheduledAt"}
+          data={SORT_OPTIONS}
+          onChange={(value) => {
+            if (
+              value === "createdAt" ||
+              value === "pickupScheduledAt" ||
+              value === "orderCode"
+            ) {
+              onSortByChange(value);
+            }
+          }}
+          w={180}
+        />
 
-      <Select
-        label="Urutan"
-        value={query.sortOrder ?? "asc"}
-        data={[
-          {
-            value: "asc",
-            label: "Menaik",
-          },
-          {
-            value: "desc",
-            label: "Menurun",
-          },
-        ]}
-        onChange={(value) => {
-          if (value === "asc" || value === "desc") {
-            onSortOrderChange(value);
-          }
-        }}
-      />
+        <Select
+          label="Urutan"
+          value={query.sortOrder ?? "asc"}
+          data={[
+            {
+              value: "asc",
+              label: "Menaik",
+            },
+            {
+              value: "desc",
+              label: "Menurun",
+            },
+          ]}
+          onChange={(value) => {
+            if (value === "asc" || value === "desc") {
+              onSortOrderChange(value);
+            }
+          }}
+          w={180}
+        />
 
-      <Tooltip label="Reset filter">
-        <ActionIcon
-          variant="default"
-          size="input-sm"
-          onClick={onReset}
-          aria-label="Reset filter"
-        >
-          <IconRefresh size={16} />
-        </ActionIcon>
-      </Tooltip>
-    </Group>
+        <Tooltip label="Reset filter">
+          <ActionIcon
+            variant="default"
+            size="input-sm"
+            onClick={onReset}
+            aria-label="Reset filter"
+          >
+            <IconRefresh size={16} />
+          </ActionIcon>
+        </Tooltip>
+      </Group>
+      <Group align="flex-end">
+        <DateInput
+          label="Dari Tanggal"
+          placeholder="Pilih tanggal"
+          clearable
+          value={query.startDate ?? null}
+          valueFormat="DD MMM YYYY"
+          onChange={(value) => onChange("startDate", value ?? undefined)}
+        />
+
+        <DateInput
+          label="Sampai Tanggal"
+          placeholder="Pilih tanggal"
+          clearable
+          value={query.endDate ?? null}
+          valueFormat="DD MMM YYYY"
+          onChange={(value) => onChange("endDate", value ?? undefined)}
+        />
+      </Group>
+    </>
   );
 }

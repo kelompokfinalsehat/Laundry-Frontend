@@ -47,13 +47,13 @@ export function OutletTable({
           <Table.Tbody>
             {data.map((outlet) => (
               <Table.Tr key={outlet.id}>
-                <Table.Td>
+                <Table.Td style={{ maxWidth: 180 }}>
                   <Text size="sm" fw={600} c="var(--color-text-primary)">
                     {outlet.name}
                   </Text>
                 </Table.Td>
 
-                <Table.Td>
+                <Table.Td style={{ maxWidth: 280 }}>
                   <Text size="sm" c="var(--color-text-secondary)" lineClamp={1}>
                     {outlet.address}
                   </Text>

@@ -133,7 +133,7 @@ export function LaundryItemFilters({
             label: "Menaik",
           },
         ]}
-        w={150}
+        w={180}
       />
 
       <Tooltip label="Reset filter">

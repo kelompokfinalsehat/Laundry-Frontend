@@ -42,6 +42,16 @@ export function OutletContent() {
 
   const deleteOutlet = useDeleteOutlet();
 
+  const handleReset = () => {
+    setSearch("")
+
+    setSortBy("createdAt");
+
+    setSortOrder("desc");
+
+    setPage(1);
+  };
+
   const handleDeactivate = async () => {
     if (!selectedOutlet) return null;
     await deleteOutlet.mutateAsync(selectedOutlet.id, {
@@ -107,6 +117,7 @@ export function OutletContent() {
               setSortOrder(value);
               setPage(1);
             }}
+            onReset={handleReset}
           />
 
           <AsyncStateView
