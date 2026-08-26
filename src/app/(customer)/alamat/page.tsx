@@ -3,7 +3,7 @@ import { AddressList } from "@/components/customer/alamat/AddressList";
 
 export default function AddressesPage() {
   return (
-    <Stack gap="xl" maw={960} mx="auto" p={{ base: 16, sm: 32 }}>
+    <Stack gap="xl" mx="auto" p={{ base: 16, sm: 32 }}>
       <div>
         <Title order={3} style={{ color: "var(--color-text-primary)" }}>
           Alamat Saya

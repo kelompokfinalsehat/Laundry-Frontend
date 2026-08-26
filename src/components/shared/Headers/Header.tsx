@@ -21,7 +21,7 @@ export default function Header() {
           "3px solid color-mix(in srgb, var(--color-primary-dark) 13%, transparent)",
       }}
     >
-      <Container size="xl" py="sm">
+      <Container size="lg" py="sm">
         <Flex align="center" justify="space-between" gap="md" mih={48}>
           <Flex align="center" gap="xs" style={{ flexShrink: 0 }}>
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />

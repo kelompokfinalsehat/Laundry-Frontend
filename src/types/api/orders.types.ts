@@ -29,6 +29,8 @@ export type ListOrderQuery = {
   statusGroup?: OrderStatusGroupKey;
   startDate?: string;
   endDate?: string;
+  sortBy: "createdAt" | "pickupDate";
+  sortOrder: "asc" | "desc";
 };
 
 export type ListOrderResponse = {
