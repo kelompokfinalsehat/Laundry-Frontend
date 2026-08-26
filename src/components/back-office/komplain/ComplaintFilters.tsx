@@ -82,11 +82,11 @@ const SORT_BY_OPTIONS = [
 const SORT_ORDER_OPTIONS = [
   {
     value: "desc",
-    label: "Terbaru",
+    label: "Menurun",
   },
   {
     value: "asc",
-    label: "Terlama",
+    label: "Menaik",
   },
 ];
 

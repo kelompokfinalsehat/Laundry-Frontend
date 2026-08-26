@@ -16,11 +16,9 @@ import { IconEdit } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 
 import { useUpdateEmployee } from "@/hooks/employee.hooks";
-import type {
-  Employee,
-  EmployeeRole,
-} from "@/types/api/employee.types";
+import type { Employee, EmployeeRole } from "@/types/api/employee.types";
 import { useState } from "react";
+import { modals } from "@mantine/modals";
 
 type Props = {
   employee: Employee;
@@ -32,23 +30,14 @@ const ROLE_LABEL: Record<EmployeeRole, string> = {
   DRIVER: "Driver",
 };
 
-export function EmployeeInformation({
-  employee,
-}: Props) {
-  const [
-    opened,
-    { open, close },
-  ] = useDisclosure(false);
+export function EmployeeInformation({ employee }: Props) {
+  const [opened, { open, close }] = useDisclosure(false);
 
-  const updateEmployee =
-    useUpdateEmployee();
+  const updateEmployee = useUpdateEmployee();
 
-  const [name, setName] = useState(
-    employee.name,
-  );
+  const [name, setName] = useState(employee.name);
 
-  const [role, setRole] =
-    useState<EmployeeRole>(employee.role);
+  const [role, setRole] = useState<EmployeeRole>(employee.role);
 
   const handleSubmit = () => {
     updateEmployee.mutate(
@@ -63,8 +52,7 @@ export function EmployeeInformation({
         onSuccess: () => {
           notifications.show({
             title: "Berhasil",
-            message:
-              "Informasi karyawan berhasil diperbarui.",
+            message: "Informasi karyawan berhasil diperbarui.",
             color: "green",
           });
 
@@ -75,9 +63,7 @@ export function EmployeeInformation({
           notifications.show({
             title: "Gagal memperbarui karyawan",
             message:
-              error instanceof Error
-                ? error.message
-                : "Terjadi kesalahan.",
+              error instanceof Error ? error.message : "Terjadi kesalahan.",
             color: "red",
           });
         },
@@ -92,15 +78,12 @@ export function EmployeeInformation({
         radius="md"
         p="lg"
         style={{
-          backgroundColor:
-            "var(--color-surface)",
+          backgroundColor: "var(--color-surface)",
         }}
       >
         <Stack gap="md">
           <Group justify="space-between">
-            <Text fw={600}>
-              Informasi Karyawan
-            </Text>
+            <Text fw={600}>Informasi Karyawan</Text>
 
             <ActionIcon
               variant="subtle"
@@ -113,10 +96,7 @@ export function EmployeeInformation({
 
           <Group grow>
             <Stack gap={2}>
-              <Text
-                size="xs"
-                c="var(--color-text-secondary)"
-              >
+              <Text size="xs" c="var(--color-text-secondary)">
                 Nama
               </Text>
 
@@ -126,10 +106,7 @@ export function EmployeeInformation({
             </Stack>
 
             <Stack gap={2}>
-              <Text
-                size="xs"
-                c="var(--color-text-secondary)"
-              >
+              <Text size="xs" c="var(--color-text-secondary)">
                 Email
               </Text>
 
@@ -139,10 +116,7 @@ export function EmployeeInformation({
             </Stack>
 
             <Stack gap={2}>
-              <Text
-                size="xs"
-                c="var(--color-text-secondary)"
-              >
+              <Text size="xs" c="var(--color-text-secondary)">
                 Role
               </Text>
 
@@ -164,18 +138,13 @@ export function EmployeeInformation({
           <TextInput
             label="Nama"
             value={name}
-            onChange={(event) =>
-              setName(event.currentTarget.value)
-            }
+            onChange={(event) => setName(event.currentTarget.value)}
           />
 
           <Select
             label="Role"
             value={role}
-            onChange={(value) =>
-              value &&
-              setRole(value as EmployeeRole)
-            }
+            onChange={(value) => value && setRole(value as EmployeeRole)}
             data={[
               {
                 value: "OUTLET_ADMIN",
@@ -201,10 +170,7 @@ export function EmployeeInformation({
               Batal
             </Button>
 
-            <Button
-              onClick={handleSubmit}
-              loading={updateEmployee.isPending}
-            >
+            <Button onClick={handleSubmit} loading={updateEmployee.isPending}>
               Simpan Perubahan
             </Button>
           </Group>
