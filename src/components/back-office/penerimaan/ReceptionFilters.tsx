@@ -1,48 +1,29 @@
 "use client";
 
-import {
-  ActionIcon,
-  Group,
-  Select,
-  TextInput,
-  Tooltip,
-} from "@mantine/core";
+import { ActionIcon, Group, Select, TextInput, Tooltip } from "@mantine/core";
 
 import { DateInput } from "@mantine/dates";
 
-import {
-  IconRefresh,
-  IconSearch,
-} from "@tabler/icons-react";
+import { IconRefresh, IconSearch } from "@tabler/icons-react";
 
-import type {
-  OrderQuery,
-} from "@/types/api/order.types";
+import type { OrderQuery } from "@/types/api/order.types";
 
 type ReceptionFiltersState = Pick<
   OrderQuery,
-  | "search"
-  | "startDate"
-  | "endDate"
+  "search" | "startDate" | "endDate"
 >;
 
 type Props = {
   query: OrderQuery;
 
-  onChange: <
-    Key extends keyof ReceptionFiltersState,
-  >(
+  onChange: <Key extends keyof ReceptionFiltersState>(
     key: Key,
     value: ReceptionFiltersState[Key],
   ) => void;
 
-  onSortByChange: (
-    value: NonNullable<OrderQuery["sortBy"]>,
-  ) => void;
+  onSortByChange: (value: NonNullable<OrderQuery["sortBy"]>) => void;
 
-  onSortOrderChange: (
-    value: NonNullable<OrderQuery["sortOrder"]>,
-  ) => void;
+  onSortOrderChange: (value: NonNullable<OrderQuery["sortOrder"]>) => void;
 
   onReset: () => void;
 };
@@ -70,21 +51,14 @@ export function ReceptionFilters({
   onReset,
 }: Props) {
   return (
-    <Group
-      align="end"
-      wrap="wrap"
-      gap="sm"
-    >
+    <Group align="end" wrap="wrap" gap="sm">
       <TextInput
         label="Cari"
         placeholder="Kode pesanan atau pelanggan"
         leftSection={<IconSearch size={16} />}
         value={query.search ?? ""}
         onChange={(event) =>
-          onChange(
-            "search",
-            event.currentTarget.value || undefined,
-          )
+          onChange("search", event.currentTarget.value || undefined)
         }
       />
 
@@ -94,12 +68,7 @@ export function ReceptionFilters({
         clearable
         value={query.startDate ?? null}
         valueFormat="DD MMM YYYY"
-        onChange={(value) =>
-          onChange(
-            "startDate",
-            value ?? undefined,
-          )
-        }
+        onChange={(value) => onChange("startDate", value ?? undefined)}
       />
 
       <DateInput
@@ -108,12 +77,7 @@ export function ReceptionFilters({
         clearable
         value={query.endDate ?? null}
         valueFormat="DD MMM YYYY"
-        onChange={(value) =>
-          onChange(
-            "endDate",
-            value ?? undefined,
-          )
-        }
+        onChange={(value) => onChange("endDate", value ?? undefined)}
       />
 
       <Select
@@ -145,10 +109,7 @@ export function ReceptionFilters({
           },
         ]}
         onChange={(value) => {
-          if (
-            value === "asc" ||
-            value === "desc"
-          ) {
+          if (value === "asc" || value === "desc") {
             onSortOrderChange(value);
           }
         }}

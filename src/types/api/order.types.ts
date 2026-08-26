@@ -92,6 +92,8 @@ export type OrderBill = {
   weightKg: DecimalString;
   totalAmount: DecimalString;
   paymentStatus: BillPaymentStatus;
+  laundryCost: DecimalString;
+  shippingCost: DecimalString
 };
 
 export type OrderListItem = {

@@ -208,35 +208,37 @@ export function ReceptionContent() {
           }}
         >
           <Stack gap="md">
-          <ReceptionFilters
-            query={query}
-            onChange={handleQueryChange}
-            onSortByChange={(value) => handleQueryChange("sortBy", value)}
-            onSortOrderChange={(value) => handleQueryChange("sortOrder", value)}
-            onReset={handleReset}
-          />
+            <ReceptionFilters
+              query={query}
+              onChange={handleQueryChange}
+              onSortByChange={(value) => handleQueryChange("sortBy", value)}
+              onSortOrderChange={(value) =>
+                handleQueryChange("sortOrder", value)
+              }
+              onReset={handleReset}
+            />
 
-          <AsyncStateView
-            isLoading={isLoading}
-            isError={isError}
-            error={error}
-            data={data}
-            onRetry={refetch}
-            isEmpty={(result) => result.data.length === 0}
-          >
-            {(result) => (
-              <ReceptionTable
-                data={result.data}
-                meta={result.meta}
-                mode={tableMode}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
-                onReceive={handleReceive}
-                onCreateOrder={handleCreateOrder}
-                onView={handleView}
-              />
-            )}
-          </AsyncStateView>
+            <AsyncStateView
+              isLoading={isLoading}
+              isError={isError}
+              error={error}
+              data={data}
+              onRetry={refetch}
+              isEmpty={(result) => result.data.length === 0}
+            >
+              {(result) => (
+                <ReceptionTable
+                  data={result.data}
+                  meta={result.meta}
+                  mode={tableMode}
+                  onPageChange={handlePageChange}
+                  onPageSizeChange={handlePageSizeChange}
+                  onReceive={handleReceive}
+                  onCreateOrder={handleCreateOrder}
+                  onView={handleView}
+                />
+              )}
+            </AsyncStateView>
           </Stack>
         </Paper>
       </Stack>

@@ -95,7 +95,7 @@ export function ReceptionTable({
                       </Button>
                     )}
 
-                    {mode === "CREATE_ORDER" && (
+                    {mode === "CREATE_ORDER" && !order.bill && (
                       <Button size="xs" onClick={() => onCreateOrder(order)}>
                         Buat Order
                       </Button>

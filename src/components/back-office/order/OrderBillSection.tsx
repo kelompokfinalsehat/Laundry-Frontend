@@ -110,7 +110,7 @@ export function OrderBillSection({
           cols={{
             base: 1,
             sm: 2,
-            lg: 3,
+            lg: 4,
           }}
           spacing="lg"
         >
@@ -129,6 +129,16 @@ export function OrderBillSection({
           <BillInformationItem
             label="Berat Laundry"
             value={`${bill.weightKg} kg`}
+          />
+
+          <BillInformationItem 
+            label="Total Harga Laundry"
+            value={`${formatCurrency(bill.laundryCost)}`}
+          />
+
+          <BillInformationItem 
+            label="Tarif Shipping"
+            value={`${formatCurrency(bill.shippingCost)}`}
           />
 
           <BillInformationItem
