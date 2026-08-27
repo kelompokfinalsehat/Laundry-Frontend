@@ -1,6 +1,3 @@
-import { PaginationMeta } from "./pagination.type";
-
-
 export type LaundryItem = {
   id: string;
   name: string;

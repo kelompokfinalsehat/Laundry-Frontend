@@ -41,8 +41,8 @@ export type VerifyEmailPayload = {
 
 export type AcceptInvitationPayload = {
   token: string;
-  password: string
-}
+  password: string;
+};
 
 export type VerificationPayload = {
   email: string;
@@ -120,10 +120,10 @@ export interface ListQuery {
   filters?: Record<string, string | number | boolean | undefined>;
 }
 
-export interface ApiResponse<T>{
-  success: boolean
-  message: string
-  data: T
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
 }
 
 export interface PaginatedResponse<T> {
@@ -148,3 +148,47 @@ export interface OrderListItem {
   createdAt: string;
   total?: number;
 }
+
+export type EmployeeRole = "OUTLET_ADMIN" | "WORKER" | "DRIVER";
+export type WorkStatus = "OFF_DUTY" | "AVAILABLE" | "BUSY";
+export type BypassStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type StationType = "WASHING" | "IRONING" | "PACKING";
+export type SortOrder = "asc" | "desc";
+export type ComplaintCategory = "TIDAK_SESUAI" | "RUSAK" | "HILANG";
+
+export type ComplaintStatus = "OPEN" | "APPROVED" | "REJECTED";
+
+export type CustomerStatus =
+  | "SCHEDULED"
+  | "WAITING_DRIVER_PICKUP"
+  | "ON_THE_WAY_TO_OUTLET"
+  | "ARRIVED_AT_OUTLET"
+  | "WASHING"
+  | "IRONING"
+  | "PACKING"
+  | "WAITING_PAYMENT"
+  | "OVERDUE"
+  | "READY_FOR_DELIVERY"
+  | "ON_THE_WAY_TO_CUSTOMER"
+  | "WAITING_CUSTOMER_CONFIRMATION"
+  | "RECEIVED_BY_CUSTOMER";
+
+export type BillPaymentStatus =
+  | "UNPAID"
+  | "PAID";
+
+export type PickupDeliveryType =
+  | "PICKUP"
+  | "DELIVERY";
+
+export type DriverAssignmentStatus =
+  | "QUEUED"
+  | "ASSIGNED"
+  | "IN_PROGRESS"
+  | "COMPLETED";
+export type WorkerAssignmentStatus =
+  | "QUEUED"
+  | "ASSIGNED"
+  | "IN_PROGRESS"
+  | "ON_HOLD_BYPASS"
+  | "COMPLETED";

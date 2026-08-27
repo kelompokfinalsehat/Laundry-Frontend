@@ -1,48 +1,19 @@
 "use client";
 
-import {
-  ActionIcon,
-  Grid,
-  Select,
-  TextInput,
-} from "@mantine/core";
+import { ActionIcon, Grid, Select, TextInput } from "@mantine/core";
+import { IconRefresh, IconSearch } from "@tabler/icons-react";
+import { SortOrder } from "@/types/api";
+import type { ShippingRateQuery, ShippingRateSortBy } from "@/types/api/pricing.types";
 
-import {
-  IconRefresh,
-  IconSearch,
-} from "@tabler/icons-react";
-
-import type {
-  ShippingRateQuery,
-  ShippingRateSortBy,
-  SortOrder,
-} from "@/types/api/pricing.types";
-
-type FiltersState = Pick<
-  ShippingRateQuery,
-  "search"
->;
+type FiltersState = Pick<ShippingRateQuery, "search">;
 
 type Props = {
   filters: FiltersState;
-
   sortBy: ShippingRateSortBy;
-
   sortOrder: SortOrder;
-
-  onChange: (
-    key: keyof FiltersState,
-    value: ShippingRateQuery[keyof FiltersState],
-  ) => void;
-
-  onSortByChange: (
-    value: ShippingRateSortBy,
-  ) => void;
-
-  onSortOrderChange: (
-    value: SortOrder,
-  ) => void;
-
+  onChange: (key: keyof FiltersState, value: ShippingRateQuery[keyof FiltersState]) => void;
+  onSortByChange: (value: ShippingRateSortBy) => void;
+  onSortOrderChange: (value: SortOrder) => void;
   onReset: () => void;
 };
 
@@ -78,15 +49,7 @@ const SORT_ORDER_OPTIONS: {
   },
 ];
 
-export function ShippingRateFilters({
-  filters,
-  sortBy,
-  sortOrder,
-  onChange,
-  onSortByChange,
-  onSortOrderChange,
-  onReset,
-}: Props) {
+export function ShippingRateFilters({ filters, sortBy, sortOrder, onChange, onSortByChange, onSortOrderChange, onReset }: Props) {
   return (
     <Grid align="flex-end">
       <Grid.Col
@@ -98,16 +61,9 @@ export function ShippingRateFilters({
         <TextInput
           label="Cari"
           placeholder="Cari berdasarkan harga atau jarak"
-          leftSection={
-            <IconSearch size={16} />
-          }
+          leftSection={<IconSearch size={16} />}
           value={filters.search ?? ""}
-          onChange={(event) =>
-            onChange(
-              "search",
-              event.currentTarget.value,
-            )
-          }
+          onChange={(event) => onChange("search", event.currentTarget.value)}
         />
       </Grid.Col>
 
@@ -126,9 +82,7 @@ export function ShippingRateFilters({
               return;
             }
 
-            onSortByChange(
-              value as ShippingRateSortBy,
-            );
+            onSortByChange(value as ShippingRateSortBy);
           }}
           allowDeselect={false}
         />
@@ -149,9 +103,7 @@ export function ShippingRateFilters({
               return;
             }
 
-            onSortOrderChange(
-              value as SortOrder,
-            );
+            onSortOrderChange(value as SortOrder);
           }}
           allowDeselect={false}
         />
@@ -163,12 +115,7 @@ export function ShippingRateFilters({
           md: 2,
         }}
       >
-        <ActionIcon
-          variant="default"
-          size="lg"
-          aria-label="Reset filter"
-          onClick={onReset}
-        >
+        <ActionIcon variant="default" size="lg" aria-label="Reset filter" onClick={onReset}>
           <IconRefresh size={18} />
         </ActionIcon>
       </Grid.Col>

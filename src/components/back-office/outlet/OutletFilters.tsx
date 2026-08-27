@@ -1,32 +1,17 @@
 import { ActionIcon, Group, Select, TextInput, Tooltip } from "@mantine/core";
-
 import { IconRefresh, IconSearch } from "@tabler/icons-react";
 
 interface OutletFiltersProps {
   search: string;
-
   sortBy: "name" | "createdAt";
-
   sortOrder: "asc" | "desc";
-
   onSearchChange: (value: string) => void;
-
   onSortByChange: (value: "name" | "createdAt") => void;
-
   onSortOrderChange: (value: "asc" | "desc") => void;
-
-  onReset: () => void
+  onReset: () => void;
 }
 
-export function OutletFilters({
-  search,
-  sortBy,
-  sortOrder,
-  onSearchChange,
-  onSortByChange,
-  onSortOrderChange,
-  onReset
-}: OutletFiltersProps) {
+export function OutletFilters({ search, sortBy, sortOrder, onSearchChange, onSortByChange, onSortOrderChange, onReset }: OutletFiltersProps) {
   return (
     <Group align="end" wrap="wrap" gap="sm">
       <TextInput
@@ -79,14 +64,9 @@ export function OutletFilters({
         ]}
         w={180}
       />
-      
+
       <Tooltip label="Reset filter">
-        <ActionIcon
-          variant="default"
-          size="input-sm"
-          onClick={onReset}
-          aria-label="Reset filter"
-        >
+        <ActionIcon variant="default" size="input-sm" onClick={onReset} aria-label="Reset filter">
           <IconRefresh size={16} />
         </ActionIcon>
       </Tooltip>

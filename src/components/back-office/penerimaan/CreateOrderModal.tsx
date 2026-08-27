@@ -1,188 +1,32 @@
 "use client";
 
-import {
-  ActionIcon,
-  Button,
-  Group,
-  Modal,
-  NumberInput,
-  Select,
-  Stack,
-  Text,
-} from "@mantine/core";
-
+import { ActionIcon, Button, Group, Modal, NumberInput, Select, Stack, Text } from "@mantine/core";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
-
-import { useEffect, useState } from "react";
-
-import { useLaundryItems } from "@/hooks/laundry-item.hooks";
-
-import type {
-  CreateOrderPayload,
-  OrderListItem,
-} from "@/types/api/order.types";
-
-type CreateOrderItemForm = {
-  laundryItemId: string;
-  quantity: number;
-};
-
-const INITIAL_ITEM: CreateOrderItemForm = {
-  laundryItemId: "",
-  quantity: 1,
-};
+import type { CreateOrderPayload, OrderListItem } from "@/types/api/order.types";
+import { useCreateOrderHooks } from "@/hooks/reception.hooks";
 
 type Props = {
   opened: boolean;
   order: OrderListItem | null;
   isSubmitting: boolean;
-
   onClose: () => void;
-
   onSubmit: (orderId: string, payload: CreateOrderPayload) => Promise<void>;
 };
 
-export function CreateOrderModal({
-  opened,
-  order,
-  isSubmitting,
-  onClose,
-  onSubmit,
-}: Props) {
-  const [weightKg, setWeightKg] = useState<number | string>("");
-
-  const [items, setItems] = useState<CreateOrderItemForm[]>([
-    {
-      ...INITIAL_ITEM,
-    },
-  ]);
-
-  const { data: laundryItems, isLoading: isLaundryItemsLoading } =
-    useLaundryItems({
-      page: 1,
-      pageSize: 100,
-    });
-
-  const resetForm = () => {
-    setWeightKg("");
-
-    setItems([
-      {
-        ...INITIAL_ITEM,
-      },
-    ]);
-  };
-
-  useEffect(() => {
-    if (!opened) {
-      resetForm();
-    }
-  }, [opened]);
-
-  const handleClose = () => {
-    if (isSubmitting) {
-      return;
-    }
-
-    onClose();
-  };
-
-  const handleAddItem = () => {
-    setItems((previous) => [
-      ...previous,
-      {
-        ...INITIAL_ITEM,
-      },
-    ]);
-  };
-
-  const handleRemoveItem = (index: number) => {
-    setItems((previous) =>
-      previous.filter((_, itemIndex) => itemIndex !== index),
-    );
-  };
-
-  const handleLaundryItemChange = (index: number, value: string | null) => {
-    setItems((previous) =>
-      previous.map((item, itemIndex) => {
-        if (itemIndex !== index) {
-          return item;
-        }
-
-        return {
-          ...item,
-          laundryItemId: value ?? "",
-        };
-      }),
-    );
-  };
-
-  const handleQuantityChange = (index: number, value: string | number) => {
-    const quantity = typeof value === "number" ? value : Number(value);
-
-    setItems((previous) =>
-      previous.map((item, itemIndex) => {
-        if (itemIndex !== index) {
-          return item;
-        }
-
-        return {
-          ...item,
-          quantity: Number.isInteger(quantity) && quantity > 0 ? quantity : 1,
-        };
-      }),
-    );
-  };
-
-  const getLaundryItemOptions = (currentItemId: string) => {
-    const selectedItemIds = items
-      .filter(
-        (item) =>
-          item.laundryItemId !== "" && item.laundryItemId !== currentItemId,
-      )
-      .map((item) => item.laundryItemId);
-
-    return (
-      laundryItems?.data
-        .filter((item) => !selectedItemIds.includes(item.id))
-        .map((item) => ({
-          value: item.id,
-          label: item.name,
-        })) ?? []
-    );
-  };
-
-  const handleSubmit = async () => {
-    if (!order) {
-      return;
-    }
-
-    if (typeof weightKg !== "number" || weightKg <= 0) {
-      return;
-    }
-
-    const hasInvalidItem = items.some(
-      (item) =>
-        item.laundryItemId === "" ||
-        !Number.isInteger(item.quantity) ||
-        item.quantity <= 0,
-    );
-
-    if (hasInvalidItem) {
-      return;
-    }
-
-    const payload: CreateOrderPayload = {
-      weightKg,
-      items: items.map((item) => ({
-        laundryItemId: item.laundryItemId,
-        quantity: item.quantity,
-      })),
-    };
-
-    await onSubmit(order.id, payload);
-  };
-
+export function CreateOrderModal({ opened, order, isSubmitting, onClose, onSubmit }: Props) {
+  const {
+    handleClose,
+    weightKg,
+    setWeightKg,
+    handleAddItem,
+    isLaundryItemsLoading,
+    items,
+    getLaundryItemOptions,
+    handleLaundryItemChange,
+    handleQuantityChange,
+    handleRemoveItem,
+    handleSubmit,
+  } = useCreateOrderHooks({ opened, order, isSubmitting, onClose, onSubmit });
   return (
     <Modal opened={opened} onClose={handleClose} title="Buat Order" centered>
       <Stack gap="md">
@@ -258,13 +102,7 @@ export function CreateOrderModal({
               />
 
               {items.length > 1 && (
-                <ActionIcon
-                  variant="subtle"
-                  color="red"
-                  aria-label="Hapus item"
-                  onClick={() => handleRemoveItem(index)}
-                  disabled={isSubmitting}
-                >
+                <ActionIcon variant="subtle" color="red" aria-label="Hapus item" onClick={() => handleRemoveItem(index)} disabled={isSubmitting}>
                   <IconTrash size={18} />
                 </ActionIcon>
               )}
@@ -273,11 +111,7 @@ export function CreateOrderModal({
         </Stack>
 
         <Group justify="flex-end">
-          <Button
-            variant="default"
-            onClick={handleClose}
-            disabled={isSubmitting}
-          >
+          <Button variant="default" onClick={handleClose} disabled={isSubmitting}>
             Batal
           </Button>
 

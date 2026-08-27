@@ -1,10 +1,9 @@
 import { Group, Paper, Progress, Stack, Text } from "@mantine/core";
-import type { OrderOverviewItem } from "@/types/api/dashboard.types";
+import { OrderOverviewItem } from "@/types/api/dashboard.types";
 import { DASHBOARD_STATUS_LABEL } from "@/lib/constants/dashboard-status";
 
 export function OrderOverview({ data }: { data: OrderOverviewItem[] }) {
   const total = data.reduce((sum, item) => sum + item.total, 0);
-
   const sortedData = [...data].sort((a, b) => b.total - a.total);
 
   return (
@@ -44,12 +43,7 @@ export function OrderOverview({ data }: { data: OrderOverviewItem[] }) {
                   </Text>
                 </Group>
 
-                <Progress
-                  value={percentage}
-                  size={4}
-                  radius="xl"
-                  color="rinseBlue"
-                />
+                <Progress value={percentage} size={4} radius="xl" color="rinseBlue" />
               </Stack>
             );
           })}

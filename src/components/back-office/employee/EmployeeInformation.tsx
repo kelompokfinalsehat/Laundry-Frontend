@@ -1,24 +1,13 @@
 "use client";
 
-import {
-  ActionIcon,
-  Button,
-  Group,
-  Modal,
-  Paper,
-  Select,
-  Stack,
-  Text,
-  TextInput,
-} from "@mantine/core";
+import { ActionIcon, Button, Group, Modal, Paper, Select, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconEdit } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
-
 import { useUpdateEmployee } from "@/hooks/employee.hooks";
-import type { Employee, EmployeeRole } from "@/types/api/employee.types";
+import { Employee } from "@/types/api/employee.types";
 import { useState } from "react";
-import { modals } from "@mantine/modals";
+import { EmployeeRole } from "@/types/api";
 
 type Props = {
   employee: Employee;
@@ -32,12 +21,9 @@ const ROLE_LABEL: Record<EmployeeRole, string> = {
 
 export function EmployeeInformation({ employee }: Props) {
   const [opened, { open, close }] = useDisclosure(false);
-
-  const updateEmployee = useUpdateEmployee();
-
   const [name, setName] = useState(employee.name);
-
   const [role, setRole] = useState<EmployeeRole>(employee.role);
+  const updateEmployee = useUpdateEmployee();
 
   const handleSubmit = () => {
     updateEmployee.mutate(
@@ -62,8 +48,7 @@ export function EmployeeInformation({ employee }: Props) {
         onError: (error) => {
           notifications.show({
             title: "Gagal memperbarui karyawan",
-            message:
-              error instanceof Error ? error.message : "Terjadi kesalahan.",
+            message: error instanceof Error ? error.message : "Terjadi kesalahan.",
             color: "red",
           });
         },
@@ -85,11 +70,7 @@ export function EmployeeInformation({ employee }: Props) {
           <Group justify="space-between">
             <Text fw={600}>Informasi Karyawan</Text>
 
-            <ActionIcon
-              variant="subtle"
-              onClick={open}
-              aria-label="Edit informasi"
-            >
+            <ActionIcon variant="subtle" onClick={open} aria-label="Edit informasi">
               <IconEdit size={18} />
             </ActionIcon>
           </Group>
@@ -128,18 +109,9 @@ export function EmployeeInformation({ employee }: Props) {
         </Stack>
       </Paper>
 
-      <Modal
-        opened={opened}
-        onClose={close}
-        title="Edit Informasi Karyawan"
-        centered
-      >
+      <Modal opened={opened} onClose={close} title="Edit Informasi Karyawan" centered>
         <Stack gap="md">
-          <TextInput
-            label="Nama"
-            value={name}
-            onChange={(event) => setName(event.currentTarget.value)}
-          />
+          <TextInput label="Nama" value={name} onChange={(event) => setName(event.currentTarget.value)} />
 
           <Select
             label="Role"
@@ -162,11 +134,7 @@ export function EmployeeInformation({ employee }: Props) {
           />
 
           <Group justify="flex-end">
-            <Button
-              variant="default"
-              onClick={close}
-              disabled={updateEmployee.isPending}
-            >
+            <Button variant="default" onClick={close} disabled={updateEmployee.isPending}>
               Batal
             </Button>
 

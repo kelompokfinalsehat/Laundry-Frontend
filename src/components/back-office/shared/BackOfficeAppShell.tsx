@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  AppShell,
-  Burger,
-  Group,
-  NavLink,
-  ScrollArea,
-  Stack,
-  Text,
-  ThemeIcon,
-  Box,
-} from "@mantine/core";
+import { AppShell, Burger, Group, NavLink, ScrollArea, Stack, Text, ThemeIcon, Box, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconBuildingStore,
@@ -161,7 +151,7 @@ const superAdmin: MenuGroup[] = [
     ],
   },
   {
-    label: "LAPORAN & MONITORING",
+    label: "LAPORAN",
     items: [
       {
         label: "Laporan Penjualan",
@@ -170,10 +160,6 @@ const superAdmin: MenuGroup[] = [
       {
         label: "Kinerja Karyawan",
         href: "/internal/super-admin/laporan/kinerja-karyawan",
-      },
-      {
-        label: "Audit Log",
-        href: "/internal/super-admin/audit-log",
       },
     ],
   },
@@ -201,13 +187,7 @@ const menuIcons: Record<string, React.ReactNode> = {
   Laporan: <IconFileAnalytics size={18} />,
 };
 
-export function BackOfficeAppShell({
-  children,
-  role,
-}: {
-  children: React.ReactNode;
-  role: Extract<Role, "OUTLET_ADMIN" | "SUPER_ADMIN">;
-}) {
+export function BackOfficeAppShell({ children, role }: { children: React.ReactNode; role: Extract<Role, "OUTLET_ADMIN" | "SUPER_ADMIN"> }) {
   const [opened, { toggle }] = useDisclosure();
   const pathname = usePathname();
 
@@ -243,10 +223,9 @@ export function BackOfficeAppShell({
           </ThemeIcon>
 
           <Box>
-            <Text fw={800} size="sm">
+            <Title fw={800} size="lg" style={{ color: "var(--color-primary-dark)", letterSpacing: -0.5}} order={3}>
               Popo Laundry
-            </Text>
-
+            </Title>
             <Text size="xs" c="dimmed">
               Back Office
             </Text>
@@ -276,9 +255,7 @@ export function BackOfficeAppShell({
               {group.items.map(({ label, href }) => {
                 const isDashboard = href.endsWith("/dashboard");
 
-                const isActive = isDashboard
-                  ? pathname === href
-                  : pathname === href || pathname.startsWith(`${href}/`);
+                const isActive = isDashboard ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 
                 return (
                   <NavLink

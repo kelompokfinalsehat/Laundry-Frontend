@@ -1,9 +1,8 @@
 "use client";
 
 import { Group, NumberInput, Paper, Select, Stack } from "@mantine/core";
-
-import type { SalesPeriod, SalesQuery } from "@/types/api/report.types";
-import { DateInput } from "@mantine/dates";
+import { SalesPeriod, SalesQuery } from "@/types/api/report.types";
+import { DatePickerInput } from "@mantine/dates";
 
 type OutletOption = {
   value: string;
@@ -13,15 +12,10 @@ type OutletOption = {
 type Props = {
   query: SalesQuery;
   outletOptions: OutletOption[];
-
   onPeriodChange: (period: SalesPeriod) => void;
-
   onDateChange: (date: string | null) => void;
-
   onMonthChange: (month: number | null) => void;
-
   onYearChange: (year: number | null) => void;
-
   onOutletChange: (outletId: string | null) => void;
 };
 
@@ -91,15 +85,7 @@ const monthOptions = [
   },
 ];
 
-export function SalesReportFilters({
-  query,
-  outletOptions,
-  onPeriodChange,
-  onDateChange,
-  onMonthChange,
-  onYearChange,
-  onOutletChange,
-}: Props) {
+export function SalesReportFilters({ query, outletOptions, onPeriodChange, onDateChange, onMonthChange, onYearChange, onOutletChange }: Props) {
   return (
     <Paper
       p="md"
@@ -125,10 +111,10 @@ export function SalesReportFilters({
           />
 
           {query.period === "DAY" && (
-            <DateInput
+            <DatePickerInput
               label="Tanggal"
               placeholder="Pilih tanggal"
-              clearable
+              clearable={false}
               value={query.date ?? null}
               valueFormat="DD MMM YYYY"
               onChange={onDateChange}
@@ -141,9 +127,7 @@ export function SalesReportFilters({
                 label="Bulan"
                 data={monthOptions}
                 value={query.month?.toString() ?? null}
-                onChange={(value) =>
-                  onMonthChange(value ? Number(value) : null)
-                }
+                onChange={(value) => onMonthChange(value ? Number(value) : null)}
               />
 
               <NumberInput
@@ -151,9 +135,7 @@ export function SalesReportFilters({
                 min={2025}
                 max={2100}
                 value={query.year ?? ""}
-                onChange={(value) =>
-                  onYearChange(typeof value === "number" ? value : null)
-                }
+                onChange={(value) => onYearChange(typeof value === "number" ? value : null)}
               />
             </>
           )}
@@ -164,20 +146,11 @@ export function SalesReportFilters({
               min={2025}
               max={2100}
               value={query.year ?? ""}
-              onChange={(value) =>
-                onYearChange(typeof value === "number" ? value : null)
-              }
+              onChange={(value) => onYearChange(typeof value === "number" ? value : null)}
             />
           )}
 
-          <Select
-            label="Outlet"
-            placeholder="Semua outlet"
-            data={outletOptions}
-            value={query.outletId ?? null}
-            onChange={onOutletChange}
-            clearable
-          />
+          <Select label="Outlet" placeholder="Semua outlet" data={outletOptions} value={query.outletId ?? null} onChange={onOutletChange} clearable />
         </Group>
       </Stack>
     </Paper>

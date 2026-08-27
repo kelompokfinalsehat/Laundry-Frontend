@@ -1,7 +1,6 @@
-import type { PaginationMeta } from "./pagination.type";
+import { EmployeeRole, PaginatedResponse, SortOrder, StationType } from ".";
 
 export type SalesPeriod = "DAY" | "MONTH" | "YEAR";
-
 export type SalesQuery = {
   period: SalesPeriod;
   date?: string;
@@ -14,12 +13,28 @@ export type SalesSummary = {
   totalRevenue: number;
   totalOrders: number;
   averageOrderValue: number;
+  totalWeightKg: number;
+  uniqueCustomers: number;
+};
+
+export type SalesComparison = {
+  previousPeriod: {
+    startDate: string;
+    endDate: string;
+    totalRevenue: number;
+    totalOrders: number;
+    averageOrderValue: number;
+  };
+  revenueChangePercent: number | null;
+  orderChangePercent: number | null;
+  averageOrderValueChangePercent: number | null;
 };
 
 export type SalesTrendItem = {
   label: string;
   revenue: number;
   orders: number;
+  totalWeightKg: number;
 };
 
 export type SalesBreakdownItem = {
@@ -27,26 +42,29 @@ export type SalesBreakdownItem = {
   outletName: string;
   revenue: number;
   orders: number;
+  averageOrderValue: number;
+  totalWeightKg: number;
+  uniqueCustomers: number;
+  revenueSharePercent: number;
 };
+
+export type SalesHighlight = {
+  outletId: string;
+  outletName: string;
+  revenue: number;
+  orders: number;
+} | null;
 
 export type SalesReport = {
-  period: {
-    type: SalesPeriod;
-    startDate: string;
-    endDate: string;
-  };
+  period: { type: SalesPeriod; startDate: string; endDate: string };
   summary: SalesSummary;
+  comparison: SalesComparison;
   trend: SalesTrendItem[];
   breakdown: SalesBreakdownItem[];
+  highlights: { topOutlet: SalesHighlight; peak: SalesTrendItem | null };
 };
-
-export type EmployeeRole = "DRIVER" | "WORKER";
-
-export type StationType = "WASHING" | "IRONING" | "PACKING";
-
 export type EmployeePerformanceSortBy = "completedJobs" | "name";
 
-export type SortOrder = "asc" | "desc";
 
 export type EmployeePerformanceQuery = {
   page?: number;
@@ -66,14 +84,36 @@ export type EmployeePerformanceItem = {
   employeeName: string;
   role: EmployeeRole;
   completedJobs: number;
+  pickupJobs: number;
+  deliveryJobs: number;
+  washingJobs: number;
+  ironingJobs: number;
+  packingJobs: number;
+  averageCompletionMinutes: number | null;
 };
 
 export type EmployeePerformanceSummary = {
   totalEmployees: number;
   totalCompletedJobs: number;
+  averageJobsPerEmployee: number;
+  workerCompletedJobs: number;
+  driverCompletedJobs: number;
+  topPerformer: {
+    employeeId: string;
+    employeeName: string;
+    role: EmployeeRole;
+    completedJobs: number;
+  } | null;
 };
 
 export type EmployeePerformanceData = {
-    summary: EmployeePerformanceSummary;
-    data: EmployeePerformanceItem[];
+  summary: EmployeePerformanceSummary;
+  data: EmployeePerformanceItem[];
+};
+
+export type PaginatedEmployeePerformanceResponse = {
+  success: boolean;
+  message: string;
+  data: EmployeePerformanceData;
+  meta: PaginatedResponse<null>["meta"];
 };

@@ -1,22 +1,8 @@
-import type { PaginationMeta } from "./pagination.type";
-
-export type ComplaintCategory =
-  | "TIDAK_SESUAI"
-  | "RUSAK"
-  | "HILANG";
-
-export type ComplaintStatus =
-  | "OPEN"
-  | "APPROVED"
-  | "REJECTED";
+import { ComplaintCategory, ComplaintStatus, SortOrder } from ".";
 
 export type ComplaintSortBy =
   | "createdAt"
   | "decidedAt";
-
-export type SortOrder =
-  | "asc"
-  | "desc";
 
 export type ComplaintQuery = {
   page?: number;

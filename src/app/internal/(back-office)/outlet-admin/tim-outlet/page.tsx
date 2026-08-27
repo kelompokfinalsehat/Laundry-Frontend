@@ -1,2 +1,6 @@
-import { ListPageScaffold } from '@/components/shared/ListPageScaffold';
-export default function Page(){return <ListPageScaffold title='Tim Outlet' description='Read-only operasional; tidak ada invitation/edit role/deactivate.'/>}
+import { OutletTeamContent } from "@/components/back-office/tim-outlet/OutletTeamContent";
+export default function Page() {
+  return (
+    <OutletTeamContent />
+  );
+}

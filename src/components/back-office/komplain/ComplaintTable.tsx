@@ -1,28 +1,17 @@
 "use client";
 
-import { ActionIcon, Badge, Group, Table, Text } from "@mantine/core";
-
+import { ActionIcon, Badge, Table, Text } from "@mantine/core";
 import { IconEdit } from "@tabler/icons-react";
-
 import { ServerPagination } from "@/components/ui/ServerPagination";
-
-import type {
-  ComplaintListItem,
-  ComplaintStatus,
-} from "@/types/api/complaint.types";
-
-import type { PaginationMeta } from "@/types/api/pagination.type";
+import { ComplaintListItem } from "@/types/api/complaint.types";
+import { ComplaintStatus, PaginatedResponse } from "@/types/api";
 
 type Props = {
   data: ComplaintListItem[];
-  meta: PaginationMeta;
-
+  meta: PaginatedResponse<ComplaintListItem>["meta"];
   canDecide: boolean;
-
   onPageChange: (page: number) => void;
-
   onPageSizeChange: (pageSize: 10 | 20 | 50) => void;
-
   onDecide: (complaint: ComplaintListItem) => void;
 };
 
@@ -59,18 +48,10 @@ function getCategoryLabel(category: ComplaintListItem["category"]) {
     RUSAK: "Rusak",
     HILANG: "Hilang",
   };
-
   return categoryMap[category];
 }
 
-export function ComplaintTable({
-  data,
-  meta,
-  canDecide,
-  onPageChange,
-  onPageSizeChange,
-  onDecide,
-}: Props) {
+export function ComplaintTable({ data, meta, canDecide, onPageChange, onPageSizeChange, onDecide }: Props) {
   return (
     <>
       <Table.ScrollContainer minWidth={900}>
@@ -117,10 +98,7 @@ export function ComplaintTable({
                 </Table.Td>
 
                 <Table.Td>
-                  <Badge
-                    color={getStatusColor(complaint.status)}
-                    variant="light"
-                  >
+                  <Badge color={getStatusColor(complaint.status)} variant="light">
                     {getStatusLabel(complaint.status)}
                   </Badge>
                 </Table.Td>

@@ -1,21 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { employeeApi } from "@/lib/api/employee.api";
-
 import type {
   AssignEmployeePayload,
   EmployeeQuery,
   InviteEmployeePayload,
+  OutletTeamQuery,
   UpdateEmployeePayload,
 } from "@/types/api/employee.types";
+import { EmployeeApi } from "@/lib/api/employee.api";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useDebouncedValue } from "@mantine/hooks";
+import { useOutlets } from "./outlet.hooks";
 
 export const EMPLOYEES_QUERY_KEY = ["employees"];
+const employeeApi = new EmployeeApi();
 
 export function useEmployees(params?: EmployeeQuery) {
   return useQuery({
     queryKey: [...EMPLOYEES_QUERY_KEY, params],
     queryFn: () => employeeApi.getEmployees(params),
-    refetchOnMount: "always"
   });
 }
 
@@ -125,4 +129,81 @@ export function useAssignEmployee() {
       });
     },
   });
+}
+
+export function useCurrentOutletTeam(query: OutletTeamQuery) {
+  return useQuery({
+    queryKey: [...EMPLOYEES_QUERY_KEY, "team", query],
+    queryFn: () => employeeApi.getCurrentOutletTeam(query),
+  });
+}
+
+export function useEmployeeHooks() {
+  const router = useRouter();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<10 | 20 | 50>(10);
+  const [filters, setFilters] = useState<
+    Pick<
+      EmployeeQuery,
+      "search" | "role" | "accountStatus" | "workStatus" | "outletId"
+    >
+  >({});
+  const [debouncedSearch] = useDebouncedValue(filters.search ?? "", 400);
+  const [sortBy, setSortBy] =
+    useState<NonNullable<EmployeeQuery["sortBy"]>>("createdAt");
+  const [sortOrder, setSortOrder] =
+    useState<NonNullable<EmployeeQuery["sortOrder"]>>("desc");
+
+  const employees = useEmployees({
+    page,
+    pageSize,
+    ...filters,
+    search: debouncedSearch || undefined,
+    sortBy,
+    sortOrder,
+  });
+
+  const outlets = useOutlets({
+    page: 1,
+    pageSize: 50,
+    sortBy: "name",
+    sortOrder: "asc",
+  });
+
+  const handleFilterChange = (
+    key: keyof Pick<
+      EmployeeQuery,
+      "search" | "role" | "accountStatus" | "workStatus" | "outletId"
+    >,
+    value: string | null,
+  ) => {
+    setFilters((current) => ({
+      ...current,
+      [key]: value || undefined,
+    }));
+
+    setPage(1);
+  };
+
+  const handleReset = () => {
+    setFilters({});
+    setSortBy("createdAt");
+    setSortOrder("desc");
+    setPage(1);
+  };
+
+  return {
+    router,
+    filters,
+    sortBy,
+    sortOrder,
+    outlets,
+    handleFilterChange,
+    setSortBy,
+    setPage,
+    setSortOrder,
+    handleReset,
+    employees,
+    setPageSize,
+  };
 }

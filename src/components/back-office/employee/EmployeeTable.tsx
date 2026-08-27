@@ -2,15 +2,13 @@
 
 import { ActionIcon, Badge, Group, Table, Text } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
-
 import { ServerPagination } from "@/components/ui/ServerPagination";
-
-import type { Employee } from "@/types/api/employee.types";
-import type { PaginationMeta } from "@/types/api/pagination.type";
+import { Employee } from "@/types/api/employee.types";
+import { PaginatedResponse } from "@/types/api";
 
 type Props = {
   data: Employee[];
-  meta: PaginationMeta;
+  meta: PaginatedResponse<Employee>["meta"];
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: 10 | 20 | 50) => void;
   onView: (employeeId: string) => void;
@@ -22,10 +20,7 @@ const ROLE_LABEL: Record<Employee["role"], string> = {
   DRIVER: "Driver",
 };
 
-const ACCOUNT_STATUS: Record<
-  Employee["accountStatus"],
-  { label: string; color: string }
-> = {
+const ACCOUNT_STATUS: Record<Employee["accountStatus"], { label: string; color: string }> = {
   INVITED: {
     label: "Diundang",
     color: "yellow",
@@ -55,13 +50,7 @@ const WORK_STATUS = {
   },
 } as const;
 
-export function EmployeeTable({
-  data,
-  meta,
-  onPageChange,
-  onPageSizeChange,
-  onView,
-}: Props) {
+export function EmployeeTable({ data, meta, onPageChange, onPageSizeChange, onView }: Props) {
   return (
     <>
       <Table.ScrollContainer minWidth={900}>
@@ -82,19 +71,17 @@ export function EmployeeTable({
             {data.map((employee) => {
               const account = ACCOUNT_STATUS[employee.accountStatus];
 
-              const work = employee.workStatus
-                ? WORK_STATUS[employee.workStatus]
-                : null;
+              const work = employee.workStatus ? WORK_STATUS[employee.workStatus] : null;
 
               return (
                 <Table.Tr key={employee.id}>
-                  <Table.Td>
+                  <Table.Td w={250}>
                     <Text size="sm" fw={600} c="var(--color-text-primary)">
                       {employee.name}
                     </Text>
                   </Table.Td>
 
-                  <Table.Td>
+                  <Table.Td w={300}>
                     <Text size="sm" c="var(--color-text-secondary)">
                       {employee.email}
                     </Text>
@@ -128,12 +115,7 @@ export function EmployeeTable({
 
                   <Table.Td ta="right">
                     <Group gap={4} justify="flex-end">
-                      <ActionIcon
-                        variant="subtle"
-                        color="rinseBlue"
-                        aria-label={`Lihat ${employee.name}`}
-                        onClick={() => onView(employee.id)}
-                      >
+                      <ActionIcon variant="subtle" color="rinseBlue" aria-label={`Lihat ${employee.name}`} onClick={() => onView(employee.id)}>
                         <IconChevronRight size={18} />
                       </ActionIcon>
                     </Group>

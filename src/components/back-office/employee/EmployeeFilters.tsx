@@ -1,54 +1,26 @@
 "use client";
 
-import type { EmployeeQuery } from "@/types/api/employee.types";
+import { EmployeeQuery } from "@/types/api/employee.types";
+import { ActionIcon, Group, Select, TextInput, Tooltip } from "@mantine/core";
+import { IconRefresh, IconSearch } from "@tabler/icons-react";
 
-import {
-  ActionIcon,
-  Button,
-  Group,
-  Select,
-  TextInput,
-  Tooltip,
-} from "@mantine/core";
-
-import { IconRefresh, IconSearch, IconX } from "@tabler/icons-react";
-
-type EmployeeFiltersState = Pick<
-  EmployeeQuery,
-  "search" | "role" | "accountStatus" | "workStatus" | "outletId"
->;
+type EmployeeFiltersState = Pick<EmployeeQuery, "search" | "role" | "accountStatus" | "workStatus" | "outletId">;
 
 type Props = {
   filters: EmployeeFiltersState;
-
   sortBy: NonNullable<EmployeeQuery["sortBy"]>;
-
   sortOrder: NonNullable<EmployeeQuery["sortOrder"]>;
-
   outlets: {
     id: string;
     name: string;
   }[];
-
   onChange: (key: keyof EmployeeFiltersState, value: string | null) => void;
-
   onSortByChange: (value: NonNullable<EmployeeQuery["sortBy"]>) => void;
-
   onSortOrderChange: (value: NonNullable<EmployeeQuery["sortOrder"]>) => void;
-
   onReset: () => void;
 };
 
-export function EmployeeFilters({
-  filters,
-  sortBy,
-  sortOrder,
-  outlets,
-  onChange,
-  onSortByChange,
-  onSortOrderChange,
-  onReset,
-}: Props) {
+export function EmployeeFilters({ filters, sortBy, sortOrder, outlets, onChange, onSortByChange, onSortOrderChange, onReset }: Props) {
   return (
     <>
       <Group align="end" wrap="wrap" gap="sm">
@@ -57,9 +29,7 @@ export function EmployeeFilters({
           placeholder="Nama atau email"
           leftSection={<IconSearch size={16} />}
           value={filters.search ?? ""}
-          onChange={(event) =>
-            onChange("search", event.currentTarget.value || null)
-          }
+          onChange={(event) => onChange("search", event.currentTarget.value || null)}
           style={{ flex: 1, minWidth: 280 }}
         />
         <Select
@@ -88,13 +58,7 @@ export function EmployeeFilters({
             },
           ]}
           onChange={(value) => {
-            if (
-              value === "name" ||
-              value === "email" ||
-              value === "role" ||
-              value === "accountStatus" ||
-              value === "createdAt"
-            ) {
+            if (value === "name" || value === "email" || value === "role" || value === "accountStatus" || value === "createdAt") {
               onSortByChange(value);
             }
           }}
@@ -122,17 +86,12 @@ export function EmployeeFilters({
           w={180}
         />
         <Tooltip label="Reset filter">
-          <ActionIcon
-            variant="default"
-            size="input-sm"
-            onClick={onReset}
-            aria-label="Reset filter"
-          >
+          <ActionIcon variant="default" size="input-sm" onClick={onReset} aria-label="Reset filter">
             <IconRefresh size={16} />
           </ActionIcon>
         </Tooltip>
       </Group>
-      <Group align="flex-end">
+      <Group align="flex-end" grow>
         <Select
           label="Role"
           placeholder="Semua role"

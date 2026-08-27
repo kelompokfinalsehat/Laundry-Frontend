@@ -1,57 +1,26 @@
 "use client";
 
-import {
-  Button,
-  Group,
-  Modal,
-  NumberInput,
-  Stack,
-} from "@mantine/core";
-
-import {
-  useEffect,
-  useState,
-} from "react";
-
-import type {
-  LaundryPricing,
-} from "@/types/api/pricing.types";
+import { useEffect, useState } from "react";
+import { Button, Group, Modal, NumberInput, Stack } from "@mantine/core";
+import type { LaundryPricing } from "@/types/api/pricing.types";
 
 type Props = {
   opened: boolean;
-
   pricing: LaundryPricing | null;
-
   isSubmitting: boolean;
-
   onClose: () => void;
-
-  onSubmit: (
-    pricePerKg: number,
-    pricing: LaundryPricing | null,
-  ) => Promise<void>;
+  onSubmit: (pricePerKg: number, pricing: LaundryPricing | null) => Promise<void>;
 };
 
-export function LaundryPricingModal({
-  opened,
-  pricing,
-  isSubmitting,
-  onClose,
-  onSubmit,
-}: Props) {
-  const [pricePerKg, setPricePerKg] =
-    useState<number | string>("");
+export function LaundryPricingModal({ opened, pricing, isSubmitting, onClose, onSubmit }: Props) {
+  const [pricePerKg, setPricePerKg] = useState<number | string>("");
 
   useEffect(() => {
     if (!opened) {
       return;
     }
 
-    setPricePerKg(
-      pricing
-        ? Number(pricing.pricePerKg)
-        : "",
-    );
+    setPricePerKg(pricing ? Number(pricing.pricePerKg) : "");
   }, [opened, pricing]);
 
   const handleClose = () => {
@@ -63,30 +32,15 @@ export function LaundryPricingModal({
   };
 
   const handleSubmit = async () => {
-    if (
-      typeof pricePerKg !== "number" ||
-      pricePerKg <= 0
-    ) {
+    if (typeof pricePerKg !== "number" || pricePerKg <= 0) {
       return;
     }
 
-    await onSubmit(
-      pricePerKg,
-      pricing,
-    );
+    await onSubmit(pricePerKg, pricing);
   };
 
   return (
-    <Modal
-      opened={opened}
-      onClose={handleClose}
-      title={
-        pricing
-          ? "Ubah Harga Laundry"
-          : "Buat Harga Laundry"
-      }
-      centered
-    >
+    <Modal opened={opened} onClose={handleClose} title={pricing ? "Ubah Harga Laundry" : "Buat Harga Laundry"} centered>
       <Stack gap="md">
         <NumberInput
           label="Harga per Kilogram"
@@ -103,21 +57,12 @@ export function LaundryPricingModal({
         />
 
         <Group justify="flex-end">
-          <Button
-            variant="default"
-            onClick={handleClose}
-            disabled={isSubmitting}
-          >
+          <Button variant="default" onClick={handleClose} disabled={isSubmitting}>
             Batal
           </Button>
 
-          <Button
-            onClick={handleSubmit}
-            loading={isSubmitting}
-          >
-            {pricing
-              ? "Simpan Perubahan"
-              : "Buat Harga"}
+          <Button onClick={handleSubmit} loading={isSubmitting}>
+            {pricing ? "Simpan Perubahan" : "Buat Harga"}
           </Button>
         </Group>
       </Stack>

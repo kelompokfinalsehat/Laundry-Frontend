@@ -1,43 +1,24 @@
 "use client";
 
 import { ActionIcon, Group, Select, TextInput, Tooltip } from "@mantine/core";
-
-import { DateInput } from "@mantine/dates";
-
+import { DatePickerInput } from "@mantine/dates";
 import { IconRefresh, IconSearch } from "@tabler/icons-react";
-
 import type { OrderQuery } from "@/types/api/order.types";
 
-type OrderFiltersState = Pick<
-  OrderQuery,
-  | "search"
-  | "customerStatus"
-  | "paymentStatus"
-  | "outletId"
-  | "startDate"
-  | "endDate"
->;
+type OrderFiltersState = Pick<OrderQuery, "search" | "customerStatus" | "paymentStatus" | "outletId" | "startDate" | "endDate">;
 
 type Props = {
   filters: OrderFiltersState;
-
   sortBy: NonNullable<OrderQuery["sortBy"]>;
-
   sortOrder: NonNullable<OrderQuery["sortOrder"]>;
-
   outlets?: {
     id: string;
     name: string;
   }[];
-
   showOutletFilter: boolean;
-
   onChange: (key: keyof OrderFiltersState, value: string | null) => void;
-
   onSortByChange: (value: NonNullable<OrderQuery["sortBy"]>) => void;
-
   onSortOrderChange: (value: NonNullable<OrderQuery["sortOrder"]>) => void;
-
   onReset: () => void;
 };
 
@@ -141,9 +122,7 @@ export function OrderFilters({
           placeholder="Kode pesanan atau pelanggan"
           leftSection={<IconSearch size={16} />}
           value={filters.search ?? ""}
-          onChange={(event) =>
-            onChange("search", event.currentTarget.value || null)
-          }
+          onChange={(event) => onChange("search", event.currentTarget.value || null)}
           style={{ flex: 1, minWidth: 220 }}
         />
 
@@ -152,11 +131,7 @@ export function OrderFilters({
           value={sortBy}
           data={SORT_OPTIONS}
           onChange={(value) => {
-            if (
-              value === "createdAt" ||
-              value === "pickupScheduledAt" ||
-              value === "orderCode"
-            ) {
+            if (value === "createdAt" || value === "pickupScheduledAt" || value === "orderCode") {
               onSortByChange(value);
             }
           }}
@@ -184,70 +159,64 @@ export function OrderFilters({
           w={180}
         />
 
-      <Tooltip label="Reset filter">
-        <ActionIcon
-          variant="default"
-          size="input-sm"
-          onClick={onReset}
-          aria-label="Reset filter"
-        >
-          <IconRefresh size={16} />
-        </ActionIcon>
-      </Tooltip>
+        <Tooltip label="Reset filter">
+          <ActionIcon variant="default" size="input-sm" onClick={onReset} aria-label="Reset filter">
+            <IconRefresh size={16} />
+          </ActionIcon>
+        </Tooltip>
       </Group>
 
-      <Group align="flex-end" wrap="wrap">
-
-      <Select
-        label="Status Pesanan"
-        placeholder="Semua status"
-        clearable
-        data={CUSTOMER_STATUS_OPTIONS}
-        value={filters.customerStatus ?? null}
-        onChange={(value) => onChange("customerStatus", value)}
-      />
-
-      <Select
-        label="Status Pembayaran"
-        placeholder="Semua status"
-        clearable
-        data={PAYMENT_STATUS_OPTIONS}
-        value={filters.paymentStatus ?? null}
-        onChange={(value) => onChange("paymentStatus", value)}
-      />
-
-      {showOutletFilter && (
+      <Group align="flex-end" wrap="wrap" grow>
         <Select
-          label="Outlet"
-          placeholder="Semua outlet"
+          label="Status Pesanan"
+          placeholder="Semua status"
           clearable
-          searchable
-          data={outlets.map((outlet) => ({
-            value: outlet.id,
-            label: outlet.name,
-          }))}
-          value={filters.outletId ?? null}
-          onChange={(value) => onChange("outletId", value)}
+          data={CUSTOMER_STATUS_OPTIONS}
+          value={filters.customerStatus ?? null}
+          onChange={(value) => onChange("customerStatus", value)}
         />
-      )}
-      <DateInput
-        label="Dari Tanggal"
-        placeholder="Pilih tanggal"
-        clearable
-        value={filters.startDate ?? null}
-        valueFormat="DD MMM YYYY"
-        onChange={(value) => onChange("startDate", value)}
-      />
 
-      <DateInput
-        label="Sampai Tanggal"
-        placeholder="Pilih tanggal"
-        clearable
-        value={filters.endDate ?? null}
-        valueFormat="DD MMM YYYY"
-        onChange={(value) => onChange("endDate", value)}
-      />
+        <Select
+          label="Status Pembayaran"
+          placeholder="Semua status"
+          clearable
+          data={PAYMENT_STATUS_OPTIONS}
+          value={filters.paymentStatus ?? null}
+          onChange={(value) => onChange("paymentStatus", value)}
+        />
 
+        {showOutletFilter && (
+          <Select
+            label="Outlet"
+            placeholder="Semua outlet"
+            clearable
+            searchable
+            data={outlets.map((outlet) => ({
+              value: outlet.id,
+              label: outlet.name,
+            }))}
+            value={filters.outletId ?? null}
+            onChange={(value) => onChange("outletId", value)}
+          />
+        )}
+
+        <DatePickerInput
+          label="Dari Tanggal"
+          placeholder="Pilih tanggal"
+          clearable
+          value={filters.startDate ?? null}
+          valueFormat="DD MMM YYYY"
+          onChange={(value) => onChange("startDate", value)}
+        />
+
+        <DatePickerInput
+          label="Sampai Tanggal"
+          placeholder="Pilih tanggal"
+          clearable
+          value={filters.endDate ?? null}
+          valueFormat="DD MMM YYYY"
+          onChange={(value) => onChange("endDate", value)}
+        />
       </Group>
     </>
   );

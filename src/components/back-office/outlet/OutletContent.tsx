@@ -2,91 +2,40 @@
 
 import { Button, Paper, Stack } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useDebouncedValue } from "@mantine/hooks";
-
+import { useDisclosure } from "@mantine/hooks";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
-import { useDeleteOutlet, useOutlets } from "@/hooks/outlet.hooks";
-
+import { useOutletHooks } from "@/hooks/outlet.hooks";
 import { OutletFilters } from "./OutletFilters";
 import { OutletTable } from "./OutletTable";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { notifications } from "@mantine/notifications";
-import type { Outlet } from "@/types/api/outlet.types";
+import TableSkeleton from "../shared/TableSkeleton";
 
 export function OutletContent() {
-  const router = useRouter();
-
-  const [page, setPage] = useState(1);
-
-  const [pageSize, setPageSize] = useState<10 | 20 | 50>(10);
-
-  const [search, setSearch] = useState("");
-
-  const [debouncedSearch] = useDebouncedValue(search, 400);
-
-  const [sortBy, setSortBy] = useState<"name" | "createdAt">("createdAt");
-
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
-  const outlets = useOutlets({
-    page,
-    pageSize,
-    search: debouncedSearch || undefined,
+  const {
+    router,
+    search,
     sortBy,
     sortOrder,
-  });
-  const [selectedOutlet, setSelectedOutlet] = useState<Outlet | null>(null);
-
-  const deleteOutlet = useDeleteOutlet();
-
-  const handleReset = () => {
-    setSearch("")
-
-    setSortBy("createdAt");
-
-    setSortOrder("desc");
-
-    setPage(1);
-  };
-
-  const handleDeactivate = async () => {
-    if (!selectedOutlet) return null;
-    await deleteOutlet.mutateAsync(selectedOutlet.id, {
-      onSuccess: () => {
-        notifications.show({
-          title: "Berhasil",
-          message: "Outlet berhasil dinonaktifkan.",
-          color: "green",
-        });
-
-        setSelectedOutlet(null);
-      },
-      onError: (error) => {
-        notifications.show({
-          title: "Gagal",
-          message:
-            error instanceof Error
-              ? error.message
-              : "Gagal menonaktifkan outlet.",
-          color: "red",
-        });
-      },
-    });
-  };
-
+    setSearch,
+    setPage,
+    setSortBy,
+    setSortOrder,
+    handleReset,
+    outlets,
+    setPageSize,
+    setSelectedOutlet,
+    selectedOutlet,
+    deleteOutlet,
+    handleDeactivate,
+  } = useOutletHooks();
   return (
     <Stack gap="lg">
       <PageHeader
         title="Outlet"
         description="Kelola seluruh outlet dalam sistem."
         action={
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={() => router.push("/internal/super-admin/outlet/baru")}
-          >
+          <Button leftSection={<IconPlus size={16} />} onClick={() => router.push("/internal/super-admin/outlet/baru")}>
             Tambah Outlet
           </Button>
         }
@@ -126,6 +75,7 @@ export function OutletContent() {
             error={outlets.error}
             data={outlets.data}
             onRetry={() => outlets.refetch()}
+            skeleton={<TableSkeleton />}
           >
             {(response) => (
               <OutletTable
@@ -136,9 +86,7 @@ export function OutletContent() {
                   setPageSize(size);
                   setPage(1);
                 }}
-                onEdit={(id) =>
-                  router.push(`/internal/super-admin/outlet/${id}`)
-                }
+                onEdit={(id) => router.push(`/internal/super-admin/outlet/${id}`)}
                 onDelete={(outlet) => setSelectedOutlet(outlet)}
               />
             )}

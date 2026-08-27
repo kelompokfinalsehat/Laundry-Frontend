@@ -1,66 +1,19 @@
-import type { PaginationMeta } from "./pagination.type";
+import {
+  BillPaymentStatus,
+  ComplaintCategory,
+  ComplaintStatus,
+  CustomerStatus,
+  DriverAssignmentStatus,
+  PaginatedResponse,
+  PickupDeliveryType,
+  SortOrder,
+  StationType,
+  WorkerAssignmentStatus,
+} from ".";
 
 export type DecimalString = string;
 
-export type CustomerStatus =
-  | "SCHEDULED"
-  | "WAITING_DRIVER_PICKUP"
-  | "ON_THE_WAY_TO_OUTLET"
-  | "ARRIVED_AT_OUTLET"
-  | "WASHING"
-  | "IRONING"
-  | "PACKING"
-  | "WAITING_PAYMENT"
-  | "OVERDUE"
-  | "READY_FOR_DELIVERY"
-  | "ON_THE_WAY_TO_CUSTOMER"
-  | "WAITING_CUSTOMER_CONFIRMATION"
-  | "RECEIVED_BY_CUSTOMER";
-
-export type BillPaymentStatus =
-  | "UNPAID"
-  | "PAID";
-
-export type PickupDeliveryType =
-  | "PICKUP"
-  | "DELIVERY";
-
-export type DriverAssignmentStatus =
-  | "QUEUED"
-  | "ASSIGNED"
-  | "IN_PROGRESS"
-  | "COMPLETED";
-
-export type StationType =
-  | "WASHING"
-  | "IRONING"
-  | "PACKING";
-
-export type WorkerAssignmentStatus =
-  | "QUEUED"
-  | "ASSIGNED"
-  | "IN_PROGRESS"
-  | "ON_HOLD_BYPASS"
-  | "COMPLETED";
-
-export type ComplaintCategory =
-  | "TIDAK_SESUAI"
-  | "RUSAK"
-  | "HILANG";
-
-export type ComplaintStatus =
-  | "OPEN"
-  | "APPROVED"
-  | "REJECTED";
-
-export type OrderSortBy =
-  | "createdAt"
-  | "pickupScheduledAt"
-  | "orderCode";
-
-export type SortOrder =
-  | "asc"
-  | "desc";
+export type OrderSortBy = "createdAt" | "pickupScheduledAt" | "orderCode";
 
 export type OrderQuery = {
   page?: number;
@@ -93,7 +46,7 @@ export type OrderBill = {
   totalAmount: DecimalString;
   paymentStatus: BillPaymentStatus;
   laundryCost: DecimalString;
-  shippingCost: DecimalString
+  shippingCost: DecimalString;
 };
 
 export type OrderListItem = {
@@ -237,7 +190,7 @@ export type OrderDetail = {
 
 export type OrdersResponse = {
   data: OrderListItem[];
-  meta: PaginationMeta;
+  meta: PaginatedResponse<OrderLaundryItem>["meta"];
 };
 
 export type CreateOrderItemPayload = {

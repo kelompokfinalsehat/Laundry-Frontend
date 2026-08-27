@@ -1,6 +1,6 @@
 import { Badge, Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconAlertTriangle } from "@tabler/icons-react";
-import type { DashboardResponse } from "@/types/api/dashboard.types";
+import { DashboardResponse } from "@/types/api/dashboard.types";
 import { DASHBOARD_STATUS_LABEL } from "@/lib/constants/dashboard-status";
 
 type Props = {
@@ -21,13 +21,7 @@ export function PendingBypass({ data }: Props) {
       <Stack gap="lg">
         <Group justify="space-between" align="flex-start" wrap="nowrap">
           <Group gap="sm" wrap="nowrap">
-            <ThemeIcon
-              size={40}
-              radius="md"
-              variant="light"
-              color="red"
-              style={{ flexShrink: 0 }}
-            >
+            <ThemeIcon size={40} radius="md" variant="light" color="red" style={{ flexShrink: 0 }}>
               <IconAlertTriangle size={20} />
             </ThemeIcon>
 
@@ -72,8 +66,7 @@ export function PendingBypass({ data }: Props) {
                 </Text>
 
                 <Text size="xs" c="var(--color-text-secondary)">
-                  Station:{" "}
-                  {DASHBOARD_STATUS_LABEL[item.stationType] ?? item.stationType}
+                  Station: {DASHBOARD_STATUS_LABEL[item.stationType] ?? item.stationType}
                 </Text>
               </Paper>
             ))}

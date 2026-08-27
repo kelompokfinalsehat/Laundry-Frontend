@@ -1,46 +1,21 @@
 "use client";
 
 import { Button, Group, Modal, NumberInput, Stack } from "@mantine/core";
-
 import { useEffect, useState } from "react";
-
-import type {
-  CreateShippingRatePayload,
-  ShippingRate,
-  UpdateShippingRatePayload,
-} from "@/types/api/pricing.types";
+import type { CreateShippingRatePayload, ShippingRate, UpdateShippingRatePayload } from "@/types/api/pricing.types";
 
 type Props = {
   opened: boolean;
-
   shippingRate: ShippingRate | null;
-
   isSubmitting: boolean;
-
   onClose: () => void;
-
   onCreate: (payload: CreateShippingRatePayload) => Promise<void>;
-
-  onUpdate: (
-    shippingRateId: string,
-    payload: UpdateShippingRatePayload,
-  ) => Promise<void>;
+  onUpdate: (shippingRateId: string, payload: UpdateShippingRatePayload) => Promise<void>;
 };
 
-export function ShippingRateModal({
-  opened,
-  shippingRate,
-  isSubmitting,
-  onClose,
-  onCreate,
-  onUpdate,
-}: Props) {
-  const [maxDistanceMeters, setMaxDistanceMeters] = useState<number | string>(
-    "",
-  );
-
+export function ShippingRateModal({ opened, shippingRate, isSubmitting, onClose, onCreate, onUpdate }: Props) {
+  const [maxDistanceMeters, setMaxDistanceMeters] = useState<number | string>("");
   const [price, setPrice] = useState<number | string>("");
-
   const isEditMode = shippingRate !== null;
 
   useEffect(() => {
@@ -93,12 +68,7 @@ export function ShippingRateModal({
   };
 
   return (
-    <Modal
-      opened={opened}
-      onClose={handleClose}
-      title={isEditMode ? "Ubah Tarif Pengiriman" : "Tambah Tarif Pengiriman"}
-      centered
-    >
+    <Modal opened={opened} onClose={handleClose} title={isEditMode ? "Ubah Tarif Pengiriman" : "Tambah Tarif Pengiriman"} centered>
       <Stack gap="md">
         <NumberInput
           label="Batas Jarak"
@@ -129,11 +99,7 @@ export function ShippingRateModal({
         />
 
         <Group justify="flex-end">
-          <Button
-            variant="default"
-            onClick={handleClose}
-            disabled={isSubmitting}
-          >
+          <Button variant="default" onClick={handleClose} disabled={isSubmitting}>
             Batal
           </Button>
 

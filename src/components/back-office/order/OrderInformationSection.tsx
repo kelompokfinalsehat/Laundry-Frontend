@@ -1,14 +1,5 @@
-import {
-  Badge,
-  Paper,
-  SimpleGrid,
-  Stack,
-  Text,
-} from "@mantine/core";
-
-import type {
-  OrderDetail,
-} from "@/types/api/order.types";
+import { Badge, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import type { OrderDetail } from "@/types/api/order.types";
 
 type Props = {
   order: OrderDetail;
@@ -69,27 +60,19 @@ const CUSTOMER_STATUS = {
   },
 } as const;
 
-function formatDateTime(
-  value?: string | null,
-) {
+function formatDateTime(value?: string | null) {
   if (!value) {
     return "-";
   }
 
-  return new Intl.DateTimeFormat(
-    "id-ID",
-    {
-      dateStyle: "medium",
-      timeStyle: "short",
-    },
-  ).format(new Date(value));
+  return new Intl.DateTimeFormat("id-ID", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
 }
 
-export function OrderInformationSection({
-  order,
-}: Props) {
-  const status =
-    CUSTOMER_STATUS[order.customerStatus];
+export function OrderInformationSection({ order }: Props) {
+  const status = CUSTOMER_STATUS[order.customerStatus];
 
   return (
     <Paper
@@ -97,14 +80,11 @@ export function OrderInformationSection({
       radius="md"
       p="lg"
       style={{
-        backgroundColor:
-          "var(--color-surface)",
+        backgroundColor: "var(--color-surface)",
       }}
     >
       <Stack gap="md">
-        <Text fw={600}>
-          Informasi Pesanan
-        </Text>
+        <Text fw={600}>Informasi Pesanan</Text>
 
         <SimpleGrid
           cols={{
@@ -116,10 +96,7 @@ export function OrderInformationSection({
           verticalSpacing="md"
         >
           <Stack gap={2}>
-            <Text
-              size="xs"
-              c="var(--color-text-secondary)"
-            >
+            <Text size="xs" c="var(--color-text-secondary)">
               Kode Pesanan
             </Text>
 
@@ -129,10 +106,7 @@ export function OrderInformationSection({
           </Stack>
 
           <Stack gap={2}>
-            <Text
-              size="xs"
-              c="var(--color-text-secondary)"
-            >
+            <Text size="xs" c="var(--color-text-secondary)">
               Outlet
             </Text>
 
@@ -142,64 +116,42 @@ export function OrderInformationSection({
           </Stack>
 
           <Stack gap={2}>
-            <Text
-              size="xs"
-              c="var(--color-text-secondary)"
-            >
+            <Text size="xs" c="var(--color-text-secondary)">
               Status Pesanan
             </Text>
 
-            <Badge
-              w="fit-content"
-              variant="light"
-              color={status.color}
-            >
+            <Badge w="fit-content" variant="light" color={status.color}>
               {status.label}
             </Badge>
           </Stack>
 
           <Stack gap={2}>
-            <Text
-              size="xs"
-              c="var(--color-text-secondary)"
-            >
+            <Text size="xs" c="var(--color-text-secondary)">
               Dibuat Pada
             </Text>
 
             <Text size="sm" fw={500}>
-              {formatDateTime(
-                order.createdAt,
-              )}
+              {formatDateTime(order.createdAt)}
             </Text>
           </Stack>
 
           <Stack gap={2}>
-            <Text
-              size="xs"
-              c="var(--color-text-secondary)"
-            >
+            <Text size="xs" c="var(--color-text-secondary)">
               Terakhir Diperbarui
             </Text>
 
             <Text size="sm" fw={500}>
-              {formatDateTime(
-                order.updatedAt,
-              )}
+              {formatDateTime(order.updatedAt)}
             </Text>
           </Stack>
 
           <Stack gap={2}>
-            <Text
-              size="xs"
-              c="var(--color-text-secondary)"
-            >
+            <Text size="xs" c="var(--color-text-secondary)">
               Diterima Pada
             </Text>
 
             <Text size="sm" fw={500}>
-              {formatDateTime(
-                order.receivedAt,
-              )}
+              {formatDateTime(order.receivedAt)}
             </Text>
           </Stack>
         </SimpleGrid>

@@ -1,26 +1,17 @@
 "use client";
 
 import { ActionIcon, Group, Menu, Table, Text } from "@mantine/core";
-
 import { IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons-react";
-
 import { ServerPagination } from "@/components/ui/ServerPagination";
-
+import { PaginatedResponse } from "@/types/api";
 import type { ShippingRate } from "@/types/api/pricing.types";
-
-import type { PaginationMeta } from "@/types/api/pagination.type";
 
 type Props = {
   data: ShippingRate[];
-
-  meta: PaginationMeta;
-
+  meta: PaginatedResponse<ShippingRate>["meta"];
   onPageChange: (page: number) => void;
-
   onPageSizeChange: (pageSize: 10 | 20 | 50) => void;
-
   onEdit: (shippingRate: ShippingRate) => void;
-
   onDeactivate: (shippingRate: ShippingRate) => void;
 };
 
@@ -45,14 +36,7 @@ function formatDateTime(value: string) {
   }).format(new Date(value));
 }
 
-export function ShippingRateTable({
-  data,
-  meta,
-  onPageChange,
-  onPageSizeChange,
-  onEdit,
-  onDeactivate,
-}: Props) {
+export function ShippingRateTable({ data, meta, onPageChange, onPageSizeChange, onEdit, onDeactivate }: Props) {
   return (
     <>
       <Table.ScrollContainer minWidth={700}>
@@ -90,7 +74,7 @@ export function ShippingRateTable({
                   </Text>
                 </Table.Td>
 
-               <Table.Td>
+                <Table.Td>
                   <Group justify="flex-end" gap={4}>
                     <Menu shadow="md" width={160} position="bottom-end">
                       <Menu.Target>
@@ -100,18 +84,11 @@ export function ShippingRateTable({
                       </Menu.Target>
 
                       <Menu.Dropdown>
-                        <Menu.Item
-                          leftSection={<IconEdit size={16} />}
-                          onClick={() => onEdit(shippingRate)}
-                        >
+                        <Menu.Item leftSection={<IconEdit size={16} />} onClick={() => onEdit(shippingRate)}>
                           Edit
                         </Menu.Item>
 
-                        <Menu.Item
-                          color="red"
-                          leftSection={<IconTrash size={16} />}
-                          onClick={() => onDeactivate(shippingRate)}
-                        >
+                        <Menu.Item color="red" leftSection={<IconTrash size={16} />} onClick={() => onDeactivate(shippingRate)}>
                           Nonaktifkan
                         </Menu.Item>
                       </Menu.Dropdown>

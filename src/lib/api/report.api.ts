@@ -1,10 +1,10 @@
-import type { ApiResponse, PaginatedResponse } from "@/types/api";
+import type { ApiResponse } from "@/types/api";
 
 import { api } from "./axios";
 
 import type {
-  EmployeePerformanceData,
   EmployeePerformanceQuery,
+  PaginatedEmployeePerformanceResponse,
   SalesQuery,
   SalesReport,
 } from "@/types/api/report.types";
@@ -25,9 +25,9 @@ export class ReportApi {
 
   async getEmployeePerformance(
     params?: EmployeePerformanceQuery,
-  ): Promise<PaginatedResponse<EmployeePerformanceData>> {
+  ): Promise<PaginatedEmployeePerformanceResponse> {
     const response = await api.get<
-      PaginatedResponse<EmployeePerformanceData>
+      PaginatedEmployeePerformanceResponse
     >(`${BASE_URL}/employee-performance`, {
       params,
     });

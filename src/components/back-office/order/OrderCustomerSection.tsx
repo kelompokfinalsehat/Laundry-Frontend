@@ -1,35 +1,22 @@
-import {
-  Paper,
-  SimpleGrid,
-  Stack,
-  Text,
-} from "@mantine/core";
-
-import type {
-  OrderDetail,
-} from "@/types/api/order.types";
+import { Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import type { OrderDetail } from "@/types/api/order.types";
 
 type Props = {
   customer: OrderDetail["customer"];
 };
 
-export function OrderCustomerSection({
-  customer,
-}: Props) {
+export function OrderCustomerSection({ customer }: Props) {
   return (
     <Paper
       withBorder
       radius="md"
       p="lg"
       style={{
-        backgroundColor:
-          "var(--color-surface)",
+        backgroundColor: "var(--color-surface)",
       }}
     >
       <Stack gap="md">
-        <Text fw={600}>
-          Informasi Pelanggan
-        </Text>
+        <Text fw={600}>Informasi Pelanggan</Text>
 
         <SimpleGrid
           cols={{
@@ -40,10 +27,7 @@ export function OrderCustomerSection({
           spacing="lg"
         >
           <Stack gap={2}>
-            <Text
-              size="xs"
-              c="var(--color-text-secondary)"
-            >
+            <Text size="xs" c="var(--color-text-secondary)">
               Nama
             </Text>
 
@@ -53,10 +37,7 @@ export function OrderCustomerSection({
           </Stack>
 
           <Stack gap={2}>
-            <Text
-              size="xs"
-              c="var(--color-text-secondary)"
-            >
+            <Text size="xs" c="var(--color-text-secondary)">
               Email
             </Text>
 
@@ -66,10 +47,7 @@ export function OrderCustomerSection({
           </Stack>
 
           <Stack gap={2}>
-            <Text
-              size="xs"
-              c="var(--color-text-secondary)"
-            >
+            <Text size="xs" c="var(--color-text-secondary)">
               Nomor Telepon
             </Text>
 

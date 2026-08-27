@@ -1,10 +1,5 @@
 import { Grid, Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
-import {
-  IconClipboardList,
-  IconClock,
-  IconCircleCheck,
-  IconCash,
-} from "@tabler/icons-react";
+import { IconClipboardList, IconClock, IconCircleCheck, IconCash } from "@tabler/icons-react";
 import type { DashboardSummary as DashboardSummaryType } from "@/types/api/dashboard.types";
 
 const formatCurrency = (value: number) =>
@@ -14,11 +9,7 @@ const formatCurrency = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value);
 
-export function DashboardSummary({
-  summary,
-}: {
-  summary: DashboardSummaryType;
-}) {
+export function DashboardSummary({ summary }: { summary: DashboardSummaryType }) {
   const items = [
     {
       label: "Total Pesanan",

@@ -2,7 +2,7 @@
 
 import { Paper, Stack, Text } from "@mantine/core";
 import { AreaChart } from "@mantine/charts";
-import type { RevenueTrendItem } from "@/types/api/dashboard.types";
+import { RevenueTrendItem } from "@/types/api/dashboard.types";
 
 interface RevenueTrendChartProps {
   data: RevenueTrendItem[];
@@ -99,8 +99,7 @@ export function RevenueTrendChart({ data }: RevenueTrendChartProps) {
         />
 
         <Text size="sm" c="var(--color-text-secondary)">
-          Pendapatan tertinggi:{" "}
-          {formatCurrency(Math.max(...data.map((item) => item.revenue), 0))}
+          Pendapatan tertinggi: {formatCurrency(Math.max(...data.map((item) => item.revenue), 0))}
         </Text>
       </Stack>
     </Paper>

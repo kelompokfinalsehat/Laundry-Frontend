@@ -1,32 +1,17 @@
 "use client";
 
-import {
-  ActionIcon,
-  Badge,
-  Group,
-  Table,
-  Text,
-} from "@mantine/core";
-
+import { ActionIcon, Badge, Group, Table, Text } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
-
 import { ServerPagination } from "@/components/ui/ServerPagination";
-
-import type {
-  CustomerStatus,
-  OrderListItem,
-} from "@/types/api/order.types";
-
-import type { PaginationMeta } from "@/types/api/pagination.type";
+import { CustomerStatus, PaginatedResponse } from "@/types/api";
+import type { OrderListItem } from "@/types/api/order.types";
 
 type Props = {
   data: OrderListItem[];
-  meta: PaginationMeta;
+  meta: PaginatedResponse<OrderListItem>["meta"];
   showOutlet: boolean;
   onPageChange: (page: number) => void;
-  onPageSizeChange: (
-    pageSize: 10 | 20 | 50,
-  ) => void;
+  onPageSizeChange: (pageSize: 10 | 20 | 50) => void;
   onView: (orderId: string) => void;
 };
 
@@ -109,144 +94,83 @@ function formatDateTime(value: string) {
   }).format(new Date(value));
 }
 
-export function OrderTable({
-  data,
-  meta,
-  showOutlet,
-  onPageChange,
-  onPageSizeChange,
-  onView,
-}: Props) {
+export function OrderTable({ data, meta, showOutlet, onPageChange, onPageSizeChange, onView }: Props) {
   return (
     <>
-      <Table.ScrollContainer
-        minWidth={showOutlet ? 1200 : 1050}
-      >
-        <Table
-          highlightOnHover
-          verticalSpacing="sm"
-        >
+      <Table.ScrollContainer minWidth={showOutlet ? 1200 : 1050}>
+        <Table highlightOnHover verticalSpacing="sm">
           <Table.Thead>
             <Table.Tr>
               <Table.Th>Kode Pesanan</Table.Th>
               <Table.Th>Pelanggan</Table.Th>
 
-              {showOutlet && (
-                <Table.Th>Outlet</Table.Th>
-              )}
+              {showOutlet && <Table.Th>Outlet</Table.Th>}
 
               <Table.Th>Jadwal Pickup</Table.Th>
               <Table.Th>Status Pesanan</Table.Th>
               <Table.Th>Status Pembayaran</Table.Th>
 
-              <Table.Th ta="right">
-                Aksi
-              </Table.Th>
+              <Table.Th ta="right">Aksi</Table.Th>
             </Table.Tr>
           </Table.Thead>
 
           <Table.Tbody>
             {data.map((order) => {
-              const customerStatus =
-                CUSTOMER_STATUS[
-                  order.customerStatus
-                ];
+              const customerStatus = CUSTOMER_STATUS[order.customerStatus];
 
-              const paymentStatus =
-                order.bill
-                  ? PAYMENT_STATUS[
-                      order.bill.paymentStatus
-                    ]
-                  : null;
+              const paymentStatus = order.bill ? PAYMENT_STATUS[order.bill.paymentStatus] : null;
 
               return (
                 <Table.Tr key={order.id}>
                   <Table.Td>
-                    <Text
-                      size="sm"
-                      fw={600}
-                      c="var(--color-text-primary)"
-                    >
+                    <Text size="sm" fw={600} c="var(--color-text-primary)">
                       {order.orderCode}
                     </Text>
                   </Table.Td>
 
                   <Table.Td>
-                    <Text
-                      size="sm"
-                      fw={600}
-                      c="var(--color-text-primary)"
-                    >
+                    <Text size="sm" fw={600} c="var(--color-text-primary)">
                       {order.customer.name}
                     </Text>
 
-                    <Text
-                      size="xs"
-                      c="var(--color-text-secondary)"
-                    >
+                    <Text size="xs" c="var(--color-text-secondary)">
                       {order.customer.email}
                     </Text>
                   </Table.Td>
 
                   {showOutlet && (
                     <Table.Td>
-                      <Text size="sm">
-                        {order.outlet.name}
-                      </Text>
+                      <Text size="sm">{order.outlet.name}</Text>
                     </Table.Td>
                   )}
 
                   <Table.Td>
-                    <Text
-                      size="sm"
-                      c="var(--color-text-secondary)"
-                    >
-                      {formatDateTime(
-                        order.pickupScheduledAt,
-                      )}
+                    <Text size="sm" c="var(--color-text-secondary)">
+                      {formatDateTime(order.pickupScheduledAt)}
                     </Text>
                   </Table.Td>
 
                   <Table.Td>
-                    <Badge
-                      variant="light"
-                      color={customerStatus.color}
-                    >
+                    <Badge variant="light" color={customerStatus.color}>
                       {customerStatus.label}
                     </Badge>
                   </Table.Td>
 
                   <Table.Td>
                     {paymentStatus ? (
-                      <Badge
-                        variant="light"
-                        color={paymentStatus.color}
-                      >
+                      <Badge variant="light" color={paymentStatus.color}>
                         {paymentStatus.label}
                       </Badge>
                     ) : (
-                      <Text
-                        size="sm"
-                        c="var(--color-text-secondary)"
-                      >
+                      <Text size="sm" c="var(--color-text-secondary)">
                         -
                       </Text>
                     )}
                   </Table.Td>
 
                   <Table.Td ta="right">
-                    <Group
-                      gap={4}
-                      justify="flex-end"
-                    >
-                      <ActionIcon
-                        variant="subtle"
-                        color="rinseBlue"
-                        aria-label={`Lihat pesanan ${order.orderCode}`}
-                        onClick={() =>
-                          onView(order.id)
-                        }
-                      >
+                    <Group gap={4} justify="flex-end">
+                      <ActionIcon variant="subtle" color="rinseBlue" aria-label={`Lihat pesanan ${order.orderCode}`} onClick={() => onView(order.id)}>
                         <IconChevronRight size={18} />
                       </ActionIcon>
                     </Group>
@@ -260,9 +184,7 @@ export function OrderTable({
 
       <ServerPagination
         page={meta.page}
-        pageSize={
-          meta.pageSize as 10 | 20 | 50
-        }
+        pageSize={meta.pageSize as 10 | 20 | 50}
         totalItems={meta.totalItems}
         totalPages={meta.totalPages}
         onPageChange={onPageChange}

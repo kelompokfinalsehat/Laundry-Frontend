@@ -1,5 +1,5 @@
 import { Badge, Paper, ScrollArea, Stack, Table, Text } from "@mantine/core";
-import type { RecentOrderItem } from "@/types/api/dashboard.types";
+import { RecentOrderItem } from "@/types/api/dashboard.types";
 import { DASHBOARD_STATUS_LABEL } from "@/lib/constants/dashboard-status";
 
 const formatDate = (date: string) =>

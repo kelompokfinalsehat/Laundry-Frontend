@@ -1,34 +1,21 @@
 import { ActionIcon, Badge, Table, Text, Group, Menu } from "@mantine/core";
-
 import { IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons-react";
-
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ServerPagination } from "@/components/ui/ServerPagination";
-
 import type { Outlet } from "@/types/api/outlet.types";
-import type { PaginationMeta } from "@/types/api/pagination.type";
+import { PaginatedResponse } from "@/types/api";
 import { formatDate } from "@/utils/dateFormatter";
 
 interface OutletTableProps {
   data: Outlet[];
-  meta: PaginationMeta;
-
+  meta: PaginatedResponse<Outlet>["meta"];
   onPageChange: (page: number) => void;
-
   onPageSizeChange: (size: 10 | 20 | 50) => void;
-
   onEdit: (id: string) => void;
-
   onDelete: (outlet: Outlet) => void;
 }
-export function OutletTable({
-  data,
-  meta,
-  onPageChange,
-  onPageSizeChange,
-  onEdit,
-  onDelete,
-}: OutletTableProps) {
+
+export function OutletTable({ data, meta, onPageChange, onPageSizeChange, onEdit, onDelete }: OutletTableProps) {
   return (
     <>
       <Table.ScrollContainer minWidth={700}>
@@ -60,10 +47,7 @@ export function OutletTable({
                 </Table.Td>
 
                 <Table.Td>
-                  <Badge
-                    color={outlet.isActive ? "green" : "gray"}
-                    variant="light"
-                  >
+                  <Badge color={outlet.isActive ? "green" : "gray"} variant="light">
                     {outlet.isActive ? "Aktif" : "Tidak Aktif"}
                   </Badge>
                 </Table.Td>
@@ -83,18 +67,11 @@ export function OutletTable({
                         </ActionIcon>
                       </Menu.Target>
                       <Menu.Dropdown>
-                        <Menu.Item
-                          leftSection={<IconEdit size={16} />}
-                          onClick={() => onEdit(outlet.id)}
-                        >
+                        <Menu.Item leftSection={<IconEdit size={16} />} onClick={() => onEdit(outlet.id)}>
                           Edit
                         </Menu.Item>
                         {outlet.isActive && (
-                          <Menu.Item
-                            color="red"
-                            leftSection={<IconTrash size={16} />}
-                            onClick={() => onDelete(outlet)}
-                          >
+                          <Menu.Item color="red" leftSection={<IconTrash size={16} />} onClick={() => onDelete(outlet)}>
                             Nonaktifkan
                           </Menu.Item>
                         )}

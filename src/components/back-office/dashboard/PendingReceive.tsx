@@ -1,6 +1,6 @@
 import { Badge, Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconTruckDelivery } from "@tabler/icons-react";
-import type { DashboardResponse } from "@/types/api/dashboard.types";
+import { DashboardResponse } from "@/types/api/dashboard.types";
 
 type Props = {
   data: DashboardResponse["pendingReceive"];
@@ -20,13 +20,7 @@ export function PendingReceive({ data }: Props) {
       <Stack gap="lg">
         <Group justify="space-between" align="flex-start" wrap="nowrap">
           <Group gap="sm" wrap="nowrap">
-            <ThemeIcon
-              size={40}
-              radius="md"
-              variant="light"
-              color="orange"
-              style={{ flexShrink: 0 }}
-            >
+            <ThemeIcon size={40} radius="md" variant="light" color="orange" style={{ flexShrink: 0 }}>
               <IconTruckDelivery size={20} />
             </ThemeIcon>
 

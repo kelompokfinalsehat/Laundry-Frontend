@@ -1,40 +1,17 @@
 "use client";
 
-import {
-  ActionIcon,
-  Button,
-  Group,
-  Select,
-  TextInput,
-  Tooltip,
-} from "@mantine/core";
-
+import { ActionIcon, Group, Select, TextInput, Tooltip } from "@mantine/core";
 import { IconRefresh, IconSearch } from "@tabler/icons-react";
-
-import type {
-  ComplaintCategory,
-  ComplaintQuery,
-  ComplaintSortBy,
-  ComplaintStatus,
-  SortOrder,
-} from "@/types/api/complaint.types";
+import { ComplaintCategory, ComplaintStatus, SortOrder } from "@/types/api";
+import { ComplaintQuery, ComplaintSortBy } from "@/types/api/complaint.types";
 
 type Props = {
   query: ComplaintQuery;
-
-  onChange: <Key extends keyof ComplaintQuery>(
-    key: Key,
-    value: ComplaintQuery[Key],
-  ) => void;
-
+  onChange: <Key extends keyof ComplaintQuery>(key: Key, value: ComplaintQuery[Key]) => void;
   onStatusChange: (value: ComplaintStatus | null) => void;
-
   onSortByChange: (value: ComplaintSortBy) => void;
-
   onSortOrderChange: (value: SortOrder) => void;
-
   onCategoryChange: (value: ComplaintCategory | null) => void;
-
   onReset: () => void;
 };
 
@@ -90,18 +67,10 @@ const SORT_ORDER_OPTIONS = [
   },
 ];
 
-export function ComplaintFilters({
-  query,
-  onChange,
-  onStatusChange,
-  onSortByChange,
-  onSortOrderChange,
-  onReset,
-  onCategoryChange,
-}: Props) {
+export function ComplaintFilters({ query, onChange, onStatusChange, onSortByChange, onSortOrderChange, onReset, onCategoryChange }: Props) {
   return (
     <>
-      <Group align="flex-end">
+      <Group align="flex-end" gap="sm">
         <TextInput
           label="Cari"
           placeholder="Cari kode pesanan atau pelanggan"
@@ -140,17 +109,12 @@ export function ComplaintFilters({
         />
 
         <Tooltip label="Reset filter">
-          <ActionIcon
-            variant="default"
-            size="input-sm"
-            onClick={onReset}
-            aria-label="Reset filter"
-          >
+          <ActionIcon variant="default" size="input-sm" onClick={onReset} aria-label="Reset filter">
             <IconRefresh size={16} />
           </ActionIcon>
         </Tooltip>
       </Group>
-      <Group align="flex-end">
+      <Group align="flex-end" gap="sm">
         <Select
           label="Status"
           placeholder="Semua status"
@@ -166,9 +130,7 @@ export function ComplaintFilters({
           clearable
           data={CATEGORY_OPTIONS}
           value={query.category ?? null}
-          onChange={(value) =>
-            onCategoryChange(value as ComplaintCategory | null)
-          }
+          onChange={(value) => onCategoryChange(value as ComplaintCategory | null)}
         />
       </Group>
     </>

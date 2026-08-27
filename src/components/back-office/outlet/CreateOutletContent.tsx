@@ -2,7 +2,6 @@
 
 import { Stack } from "@mantine/core";
 import { useRouter } from "next/navigation";
-
 import { PageHeader } from "@/components/ui/PageHeader";
 import { OutletForm } from "./OutletForm";
 import { useCreateOutlet } from "@/hooks/outlet.hooks";
@@ -27,8 +26,7 @@ export function CreateOutletContent() {
       onError: (error) => {
         notifications.show({
           title: "Gagal",
-          message:
-            error instanceof Error ? error.message : "Gagal membuat outlet.",
+          message: error instanceof Error ? error.message : "Gagal membuat outlet.",
           color: "red",
         });
       },
@@ -37,15 +35,9 @@ export function CreateOutletContent() {
 
   return (
     <Stack gap="lg">
-      <PageHeader
-        title="Tambah Outlet"
-        description="Tambahkan outlet baru ke dalam sistem."
-      />
+      <PageHeader title="Tambah Outlet" description="Tambahkan outlet baru ke dalam sistem." />
 
-      <OutletForm
-        onSubmit={handleSubmit}
-        isSubmitting={createOutlet.isPending}
-      />
+      <OutletForm onSubmit={handleSubmit} isSubmitting={createOutlet.isPending} />
     </Stack>
   );
 }

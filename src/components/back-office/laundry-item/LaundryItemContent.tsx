@@ -1,102 +1,33 @@
 "use client";
 
-import { useState } from "react";
 import { Button, Paper, Stack } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { useDebouncedValue } from "@mantine/hooks";
 import { IconPlus } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
-
 import { PageHeader } from "@/components/ui/PageHeader";
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { LaundryItemFilters } from "./LaundryItemFilters";
 import { LaundryItemTable } from "./LaundryItemTable";
-
-import {
-  useDeactivateLaundryItem,
-  useLaundryItems,
-} from "@/hooks/laundry-item.hooks";
-
-import type {
-  LaundryItem,
-  LaundryItemQuery,
-} from "@/types/api/laundry-item.types";
-
-type LaundryItemFiltersState = Pick<LaundryItemQuery, "search">;
+import { useLaundryItemHooks } from "@/hooks/laundry-item.hooks";
+import TableSkeleton from "../shared/TableSkeleton";
 
 export function LaundryItemContent() {
-  const router = useRouter();
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState<10 | 20 | 50>(10);
-  const [filters, setFilters] = useState<LaundryItemFiltersState>({});
-  const [selectedItem, setSelectedItem] = useState<LaundryItem | null>(null);
-  const [debouncedSearch] = useDebouncedValue(filters.search ?? "", 400);
-  const [sortBy, setSortBy] =
-    useState<NonNullable<LaundryItemQuery["sortBy"]>>("createdAt");
-  const [sortOrder, setSortOrder] =
-    useState<NonNullable<LaundryItemQuery["sortOrder"]>>("desc");
-
-  const laundryItems = useLaundryItems({
-    page,
-    pageSize,
-    ...filters,
-    search: debouncedSearch || undefined,
+  const {
+    router,
+    filters,
     sortBy,
     sortOrder,
-  });
-
-  const deactivateLaundryItem = useDeactivateLaundryItem();
-
-  const handleFilterChange = (
-    key: keyof LaundryItemFiltersState,
-    value: string | null,
-  ) => {
-    setFilters((current) => ({
-      ...current,
-      [key]: value || undefined,
-    }));
-
-    setPage(1);
-  };
-
-  const handleReset = () => {
-    setFilters({});
-
-    setSortBy("createdAt");
-
-    setSortOrder("desc");
-
-    setPage(1);
-  };
-
-  const handleDeactivate = async () => {
-    if (!selectedItem) {
-      return;
-    }
-    await deactivateLaundryItem.mutateAsync(selectedItem.id, {
-      onSuccess: () => {
-        notifications.show({
-          title: "Berhasil",
-          message: "Item laundry berhasil dinonaktifkan.",
-          color: "green",
-        });
-
-        setSelectedItem(null);
-      },
-      onError: (error) => {
-        notifications.show({
-          title: "Gagal",
-          message:
-            error instanceof Error
-              ? error.message
-              : "Gagal menonaktifkan item laundry.",
-          color: "red",
-        });
-      },
-    });
-  };
-
+    handleFilterChange,
+    setSortBy,
+    setPage,
+    setSortOrder,
+    handleReset,
+    laundryItems,
+    setPageSize,
+    setSelectedItem,
+    selectedItem,
+    deactivateLaundryItem,
+    handleDeactivate,
+  } = useLaundryItemHooks();
   return (
     <>
       <Stack gap="lg">
@@ -104,12 +35,7 @@ export function LaundryItemContent() {
           title="Laundry Item"
           description="Kelola jenis item laundry yang tersedia dalam sistem."
           action={
-            <Button
-              leftSection={<IconPlus size={16} />}
-              onClick={() =>
-                router.push("/internal/super-admin/item-laundry/baru")
-              }
-            >
+            <Button leftSection={<IconPlus size={16} />} onClick={() => router.push("/internal/super-admin/item-laundry/baru")}>
               Tambah Item
             </Button>
           }
@@ -151,6 +77,7 @@ export function LaundryItemContent() {
               isEmpty={(response) => response.data.length === 0}
               emptyTitle="Laundry item tidak ditemukan"
               emptyDescription="Tidak ada laundry item yang sesuai dengan pencarian."
+              skeleton={<TableSkeleton />}
             >
               {(response) => (
                 <LaundryItemTable
@@ -162,9 +89,7 @@ export function LaundryItemContent() {
 
                     setPage(1);
                   }}
-                  onEdit={(item) =>
-                    router.push(`/internal/super-admin/item-laundry/${item.id}`)
-                  }
+                  onEdit={(item) => router.push(`/internal/super-admin/item-laundry/${item.id}`)}
                   onDeactivate={(item) => setSelectedItem(item)}
                 />
               )}

@@ -1,32 +1,22 @@
 "use client";
 
 import { ActionIcon, Group, Menu, Table, Text } from "@mantine/core";
-
 import { IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons-react";
-
 import { ServerPagination } from "@/components/ui/ServerPagination";
-
-import type { LaundryItem } from "@/types/api/laundry-item.types";
-import type { PaginationMeta } from "@/types/api/pagination.type";
 import { formatDate } from "@/utils/dateFormatter";
+import { PaginatedResponse } from "@/types/api";
+import type { LaundryItem } from "@/types/api/laundry-item.types";
 
 type Props = {
   data: LaundryItem[];
-  meta: PaginationMeta;
+  meta: PaginatedResponse<LaundryItem>["meta"];
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: 10 | 20 | 50) => void;
   onEdit: (item: LaundryItem) => void;
   onDeactivate: (item: LaundryItem) => void;
 };
 
-export function LaundryItemTable({
-  data,
-  meta,
-  onPageChange,
-  onPageSizeChange,
-  onEdit,
-  onDeactivate,
-}: Props) {
+export function LaundryItemTable({ data, meta, onPageChange, onPageSizeChange, onEdit, onDeactivate }: Props) {
   return (
     <>
       <Table.ScrollContainer minWidth={700}>
@@ -64,18 +54,11 @@ export function LaundryItemTable({
                       </Menu.Target>
 
                       <Menu.Dropdown>
-                        <Menu.Item
-                          leftSection={<IconEdit size={16} />}
-                          onClick={() => onEdit(item)}
-                        >
+                        <Menu.Item leftSection={<IconEdit size={16} />} onClick={() => onEdit(item)}>
                           Edit
                         </Menu.Item>
 
-                        <Menu.Item
-                          color="red"
-                          leftSection={<IconTrash size={16} />}
-                          onClick={() => onDeactivate(item)}
-                        >
+                        <Menu.Item color="red" leftSection={<IconTrash size={16} />} onClick={() => onDeactivate(item)}>
                           Nonaktifkan
                         </Menu.Item>
                       </Menu.Dropdown>

@@ -1,10 +1,13 @@
-import type { PaginationMeta } from "./pagination.type";
-
-export type EmployeeRole = "OUTLET_ADMIN" | "WORKER" | "DRIVER";
-
-export type AccountStatus = "INVITED" | "ACTIVE" | "INACTIVE";
-
-export type WorkStatus = "OFF_DUTY" | "AVAILABLE" | "BUSY";
+import {
+  AccountStatus,
+  DriverAssignmentStatus,
+  EmployeeRole,
+  PickupDeliveryType,
+  SortOrder,
+  StationType,
+  WorkerAssignmentStatus,
+  WorkStatus,
+} from ".";
 
 export type EmployeeOutlet = {
   id: string;
@@ -50,4 +53,49 @@ export type UpdateEmployeePayload = {
 export type AssignEmployeePayload = {
   employeeId: string;
   outletId: string;
+};
+
+export type OutletTeamSortBy = "name" | "role" | "workStatus";
+
+export type OutletTeamQuery = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  role?: EmployeeRole;
+  workStatus?: WorkStatus;
+  stationType?: StationType;
+  sortBy?: OutletTeamSortBy;
+  sortOrder?: SortOrder;
+};
+
+export type OutletTeamWorkerTask = {
+  id: string;
+  stationType: StationType;
+  status: WorkerAssignmentStatus;
+  assignedAt: string;
+  startedAt: string | null;
+};
+
+export type OutletTeamDriverTask = {
+  id: string;
+  taskType: PickupDeliveryType;
+  status: DriverAssignmentStatus;
+  assignedAt: string;
+  pickedUpAt: string | null;
+};
+
+export type OutletTeamItem = {
+  id: string;
+  name: string;
+  email: string;
+
+  role: Exclude<EmployeeRole, "OUTLET_ADMIN">
+
+  accountStatus: AccountStatus;
+
+  workStatus: WorkStatus | null;
+
+  workerTasks: OutletTeamWorkerTask[];
+
+  driverTasks: OutletTeamDriverTask[];
 };

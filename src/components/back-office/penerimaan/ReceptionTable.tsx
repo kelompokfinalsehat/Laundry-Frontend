@@ -1,31 +1,21 @@
 "use client";
 
 import { ActionIcon, Button, Group, Table, Text } from "@mantine/core";
-
 import { IconChevronRight } from "@tabler/icons-react";
-
 import { ServerPagination } from "@/components/ui/ServerPagination";
-
+import { PaginatedResponse } from "@/types/api";
 import type { OrderListItem } from "@/types/api/order.types";
-
-import type { PaginationMeta } from "@/types/api/pagination.type";
 
 type ReceptionTableMode = "RECEIVE" | "CREATE_ORDER";
 
 type Props = {
   data: OrderListItem[];
-  meta: PaginationMeta;
-
+  meta: PaginatedResponse<OrderListItem>["meta"];
   mode: ReceptionTableMode;
-
   onPageChange: (page: number) => void;
-
   onPageSizeChange: (pageSize: 10 | 20 | 50) => void;
-
   onReceive: (order: OrderListItem) => void;
-
   onCreateOrder: (order: OrderListItem) => void;
-
   onView: (orderId: string) => void;
 };
 
@@ -36,16 +26,7 @@ function formatDateTime(value: string) {
   }).format(new Date(value));
 }
 
-export function ReceptionTable({
-  data,
-  meta,
-  mode,
-  onPageChange,
-  onPageSizeChange,
-  onReceive,
-  onCreateOrder,
-  onView,
-}: Props) {
+export function ReceptionTable({ data, meta, mode, onPageChange, onPageSizeChange, onReceive, onCreateOrder, onView }: Props) {
   return (
     <>
       <Table.ScrollContainer minWidth={800}>
@@ -101,12 +82,7 @@ export function ReceptionTable({
                       </Button>
                     )}
 
-                    <ActionIcon
-                      variant="subtle"
-                      color="rinseBlue"
-                      aria-label={`Lihat pesanan ${order.orderCode}`}
-                      onClick={() => onView(order.id)}
-                    >
+                    <ActionIcon variant="subtle" color="rinseBlue" aria-label={`Lihat pesanan ${order.orderCode}`} onClick={() => onView(order.id)}>
                       <IconChevronRight size={18} />
                     </ActionIcon>
                   </Group>

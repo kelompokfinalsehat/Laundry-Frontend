@@ -11,11 +11,8 @@ import { notifications } from "@mantine/notifications";
 export function EditOutletContent() {
   const router = useRouter();
   const params = useParams<{ outletId: string }>();
-
   const outletId = params.outletId;
-
   const { data: outlet, isLoading, isError } = useOutlet(outletId);
-
   const updateOutlet = useUpdateOutlet();
 
   const handleSubmit = async (values: CreateOutletPayload) => {
@@ -37,10 +34,7 @@ export function EditOutletContent() {
         onError: (error) => {
           notifications.show({
             title: "Gagal",
-            message:
-              error instanceof Error
-                ? error.message
-                : "Gagal memperbarui outlet.",
+            message: error instanceof Error ? error.message : "Gagal memperbarui outlet.",
             color: "red",
           });
         },
@@ -66,10 +60,7 @@ export function EditOutletContent() {
 
   return (
     <Stack gap="lg">
-      <PageHeader
-        title="Edit Outlet"
-        description="Perbarui informasi outlet."
-      />
+      <PageHeader title="Edit Outlet" description="Perbarui informasi outlet." />
 
       <OutletForm
         initialValues={{

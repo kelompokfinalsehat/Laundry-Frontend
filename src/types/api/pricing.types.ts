@@ -1,4 +1,4 @@
-import type { PaginationMeta } from "./pagination.type";
+import { SortOrder } from ".";
 
 export type DecimalString = string;
 
@@ -21,10 +21,6 @@ export type ShippingRateSortBy =
   | "price"
   | "maxDistanceMeters"
   | "createdAt";
-
-export type SortOrder =
-  | "asc"
-  | "desc";
 
 export type ShippingRateQuery = {
   page?: number;

@@ -1,10 +1,8 @@
 "use client";
 
 import { Stack } from "@mantine/core";
-
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { useEmployee } from "@/hooks/employee.hooks";
-
 import { EmployeeActions } from "./EmployeeActions";
 import { EmployeeDetailHeader } from "./EmployeeDetailHeader";
 import { EmployeeInformation } from "./EmployeeInformation";
