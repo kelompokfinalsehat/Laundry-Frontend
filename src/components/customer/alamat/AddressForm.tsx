@@ -18,6 +18,7 @@ import {
 import { ApiError } from "@/lib/api/axios";
 import type {
   AddressFormProps,
+  AddressFormSubmitValues,
   AddressFormValues,
 } from "@/types/api/address.types";
 import {
@@ -58,8 +59,8 @@ export function AddressForm({
       streetDetail: initialAddress?.streetDetail ?? "",
       zipCode: initialAddress?.zipCode ?? "",
       phone: initialAddress?.phone ?? user?.phone ?? "",
-      longitude: null,
-      latitude: null,
+      longitude: undefined,
+      latitude: undefined,
     },
     validate: schemaResolver(createAddressSchema),
   });
@@ -87,7 +88,7 @@ export function AddressForm({
   const isAddressDetailComplete = previewLocationCheck.success;
 
   const hasPosition =
-    form.values.latitude !== null && form.values.longitude !== null;
+    form.values.latitude !== undefined && form.values.longitude !== undefined;
 
   function handleCheckLocation() {
     setLocationError(null);
@@ -110,7 +111,7 @@ export function AddressForm({
 
     previewLocationMutation.mutate(result.data, {
       onSuccess: ({ latitude, longitude, found }) => {
-        if (found && latitude !== null && longitude !== null) {
+        if (found && latitude !== undefined && longitude !== undefined) {
           form.setFieldValue("latitude", latitude);
           form.setFieldValue("longitude", longitude);
         } else {
@@ -136,15 +137,19 @@ export function AddressForm({
     form.setFieldValue("longitude", lng);
   }
 
-  function handleFormSubmit(values: AddressFormValues) {
-    if (values.latitude === null || values.longitude === null) return;
-
-    onSubmit({
-      ...values,
-      latitude: values.latitude,
-      longitude: values.longitude,
-    });
+function handleFormSubmit(values: AddressFormValues) {
+  if (values.latitude === undefined || values.longitude === undefined) {
+    return;
   }
+
+  const submitValues: AddressFormSubmitValues = {
+    ...values,
+    latitude: values.latitude,
+    longitude: values.longitude,
+  };
+
+  onSubmit(submitValues);
+}
 
   const errorMessage =
     error instanceof ApiError
@@ -195,8 +200,8 @@ export function AddressForm({
             form.setFieldValue("districtName", "");
             form.setFieldValue("subDistrictId", "");
             form.setFieldValue("subDistrictName", "");
-            form.setFieldValue("latitude", null);
-            form.setFieldValue("longitude", null);
+            form.setFieldValue("latitude", undefined);
+            form.setFieldValue("longitude", undefined);
           }}
         />
         <Select
@@ -217,8 +222,8 @@ export function AddressForm({
             form.setFieldValue("districtName", "");
             form.setFieldValue("subDistrictId", "");
             form.setFieldValue("subDistrictName", "");
-            form.setFieldValue("latitude", null);
-            form.setFieldValue("longitude", null);
+            form.setFieldValue("latitude", undefined);
+            form.setFieldValue("longitude", undefined);
           }}
         />
 
@@ -239,8 +244,8 @@ export function AddressForm({
             form.setFieldValue("districtName", selected?.name ?? "");
             form.setFieldValue("subDistrictId", "");
             form.setFieldValue("subDistrictName", "");
-            form.setFieldValue("latitude", null);
-            form.setFieldValue("longitude", null);
+            form.setFieldValue("latitude", undefined);
+            form.setFieldValue("longitude", undefined);
           }}
         />
 
@@ -264,8 +269,8 @@ export function AddressForm({
 
             form.setFieldValue("subDistrictId", value ?? "");
             form.setFieldValue("subDistrictName", selected?.name ?? "");
-            form.setFieldValue("latitude", null);
-            form.setFieldValue("longitude", null);
+            form.setFieldValue("latitude", undefined);
+            form.setFieldValue("longitude", undefined);
           }}
         />
 
@@ -282,8 +287,8 @@ export function AddressForm({
               "zipCode",
               e.currentTarget.value.replace(/\D/g, ""),
             );
-            form.setFieldValue("latitude", null);
-            form.setFieldValue("longitude", null);
+            form.setFieldValue("latitude", undefined);
+            form.setFieldValue("longitude", undefined);
           }}
         />
 
@@ -296,8 +301,8 @@ export function AddressForm({
           {...form.getInputProps("streetDetail")}
           onChange={(e) => {
             form.setFieldValue("streetDetail", e.currentTarget.value);
-            form.setFieldValue("latitude", null);
-            form.setFieldValue("longitude", null);
+            form.setFieldValue("latitude", undefined);
+            form.setFieldValue("longitude", undefined);
           }}
         />
 
@@ -336,7 +341,7 @@ export function AddressForm({
             </Alert>
           )}
 
-          {hasPosition && form.values.latitude !== null && form.values.longitude !== null && (
+          {hasPosition && form.values.latitude !== undefined && form.values.longitude !== undefined && (
             <div style={{ marginTop: 8 }}>
               <LocationPicker
                 initialLat={form.values.latitude}

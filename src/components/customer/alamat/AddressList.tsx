@@ -6,7 +6,7 @@ import { modals } from "@mantine/modals";
 
 import { AddressCard } from "./AddressCard";
 import { AddressForm } from "./AddressForm";
-import type { Address, AddressFormValues } from "@/types/api/address.types";
+import type { Address, AddressFormSubmitValues, AddressFormValues } from "@/types/api/address.types";
 import { useAddresses, useCreateAddress, useDeleteAddress, useSetPrimaryAddress, useUpdateAddress } from "@/hooks/address.hooks";
 
 const MAX_ADDRESSES = 5; // samain sama batas backend (address.service.ts)
@@ -36,16 +36,16 @@ export function AddressList() {
     setModalMode("edit");
   }
 
-  function handleSubmit(values: AddressFormValues){
-    if (modalMode === "edit" && editingAddress) {
-      updateMutation.mutate(
-        { id: editingAddress.id, payload: values },
-        { onSuccess: closeModal }
-      );
-    } else {
-      createMutation.mutate(values, { onSuccess: closeModal });
-    }
+  function handleSubmit(values: AddressFormSubmitValues) {
+  if (modalMode === "edit" && editingAddress) {
+    updateMutation.mutate(
+      { id: editingAddress.id, payload: values },
+      { onSuccess: closeModal },
+    );
+  } else {
+    createMutation.mutate(values, { onSuccess: closeModal });
   }
+}
 
   function handleDelete(address: Address) {
     modals.openConfirmModal({
