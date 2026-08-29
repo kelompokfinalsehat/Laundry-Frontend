@@ -32,12 +32,24 @@ export type AddressFormValues = {
   streetDetail: string;
   zipCode: string;
   phone: string;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 export type AddressFormProps = {
   initialAddress?: Address;
   isPending: boolean;
   error: unknown;
-  onSubmit: (values: AddressFormValues) => void;
+  onSubmit: (values: Omit<AddressFormValues, "latitude" | "longitude"> & {
+    latitude: number;
+    longitude: number;
+  }) => void;
   onCancel: () => void;
+};
+
+
+export type PreviewLocationResult = {
+  latitude: number | null;
+  longitude: number | null;
+  found: boolean;
 };

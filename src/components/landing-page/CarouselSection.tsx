@@ -17,7 +17,7 @@ import img1 from "@/../public/images/request-pickup.png";
 import img2 from "@/../public/images/menunggu-cucian.png";
 import img3 from "@/../public/images/delivery.png";
 import classes from "./css/CarouselSection.module.css";
-import { useLocationPermission } from "../shared/LocationPermission/hooks/useLocationPermission";
+import { useLocationPermission } from "../shared/Location/LocationPermission/hooks/useLocationPermission";
 
 const HERO_SLIDES = [
   {
@@ -97,7 +97,7 @@ export default function CarouselSection() {
                   <Button
                     component={Link}
                     href="/request-pickup"
-                    onClick={() => requestPermission()} 
+                    onClick={() => requestPermission()}
                     style={{
                       backgroundColor: "var(--color-accent)",
                       color: "var(--color-text-on-accent)",

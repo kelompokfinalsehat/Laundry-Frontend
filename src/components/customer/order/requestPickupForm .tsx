@@ -20,7 +20,7 @@ import { createOrderSchema } from "@/lib/validation/order.validation";
 import { ApiError } from "@/lib/api/axios";
 import { useAddresses } from "@/hooks/address.hooks";
 import { useCreateOrder } from "@/hooks/order.hooks";
-import { useLocationPermission } from "@/components/shared/LocationPermission/hooks/useLocationPermission";
+import { useLocationPermission } from "@/components/shared/Location/LocationPermission/hooks/useLocationPermission";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
 

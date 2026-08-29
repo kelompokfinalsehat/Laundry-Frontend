@@ -1,6 +1,11 @@
-import { Address, Region } from "@/types/api/address.types";
+import {
+  Address,
+  PreviewLocationResult,
+  Region,
+} from "@/types/api/address.types";
 import {
   CreateAddressSchema,
+  PreviewLocationInput,
   UpdateAddressSchema,
 } from "../validation/address.validation";
 import { api } from "./axios";
@@ -59,6 +64,13 @@ export class AddressApi {
     const { data } = await api.get<{ data: Region[] }>(
       `regions/sub-districts/${districtsId}`,
     );
+    return data.data;
+  }
+
+  async getPreviewLocation(payload: PreviewLocationInput) {
+    const { data } = await api.post<{
+      data: PreviewLocationResult;
+    }>("/regions/preview-location", payload);
     return data.data;
   }
 }
