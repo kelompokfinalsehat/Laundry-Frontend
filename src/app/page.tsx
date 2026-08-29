@@ -9,7 +9,7 @@ import Header from "@/components/shared/Headers/Header";
 import CaraKerja from "@/components/landing-page/CaraKerjaSection";
 import CarouselSection from "@/components/landing-page/CarouselSection";
 import HeroSection from "@/components/landing-page/HeroSection";
-import { LocationPermissionGate } from "@/components/shared/LocationPermission/LocationPermissionGate";
+import { LocationPermissionGate } from "@/components/shared/Location/LocationPermission/LocationPermissionGate";
 
 export default function Page() {
   return (
@@ -17,7 +17,7 @@ export default function Page() {
       style={{ backgroundColor: "var(--color-background)", minHeight: "100vh" }}
     >
       {/* Header */}
-      
+
       <Header />
 
       <Container size="lg" pt={40}>

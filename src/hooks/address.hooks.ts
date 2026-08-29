@@ -85,3 +85,9 @@ export function useSubDistrict(districtsId: string | null) {
     enabled: !!districtsId,
   });
 }
+
+export function usePreviewLocation() {
+  return useMutation({
+    mutationFn: addressApi.getPreviewLocation,
+  });
+}

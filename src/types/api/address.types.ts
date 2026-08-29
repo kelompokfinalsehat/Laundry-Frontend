@@ -13,8 +13,8 @@ export type Address = {
   streetDetail: string;
   formattedAddress: string;
   phone: string;
-  latitude: string;
-  longitude: string;
+  latitude: number | undefined; 
+  longitude: number | undefined; 
   isPrimary: boolean;
 };
 export type Region = { id: number; name: string };
@@ -32,12 +32,39 @@ export type AddressFormValues = {
   streetDetail: string;
   zipCode: string;
   phone: string;
+  latitude: number | undefined;
+  longitude: number | undefined;
+};
+
+// Payload final setelah pin di peta dipastikan ada
+export type AddressFormSubmitValues = {
+  label: string;
+  provinceId: string;
+  provinceName: string;
+  cityId: string;
+  cityName: string;
+  districtId: string;
+  districtName: string;
+  subDistrictId: string;
+  subDistrictName: string;
+  streetDetail: string;
+  zipCode: string;
+  phone: string;
+  latitude: number;
+  longitude: number;
 };
 
 export type AddressFormProps = {
   initialAddress?: Address;
   isPending: boolean;
   error: unknown;
-  onSubmit: (values: AddressFormValues) => void;
+  onSubmit: (values: AddressFormSubmitValues) => void;
   onCancel: () => void;
+};
+
+
+export type PreviewLocationResult = {
+  latitude: number | undefined;
+  longitude: number | undefined;
+  found: boolean;
 };

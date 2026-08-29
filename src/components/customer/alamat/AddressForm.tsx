@@ -7,21 +7,32 @@ import {
   Button,
   Alert,
   Select,
+  Text,
+  Group,
 } from "@mantine/core";
 import { useForm, schemaResolver } from "@mantine/form";
-import { createAddressSchema } from "@/lib/validation/address.validation";
+import {
+  createAddressSchema,
+  previewLocationSchema,
+} from "@/lib/validation/address.validation";
 import { ApiError } from "@/lib/api/axios";
 import type {
   AddressFormProps,
+  AddressFormSubmitValues,
   AddressFormValues,
 } from "@/types/api/address.types";
 import {
   useCities,
   useDistrict,
+  usePreviewLocation,
   useProvinces,
   useSubDistrict,
 } from "@/hooks/address.hooks";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useState } from "react";
+import { LocationPicker } from "@/components/shared/Location/LocationPicker";
+
+const DEFAULT_FALLBACK_POSITION = { lat: -6.2, lng: 106.816666 };
 
 export function AddressForm({
   initialAddress,
@@ -30,6 +41,9 @@ export function AddressForm({
   onSubmit,
   onCancel,
 }: AddressFormProps) {
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const previewLocationMutation = usePreviewLocation();
+
   const user = useAuthStore((state) => state.user);
   const form = useForm<AddressFormValues>({
     initialValues: {
@@ -41,10 +55,12 @@ export function AddressForm({
       districtId: initialAddress?.districtId ?? "",
       districtName: initialAddress?.districtName ?? "",
       subDistrictId: initialAddress?.subDistrictId ?? "",
-      subDistrictName: initialAddress?.districtName ?? "",
+      subDistrictName: initialAddress?.subDistrictName ?? "",
       streetDetail: initialAddress?.streetDetail ?? "",
       zipCode: initialAddress?.zipCode ?? "",
       phone: initialAddress?.phone ?? user?.phone ?? "",
+      longitude: undefined,
+      latitude: undefined,
     },
     validate: schemaResolver(createAddressSchema),
   });
@@ -60,6 +76,81 @@ export function AddressForm({
     form.values.districtId || null,
   );
 
+  const previewLocationCheck = previewLocationSchema.safeParse({
+    provinceName: form.values.provinceName,
+    cityName: form.values.cityName,
+    districtName: form.values.districtName,
+    subDistrictName: form.values.subDistrictName,
+    zipCode: form.values.zipCode,
+    streetDetail: form.values.streetDetail,
+  });
+
+  const isAddressDetailComplete = previewLocationCheck.success;
+
+  const hasPosition =
+    form.values.latitude !== undefined && form.values.longitude !== undefined;
+
+  function handleCheckLocation() {
+    setLocationError(null);
+
+    const result = previewLocationSchema.safeParse({
+      provinceName: form.values.provinceName,
+      cityName: form.values.cityName,
+      districtName: form.values.districtName,
+      subDistrictName: form.values.subDistrictName,
+      zipCode: form.values.zipCode,
+      streetDetail: form.values.streetDetail,
+    });
+
+    if (!result.success) {
+      setLocationError(
+        result.error.issues[0]?.message ?? "Lengkapi alamat terlebih dahulu.",
+      );
+      return;
+    }
+
+    previewLocationMutation.mutate(result.data, {
+      onSuccess: ({ latitude, longitude, found }) => {
+        if (found && latitude !== undefined && longitude !== undefined) {
+          form.setFieldValue("latitude", latitude);
+          form.setFieldValue("longitude", longitude);
+        } else {
+          form.setFieldValue("latitude", DEFAULT_FALLBACK_POSITION.lat);
+          form.setFieldValue("longitude", DEFAULT_FALLBACK_POSITION.lng);
+          setLocationError(
+            "Lokasi tidak ditemukan otomatis. Geser pin ke posisi yang benar di peta.",
+          );
+        }
+      },
+      onError: () => {
+        form.setFieldValue("latitude", DEFAULT_FALLBACK_POSITION.lat);
+        form.setFieldValue("longitude", DEFAULT_FALLBACK_POSITION.lng);
+        setLocationError(
+          "Gagal memuat perkiraan lokasi. Geser pin ke posisi yang benar di peta.",
+        );
+      },
+    });
+  }
+
+  function handlePinChange(lat: number, lng: number) {
+    form.setFieldValue("latitude", lat);
+    form.setFieldValue("longitude", lng);
+  }
+
+function handleFormSubmit(values: AddressFormValues) {
+  if (values.latitude === undefined || values.longitude === undefined) {
+    return;
+  }
+
+  const submitValues: AddressFormSubmitValues = {
+    ...values,
+    latitude: values.latitude,
+    longitude: values.longitude,
+  };
+
+  onSubmit(submitValues);
+}
+
   const errorMessage =
     error instanceof ApiError
       ? error.code === "GEOCODING_FAILED"
@@ -68,7 +159,7 @@ export function AddressForm({
       : null;
 
   return (
-    <form onSubmit={form.onSubmit(onSubmit)}>
+    <form onSubmit={form.onSubmit(handleFormSubmit)}>
       <Stack gap="md">
         {errorMessage && (
           <Alert
@@ -109,6 +200,8 @@ export function AddressForm({
             form.setFieldValue("districtName", "");
             form.setFieldValue("subDistrictId", "");
             form.setFieldValue("subDistrictName", "");
+            form.setFieldValue("latitude", undefined);
+            form.setFieldValue("longitude", undefined);
           }}
         />
         <Select
@@ -129,6 +222,8 @@ export function AddressForm({
             form.setFieldValue("districtName", "");
             form.setFieldValue("subDistrictId", "");
             form.setFieldValue("subDistrictName", "");
+            form.setFieldValue("latitude", undefined);
+            form.setFieldValue("longitude", undefined);
           }}
         />
 
@@ -149,6 +244,8 @@ export function AddressForm({
             form.setFieldValue("districtName", selected?.name ?? "");
             form.setFieldValue("subDistrictId", "");
             form.setFieldValue("subDistrictName", "");
+            form.setFieldValue("latitude", undefined);
+            form.setFieldValue("longitude", undefined);
           }}
         />
 
@@ -172,16 +269,9 @@ export function AddressForm({
 
             form.setFieldValue("subDistrictId", value ?? "");
             form.setFieldValue("subDistrictName", selected?.name ?? "");
+            form.setFieldValue("latitude", undefined);
+            form.setFieldValue("longitude", undefined);
           }}
-        />
-
-        <Textarea
-          label="Detail Alamat"
-          description="Nama jalan, nomor rumah."
-          placeholder="Contoh: nama jalan, nomor rumah"
-          minRows={3}
-          required
-          {...form.getInputProps("streetDetail")}
         />
 
         <TextInput
@@ -192,19 +282,84 @@ export function AddressForm({
           inputMode="numeric"
           required
           {...form.getInputProps("zipCode")}
+          onChange={(e) => {
+            form.setFieldValue(
+              "zipCode",
+              e.currentTarget.value.replace(/\D/g, ""),
+            );
+            form.setFieldValue("latitude", undefined);
+            form.setFieldValue("longitude", undefined);
+          }}
         />
 
-        <TextInput
-          label="Nomor Telepon"
-          placeholder="08xxxxxxxxxx"
+        <Textarea
+          label="Detail Alamat"
+          description="Nama jalan, nomor rumah."
+          placeholder="Contoh: nama jalan, nomor rumah"
+          minRows={3}
           required
-          {...form.getInputProps("phone")}
+          {...form.getInputProps("streetDetail")}
+          onChange={(e) => {
+            form.setFieldValue("streetDetail", e.currentTarget.value);
+            form.setFieldValue("latitude", undefined);
+            form.setFieldValue("longitude", undefined);
+          }}
         />
+
+         <div>
+          <Group justify="space-between" align="center" mb="xs">
+            <Text size="sm" fw={500}>
+              Titik Lokasi di Peta
+            </Text>
+            <Button
+              variant="light"
+              size="xs"
+              disabled={!isAddressDetailComplete}
+              loading={previewLocationMutation.isPending}
+              onClick={handleCheckLocation}
+            >
+              {hasPosition ? "Cek Ulang Lokasi" : "Cek di Peta"}
+            </Button>
+          </Group>
+
+          {!isAddressDetailComplete && (
+            <Text size="xs" c="var(--color-text-secondary)">
+              Lengkapi provinsi, kota, kecamatan, kode pos, dan detail alamat
+              dulu untuk menampilkan peta.
+            </Text>
+          )}
+
+          {locationError && (
+            <Alert
+              mt="xs"
+              style={{
+                backgroundColor: "var(--color-primary-light)",
+                color: "var(--color-primary)",
+              }}
+            >
+              {locationError}
+            </Alert>
+          )}
+
+          {hasPosition && form.values.latitude !== undefined && form.values.longitude !== undefined && (
+            <div style={{ marginTop: 8 }}>
+              <LocationPicker
+                initialLat={form.values.latitude}
+                initialLng={form.values.longitude}
+                onChange={handlePinChange}
+              />
+              <Text size="xs" c="var(--color-text-secondary)" mt={4}>
+                Geser pin merah kalau posisinya belum tepat.
+              </Text>
+            </div>
+          )}
+        </div>
 
         <Stack gap="xs">
           <Button
             type="submit"
             loading={isPending}
+            disabled={!hasPosition}
             style={{
               backgroundColor: "var(--color-accent)",
               color: "var(--color-text-on-accent)",
