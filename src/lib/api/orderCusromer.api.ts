@@ -1,9 +1,10 @@
 import {
   CreateOrderResponse,
+  CreatePaymentResponse,
   ListOrderQuery,
   ListOrderResponse,
   OrderDetail,
-  OrderListItem,
+  PaymentAttempt,
 } from "@/types/api/orders.types";
 import { CreateOrderSchema } from "../validation/order.validation";
 import { api } from "./axios";
@@ -28,6 +29,20 @@ export class OrderApi {
 
   async getOrderDetail(id: string) {
     const { data } = await api.get<{ data: OrderDetail }>(`/order/${id}`);
+    return data.data;
+  }
+
+  async paymentAttempt(id: string) {
+    const { data } = await api.post<{ data: CreatePaymentResponse }>(
+      `/order/${id}/payment`,
+    );
+    return data.data;
+  }
+
+  async getLastestPayment(id: string) {
+    const { data } = await api.get<{ data: PaymentAttempt }>(
+      `/order/${id}/payment`,
+    );
     return data.data;
   }
 }

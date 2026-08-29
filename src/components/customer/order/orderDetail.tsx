@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { useOrderDetail } from "@/hooks/order.hooks";
 import { OrderTimeline } from "./orderTimeLine";
+import Link from "next/link";
 
 export function OrderDetailView({ id }: { id: string }) {
   console.log("ORDER DETAIL ID:", id);
@@ -86,6 +87,8 @@ export function OrderDetailView({ id }: { id: string }) {
             )}
             {order.allowedActions.canPay && (
               <Button
+                component={Link}
+                href={`/pesanan/${order.id}/invoice`}
                 mt="xs"
                 style={{
                   backgroundColor: "var(--color-accent)",
@@ -93,6 +96,19 @@ export function OrderDetailView({ id }: { id: string }) {
                 }}
               >
                 Bayar Sekarang
+              </Button>
+            )}
+            {order.bill?.paymentStatus === "PAID" && (
+              <Button
+                component={Link}
+                href={`/pesanan/${order.id}/invoice`}
+                mt="xs"
+                style={{
+                  backgroundColor: "var(--color-accent)",
+                  color: "var(--color-text-on-accent)",
+                }}
+              >
+                Lihat Detail & Histori Pembayaran
               </Button>
             )}
           </Stack>

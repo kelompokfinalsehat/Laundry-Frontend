@@ -8,8 +8,6 @@ export default async function OrderDetailPage({
 }) {
   
   const { id } = await params;
-
-  console.log("PAGE ID:", id);
   
   return (
     <Box mx="auto" py={{ base: 16, sm: 32 }}>
