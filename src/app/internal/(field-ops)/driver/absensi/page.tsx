@@ -1,13 +1,14 @@
 "use client";
-import { Stack } from "@mantine/core";
-import { AttendanceHistoryList } from "@/components/field-ops/shared/AttendanceHistory";
-import { AttendanceStatus } from "@/components/field-ops/shared/AttendanceStatus";
+import {  Stack  } from "@mantine/core";
+import { AttendanceStatusCard } from "@/components/field-ops/shared/AttendanceStatusCard";
+import { AttendanceHistory } from "@/components/field-ops/shared/AttendanceHistory";
 
 export default function Page() {
   return (
-    <Stack>
-      <AttendanceStatus />
-      <AttendanceHistoryList />
+    <Stack gap="md">
+      <AttendanceStatusCard />
+
+      <AttendanceHistory/>
     </Stack>
   );
 }

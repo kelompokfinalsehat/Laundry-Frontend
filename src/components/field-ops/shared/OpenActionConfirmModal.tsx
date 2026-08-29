@@ -7,7 +7,12 @@ type ActionConfirmModalParams = {
   confirmLabel: string;
   onConfirm: () => void;
 };
-export function openActionConfirmModal({ title, message, confirmLabel, onConfirm }: ActionConfirmModalParams) {
+export function openActionConfirmModal({
+  title,
+  message,
+  confirmLabel,
+  onConfirm,
+}: ActionConfirmModalParams) {
   modals.openConfirmModal({
     title: title,
     centered: true,

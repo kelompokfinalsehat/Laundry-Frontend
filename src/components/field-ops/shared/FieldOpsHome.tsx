@@ -1,7 +1,7 @@
 "use client";
 
 import { Stack, Text, Card, Badge, Group, Button } from "@mantine/core";
-import { AttendanceStatus } from "./AttendanceStatus";
+import { AttendanceStatusCard } from "./AttendanceStatusCard";
 
 // ── UI KOSONGAN — data dummy, belum disambungkan hooks/API ──────────
 
@@ -30,7 +30,7 @@ export function FieldOpsHome({
       </Text>
 
       {/* ── Kartu status attendance (ringkas) ── */}
-      <AttendanceStatus />
+      <AttendanceStatusCard />
 
       {/* ── Kartu tugas aktif ── */}
       {activeTask ? (

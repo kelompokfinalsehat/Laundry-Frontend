@@ -11,6 +11,7 @@
   "dependencies": {
     "@mantine/carousel": "^9.5.0",
     "@mantine/core": "^9.5.0",
+    "@mantine/dates": "^9.5.0",
     "@mantine/form": "^9.5.0",
     "@mantine/hooks": "^9.5.0",
     "@mantine/modals": "^9.5.0",

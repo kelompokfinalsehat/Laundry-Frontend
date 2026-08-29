@@ -1,86 +1,25 @@
 import type {
-  DriverActiveAssignment,
-  DriverAvailableAssignment,
+  DriverAvailablePaginated,
   DriverAvailableQuery,
   DriverClaimResponse,
-  DriverCompleteDeliveryResponse,
-  DriverPickupCollectedResponse,
-  DriverStartResponse,
 } from "@/types/api/driver.types";
-
-import type { ApiResponse, PaginatedResponse } from "@/types/api";
-
 import { api } from "./axios";
+import { ApiResponse } from "@/types/api";
 
-const BASE_PATH = "/internal/driver";
-
-type PaginatedApiResponse<T> = ApiResponse<T[]> & {
-  meta: PaginatedResponse<T>["meta"];
-};
+const BASE_PATH = "/internal/driver/task";
 
 export class DriverApi {
-  /* =======================================================
-     AVAILABLE
-  ======================================================= */
-
   async getAvailable(query: DriverAvailableQuery) {
-    const { data } = await api.get<PaginatedApiResponse<DriverAvailableAssignment>>(`${BASE_PATH}/task/available`, {
+    const { data } = await api.get<DriverAvailablePaginated>(`${BASE_PATH}/available`, {
       params: query,
     });
-
-    return {
-      data: data.data,
-      meta: data.meta,
-    };
+    return { data: data.data, meta: data.meta };
   }
 
-  /* =======================================================
-     CLAIM
-  ======================================================= */
-
-  async claimAssignment(assignmentId: string) {
-    const { data } = await api.post<ApiResponse<DriverClaimResponse>>(`${BASE_PATH}/task/${assignmentId}/claim`, {});
-
-    return data.data;
-  }
-
-  /* =======================================================
-     ACTIVE
-  ======================================================= */
-
-  async getActive() {
-    const { data } = await api.get<ApiResponse<DriverActiveAssignment | null>>(`${BASE_PATH}/task/active`);
-
-    return data.data;
-  }
-
-  /* =======================================================
-     START
-  ======================================================= */
-
-  async startAssignment(assignmentId: string) {
-    const { data } = await api.post<ApiResponse<DriverStartResponse>>(`${BASE_PATH}/task/${assignmentId}/start`, {});
-
-    return data.data;
-  }
-
-  /* =======================================================
-     PICKUP COLLECTED
-  ======================================================= */
-
-  async pickupCollected(assignmentId: string) {
-    const { data } = await api.post<ApiResponse<DriverPickupCollectedResponse>>(`${BASE_PATH}/task/${assignmentId}/pickup-collected`, {});
-
-    return data.data;
-  }
-
-  /* =======================================================
-     COMPLETE DELIVERY
-  ======================================================= */
-
-  async completeDelivery(assignmentId: string) {
-    const { data } = await api.post<ApiResponse<DriverCompleteDeliveryResponse>>(`${BASE_PATH}/task/${assignmentId}/complete-delivery`, {});
-
+  async claim(assignmentId: string) {
+    const { data } = await api.post<ApiResponse<DriverClaimResponse>>(
+      `${BASE_PATH}/${assignmentId}/claim`,{}
+    );
     return data.data;
   }
 }

@@ -18,7 +18,9 @@ export function FieldOpsAppShell({
           <Title order={3} style={{ color: "var(--color-primary-dark)", letterSpacing: -0.5 }}>
             Popo Laundry
           </Title>
-          <Text size="sm">{role}</Text>
+          <Title size="md" style={{ color: "var(--color-primary-dark)", letterSpacing: -0.5 }}>
+            {role}
+          </Title>
         </Group>
       </AppShell.Header>
       <AppShell.Main maw={720} mx="auto" pb={80}>

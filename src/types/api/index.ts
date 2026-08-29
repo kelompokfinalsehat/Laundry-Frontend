@@ -1,9 +1,4 @@
-export type Role =
-  | "CUSTOMER"
-  | "WORKER"
-  | "DRIVER"
-  | "OUTLET_ADMIN"
-  | "SUPER_ADMIN";
+export type Role = "CUSTOMER" | "WORKER" | "DRIVER" | "OUTLET_ADMIN" | "SUPER_ADMIN";
 
 export type RegisterCustomerResponse = {
   customerId: string;
@@ -41,8 +36,8 @@ export type VerifyEmailPayload = {
 
 export type AcceptInvitationPayload = {
   token: string;
-  password: string
-}
+  password: string;
+};
 
 export type VerificationPayload = {
   email: string;
@@ -77,13 +72,7 @@ export type MeResponse = {
 export type AccountStatus = "INVITED" | "ACTIVE" | "INACTIVE";
 export type AttendanceStatus = "OFF_DUTY" | "ON_DUTY";
 export type AvailabilityStatus = "AVAILABLE" | "BUSY";
-export type PaymentStatus =
-  | "UNPAID"
-  | "PENDING"
-  | "PAID"
-  | "FAILED"
-  | "CANCELLED"
-  | "EXPIRED";
+export type PaymentStatus = "UNPAID" | "PENDING" | "PAID" | "FAILED" | "CANCELLED" | "EXPIRED";
 export type InternalOrderState = "ON_HOLD_BYPASS" | "PAUSED_OFF_HOURS";
 export type CustomerOrderStatus =
   | "MENUNGGU_PENJEMPUTAN_DRIVER"
@@ -120,10 +109,10 @@ export interface ListQuery {
   filters?: Record<string, string | number | boolean | undefined>;
 }
 
-export interface ApiResponse<T>{
-  success: boolean
-  message: string
-  data: T
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
 }
 
 export interface PaginatedResponse<T> {
@@ -148,3 +137,12 @@ export interface OrderListItem {
   createdAt: string;
   total?: number;
 }
+
+export type PaginationMeta = {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+};

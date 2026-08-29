@@ -1,14 +1,19 @@
 import { AttendanceApi } from "@/lib/api/attendance.api";
-import type { AttendanceHistoryQuery, AttendancePeriod } from "@/types/api/attendance.types";
-import { notifications } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { notifications } from "@mantine/notifications";
 import { useState } from "react";
+import dayjs from "dayjs";
+import type { AttendanceHistoryQuery } from "@/types/api/attendance.types";
+
 
 export const ATTENDANCE_QUERY_KEY = ["attendance"] as const;
 export const ATTENDANCE_STATUS_QUERY_KEY = [...ATTENDANCE_QUERY_KEY, "status"] as const;
+export const ATTENDANCE_HISTORY_QUERY_KEY = [...ATTENDANCE_QUERY_KEY, "history"] as const;
 
+// attendanceapi configuration
 const attendanceApi = new AttendanceApi();
 
+// attendance status
 export function useAttendanceStatus() {
   return useQuery({
     queryKey: ATTENDANCE_STATUS_QUERY_KEY,
@@ -16,21 +21,22 @@ export function useAttendanceStatus() {
   });
 }
 
+// clock-in
 export function useClockIn() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => attendanceApi.clockIn(),
     onSuccess: async () => {
       notifications.show({
-        title: "Absensi berhasil",
-        message: "Selamat bekerja!",
-        color: "lime",
+        title: "Absensi Berhasil!",
+        message: "Absensi Masuk Berhasil! Selamat bekerja!",
+        color: "green",
       });
       await queryClient.invalidateQueries({ queryKey: ATTENDANCE_QUERY_KEY });
     },
     onError: (error: Error) => {
       notifications.show({
-        title: "Absensi Gagal",
+        title: "Absensi Gagal!",
         message: error.message,
         color: "red",
       });
@@ -44,65 +50,59 @@ export function useClockOut() {
     mutationFn: () => attendanceApi.clockOut(),
     onSuccess: async () => {
       notifications.show({
-        title: "Absensi berhasil",
-        message: "Terimakasih atas dedikasi anda!",
-        color: "lime",
+        title: "Absensi Berhasil!",
+        message: "Absensi Pulang berhasil! Selamat Melanjutkan Kegiatan!",
+        color: "green",
       });
       await queryClient.invalidateQueries({ queryKey: ATTENDANCE_QUERY_KEY });
     },
     onError: (error: Error) => {
       notifications.show({
-        title: "Absensi Gagal",
+        title: "Absensi Gagal!",
         message: error.message,
         color: "red",
       });
     },
   });
 }
-type PeriodFilter = AttendancePeriod | "ALL";
-const HISTORY_PAGE_SIZE = 5;
 
-export function useHistoryList() {
-  const [page, setPage] = useState(1);
-  const [period, setPeriod] = useState<PeriodFilter>("ALL");
+export function useAttendanceHistory() {
+  const HISTORY_PAGE_SIZE = 5;
+
+  const [page, setPage] = useState<number>(1);
+  const [period, setPeriod] = useState<string>(() => dayjs().format("YYYY-MM"));
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
+  // query params
   const query: AttendanceHistoryQuery = {
-    page,
+    page: page,
     pageSize: HISTORY_PAGE_SIZE,
-    sortOrder,
-    ...(period !== "ALL" && { period }),
+    period: period,
+    sortOrder: sortOrder,
   };
 
+  // fetching endpoint history
   const historyQuery = useQuery({
-    queryKey: [...ATTENDANCE_QUERY_KEY, "history", query],
+    queryKey: [...ATTENDANCE_HISTORY_QUERY_KEY, query],
     queryFn: () => attendanceApi.getHistory(query),
   });
 
+  // handlers
+
   function handlePeriodChange(value: string | null) {
-    const nextPeriod = (value ?? "ALL") as PeriodFilter;
-    setPeriod(nextPeriod);
+    if (!value) return;
+    setPeriod(dayjs(value).format("YYYY-MM"));
     setPage(1);
   }
 
-  function handleSortChange() {
-    setSortOrder((current) => (current === "desc" ? "asc" : "desc"));
+  function handleSortChange(value: "asc" | "desc") {
+    setSortOrder(value); //kalo diclick pertama, akan ganti ke asc.
     setPage(1);
   }
 
   return {
-    // Bentuk asli historyQuery.data itu { data, meta } (nested), jadi
-    // dari komponen akan kebaca historyQuery.data.data yang membingungkan.
-    // Di sini sudah "dibongkar" jadi nama yang jelas: items & meta,
-    // supaya komponen tinggal pakai items.map(...) langsung.
-    items: historyQuery.data?.data ?? [],
-    meta: historyQuery.data?.meta,
-    isPending: historyQuery.isPending,
-    isError: historyQuery.isError,
-    error: historyQuery.error,
-    refetch: historyQuery.refetch,
+    historyQuery,
 
-    page,
     period,
     sortOrder,
 
