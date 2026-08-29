@@ -1,4 +1,3 @@
-
 import type { OrderStatusGroupKey } from "@/lib/constants/order";
 
 export type CreateOrderResponse = {
@@ -10,7 +9,7 @@ export type CreateOrderResponse = {
   pickupDate: string;
   pickupScheduledAt: string;
 };
- 
+
 export type OrderListItem = {
   id: string;
   orderCode: string;
@@ -20,8 +19,7 @@ export type OrderListItem = {
   totalAmount: number | null;
   paymentStatus: string | null;
 };
- 
- 
+
 export type ListOrderQuery = {
   page: number;
   limit: number;
@@ -50,7 +48,7 @@ export type TimelineEntry = {
   isCompleted: boolean;
   isCurrent: boolean;
 };
- 
+
 export type OrderDetail = {
   id: string;
   orderCode: string;
@@ -75,4 +73,21 @@ export type OrderDetail = {
     canConfirmReceived: boolean;
     canFileComplaint: boolean;
   };
+};
+
+export type CreatePaymentResponse = {
+  paymentId: string;
+  gatewayOrderId: string;
+  snapToken: string;
+  redirectUrl: string;
+};
+
+export type PaymentAttempt = {
+  id: string;
+  status: string;
+  amount: number;
+  redirectUrl: string;
+  isFinal: boolean;
+  paidAt: string | null;
+  billPaymentStatus: "PAID" | "UNPAID";
 };
