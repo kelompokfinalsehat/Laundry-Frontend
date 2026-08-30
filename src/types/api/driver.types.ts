@@ -7,7 +7,7 @@ export type DriverAssignmentStatus = "QUEUED" | "ASSIGNED" | "IN_PROGRESS" | "CO
 // available
 export type DriverAvailableItem = {
   id: string;
-  createdAt: Date;
+  createdAt: string;
   order: {
     id: string;
     orderCode: string;
@@ -34,6 +34,6 @@ export type DriverClaimResponse = {
     orderCode: string;
   };
   taskType: TaskType;
-  assignedAt: Date | null;
+  assignedAt: string | null;
   status: DriverAssignmentStatus;
 };

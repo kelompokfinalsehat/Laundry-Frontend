@@ -3,24 +3,9 @@
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { openActionConfirmModal } from "../shared/OpenActionConfirmModal";
-
 import { useAvailable, useClaim } from "@/hooks/worker.hooks";
-
-import {
-  ActionIcon,
-  Badge,
-  Button,
-  Group,
-  Pagination,
-  Paper,
-  Select,
-  Skeleton,
-  Stack,
-  Text,
-} from "@mantine/core";
-
+import { ActionIcon, Badge, Button, Group, Pagination, Paper, Select, Skeleton, Stack, Text } from "@mantine/core";
 import { IconArrowNarrowDown, IconArrowNarrowUp } from "@tabler/icons-react";
-
 import { useRouter } from "next/navigation";
 
 const STATION_OPTIONS = [
@@ -61,8 +46,7 @@ function getStationLabel(stationType: string) {
 export function WorkerAvailableAssignments() {
   const router = useRouter();
 
-  const { availableQuery, stationType, sortOrder, setPage, handleStationFilter, handleSortChange } =
-    useAvailable();
+  const { availableQuery, stationType, sortOrder, setPage, handleStationFilter, handleSortChange } = useAvailable();
 
   const claim = useClaim();
 
@@ -70,13 +54,7 @@ export function WorkerAvailableAssignments() {
     <Stack gap="md">
       {/* filter */}
       <Group justify="space-between" align="flex-end">
-        <Select
-          label="Stasiun"
-          data={STATION_OPTIONS}
-          value={stationType}
-          onChange={handleStationFilter}
-          w={180}
-        />
+        <Select label="Stasiun" data={STATION_OPTIONS} value={stationType} onChange={handleStationFilter} w={180} />
 
         <Group>
           <ActionIcon
@@ -117,10 +95,7 @@ export function WorkerAvailableAssignments() {
           <Stack gap="md">
             {/* assignment list */}
             {response.data.length === 0 ? (
-              <EmptyState
-                title="Belum ada tugas"
-                description="Belum ada tugas yang tersedia untuk diambil."
-              />
+              <EmptyState title="Belum ada tugas" description="Belum ada tugas yang tersedia untuk diambil." />
             ) : (
               response.data.map((assignment) => (
                 <Paper key={assignment.id} withBorder radius="md" p="md">
@@ -163,11 +138,7 @@ export function WorkerAvailableAssignments() {
             {/* pagination */}
             {response.meta.totalPages > 1 && (
               <Group justify="center">
-                <Pagination
-                  value={response.meta.page}
-                  total={response.meta.totalPages}
-                  onChange={setPage}
-                />
+                <Pagination value={response.meta.page} total={response.meta.totalPages} onChange={setPage} />
               </Group>
             )}
 

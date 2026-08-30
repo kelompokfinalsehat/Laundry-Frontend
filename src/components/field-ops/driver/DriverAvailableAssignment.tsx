@@ -41,7 +41,7 @@ export function DriverAvailableAssignments() {
       {/* filter */}
       <Group justify="space-between" align="flex-end">
         <Select
-          label="Stasiun"
+          label="Tipe Tugas"
           data={TASK_OPTION}
           value={taskType}
           onChange={handlerTaskTypeFilter}
@@ -117,7 +117,7 @@ export function DriverAvailableAssignments() {
                           onConfirm: () =>
                             claim.mutate(assignment.id, {
                               onSuccess: () => {
-                                router.push("/internal/worker/tugas/aktif");
+                                router.push("/internal/driver/tugas/aktif");
                               },
                             }),
                         })

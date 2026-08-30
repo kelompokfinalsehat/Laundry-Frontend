@@ -44,7 +44,7 @@ export class AuthEmployeeApi {
     return data;
   }
    async me() {
-      const {data}= await api.get<MeResponse>("/auth/employe/me");
+      const {data}= await api.get<MeResponse>("/auth/employee/me");
       return data.data;
     }
   

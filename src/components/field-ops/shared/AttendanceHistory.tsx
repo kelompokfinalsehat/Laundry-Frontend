@@ -86,29 +86,29 @@ export function AttendanceHistory() {
             <Stack gap={"md"}>
               {/* summary statistic requested by mentor */}
               <SimpleGrid cols={3}>
-                <Paper withBorder p={"sm"} radius={"md"}>
-                  <Text size="xs" c="dimmed">
+                <Paper withBorder p={"sm"} radius={"md"} shadow="md">
+                  <Text size="xs" c="dimmed" ta={'center'}>
                     Hari Efektif
                   </Text>
-                  <Text fw={600} size="lg">
+                  <Text fw={600} size="lg" ta={'center'}>
                     {summary.totalDays}
                   </Text>
                 </Paper>
 
-                <Paper withBorder p={"sm"} radius={"md"}>
-                  <Text size="xs" c="dimmed">
+                <Paper withBorder p={"sm"} radius={"md"} shadow="md">
+                  <Text size="xs" c="dimmed" ta={'center'}>
                     Hadir
                   </Text>
-                  <Text fw={600} size="lg">
+                  <Text fw={600} size="lg" ta={'center'}>
                     {summary.presentDays}
                   </Text>
                 </Paper>
 
-                <Paper withBorder p={"sm"} radius={"md"}>
-                  <Text size="xs" c="dimmed">
+                <Paper withBorder p={"sm"} radius={"md"} shadow="md"  >
+                  <Text size="xs" c="dimmed" ta={'center'}>
                     Tidak Hadir
                   </Text>
-                  <Text fw={600} size="lg">
+                  <Text fw={600} size="lg" ta={'center'}>
                     {summary.absentDays}
                   </Text>
                 </Paper>
