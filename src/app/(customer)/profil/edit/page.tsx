@@ -18,6 +18,7 @@ export default function ProfilePage() {
       from ? `/profil?from=${encodeURIComponent(from)}` : "/profil",
     );
   }
+  
   return (
     <Paper
       maw={480}

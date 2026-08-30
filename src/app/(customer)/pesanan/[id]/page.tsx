@@ -1,6 +1,7 @@
 import { Box, Paper } from "@mantine/core";
 import { OrderDetailView } from "@/components/customer/order/orderDetail";
 
+
 export default async function OrderDetailPage({
   params,
 }: {
@@ -8,6 +9,7 @@ export default async function OrderDetailPage({
 }) {
   
   const { id } = await params;
+  
   
   return (
     <Box mx="auto" py={{ base: 16, sm: 32 }}>
