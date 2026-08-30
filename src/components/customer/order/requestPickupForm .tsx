@@ -13,8 +13,8 @@ import {
   Paper,
   Divider,
   Loader,
+  Select,
 } from "@mantine/core";
-import { TimeInput } from "@mantine/dates";
 import { useForm, schemaResolver } from "@mantine/form";
 import { createOrderSchema } from "@/lib/validation/order.validation";
 import { ApiError } from "@/lib/api/axios";
@@ -23,6 +23,7 @@ import { useCreateOrder } from "@/hooks/order.hooks";
 import { useLocationPermission } from "@/components/shared/Location/LocationPermission/hooks/useLocationPermission";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
+import { getPickupTimeOptions } from "./pickupTimeHelper";
 
 dayjs.locale("id");
 
@@ -71,6 +72,8 @@ export function RequestPickupForm() {
     if (result.hasErrors) return;
     setIsReviewing(true);
   }
+
+  const pickupTimeOptions = getPickupTimeOptions(form.values.pickupDate);
 
   function handleConfirm() {
     const values = form.values;
@@ -149,7 +152,7 @@ export function RequestPickupForm() {
       <Stack gap="md">
         <Paper withBorder p="md" radius="md">
           <Stack gap="xs">
-            <Text fw={600} style={{ color: "var(--color-text-primary)" }}>
+            <Text fw={50} style={{ color: "var(--color-text-primary)" }}>
               {selectedAddress.label || "Alamat"}
             </Text>
             <Text size="sm" c="var(--color-text-secondary)">
@@ -218,11 +221,18 @@ export function RequestPickupForm() {
 
   return (
     <Stack gap="md">
-      <div>
-        <Group justify="space-between" align="center" mb="xs">
+      <div style={{ width: "100%", maxWidth: "600px" }}>
+        <Group
+          justify="space-between"
+          align="center"
+          mb="xs"
+          wrap="wrap"
+          gap="xs"
+        >
           <Text size="sm" fw={500}>
             Alamat Pickup
           </Text>
+
           {!isChangingAddress && addresses.length > 1 && (
             <Button
               variant="subtle"
@@ -254,6 +264,9 @@ export function RequestPickupForm() {
                           {address.isPrimary && "(Utama)"}
                         </Text>
                         <Text size="xs" c="var(--color-text-secondary)">
+                          <Text component="span" fw={600}>
+                            Alamat:
+                          </Text>{" "}
                           {address.formattedAddress}
                         </Text>
                       </Stack>
@@ -265,13 +278,16 @@ export function RequestPickupForm() {
           </Radio.Group>
         ) : (
           selectedAddress && (
-            <Paper withBorder p="sm" radius="md">
-              <Stack gap={0}>
+            <Paper withBorder p="sm" radius="md" mih={100}>
+              <Stack gap={10}>
                 <Text size="sm" fw={600}>
                   {selectedAddress.label || "Alamat"}{" "}
                   {selectedAddress.isPrimary && "(Utama)"}
                 </Text>
                 <Text size="xs" c="var(--color-text-secondary)">
+                  <Text component="span" fw={600}>
+                    Alamat:
+                  </Text>{" "}
                   {selectedAddress.formattedAddress}
                 </Text>
               </Stack>
@@ -280,23 +296,38 @@ export function RequestPickupForm() {
         )}
       </div>
 
-      <div>
+      <div style={{ width: "100%" }}>
         <Text size="sm" fw={500} mb={4}>
           Tanggal Pickup
         </Text>
+
         <Paper
           withBorder
           p="sm"
           radius="md"
-          style={{ backgroundColor: "var(--color-surface-muted, #f8f9fa)" }}
+          w={{ base: "100%", sm: 250 }}
+          style={{
+            backgroundColor: "var(--color-surface-muted, #f8f9fa)",
+          }}
         >
-          <Text size="sm" style={{ color: "var(--color-text-primary)" }}>
+          <Text
+            size="sm"
+            style={{
+              color: "var(--color-text-primary)",
+            }}
+          >
             {dayjs(TODAY).format("dddd, D MMMM YYYY")}
           </Text>
         </Paper>
       </div>
 
-      <TimeInput label="Jam Pickup" {...form.getInputProps("pickupTime")} />
+      <Select
+        label="Jam Pickup"
+        placeholder="Pilih jam pickup"
+        data={pickupTimeOptions}
+        w={{ base: "100%", sm: 250 }}
+        {...form.getInputProps("pickupTime")}
+      />
 
       <Button
         onClick={handleReview}

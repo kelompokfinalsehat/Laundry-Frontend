@@ -7,6 +7,7 @@ import {
 } from "@/hooks/order.hooks";
 import { OrderDetail } from "@/types/api/orders.types";
 import {
+  Anchor,
   Badge,
   Box,
   Button,
@@ -18,6 +19,8 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { IconChevronLeft } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 
 type BillStatus = NonNullable<OrderDetail["bill"]>;
 
@@ -58,6 +61,12 @@ function getPaymentStatusColor(
 export function BillDetailView({ id }: { id: string }) {
   const { data: order, isLoading } = useOrderDetail(id);
 
+  const router = useRouter();
+
+  function handleBack() {
+    router.replace(`/pesanan/${id}`);
+  }
+
   const createPayment = useCreatePayment(id);
 
   const { refetch: refetchLatestPayment } = useLatestPayment(id);
@@ -93,31 +102,42 @@ export function BillDetailView({ id }: { id: string }) {
   const laundrySubtotal = weight * pricePerKg;
   const totalAmount = laundrySubtotal + shippingFee;
 
-const handlePayment = () => {
-  createPayment.mutate(undefined, {
-    onSuccess: (payment) => {
-      window.location.href = payment.redirectUrl;
-    },
+  const handlePayment = () => {
+    createPayment.mutate(undefined, {
+      onSuccess: (payment) => {
+        window.location.href = payment.redirectUrl;
+      },
 
-    onError: async (error) => {
-      if (error.code !== "PAYMENT_ALREADY_PENDING") {
-        return;
-      }
+      onError: async (error) => {
+        if (error.code !== "PAYMENT_ALREADY_PENDING") {
+          return;
+        }
 
-      const { data: latestPayment } =
-        await refetchLatestPayment();
+        const { data: latestPayment } = await refetchLatestPayment();
 
-      if (!latestPayment?.redirectUrl) {
-        return;
-      }
+        if (!latestPayment?.redirectUrl) {
+          return;
+        }
 
-      window.location.href = latestPayment.redirectUrl;
-    },
-  });
-};
+        window.location.href = latestPayment.redirectUrl;
+      },
+    });
+  };
   return (
     <Box maw={720} mx="auto" py={{ base: 16, sm: 32 }}>
       <Stack gap="lg">
+        <Anchor
+          component="button"
+          type="button"
+          onClick={handleBack}
+          fw={600}
+          c="var(--c-text-primary"
+        >
+          <Group gap={2}>
+            <IconChevronLeft stroke={2} />
+            pesanan
+          </Group>
+        </Anchor>
         {/* Header */}
         <Box>
           <Title order={2}>Detail Tagihan</Title>

@@ -9,14 +9,21 @@ import {
   Button,
   Group,
   Loader,
+  Anchor,
 } from "@mantine/core";
 import { useOrderDetail } from "@/hooks/order.hooks";
 import { OrderTimeline } from "./orderTimeLine";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { IconChevronLeft, IconPhone } from "@tabler/icons-react";
 
 export function OrderDetailView({ id }: { id: string }) {
-  console.log("ORDER DETAIL ID:", id);
   const { data: order, isLoading } = useOrderDetail(id);
+  const router = useRouter();
+
+  function handleBack() {
+    router.replace("/pesanan");
+  }
 
   if (isLoading) {
     return (
@@ -36,11 +43,28 @@ export function OrderDetailView({ id }: { id: string }) {
 
   return (
     <Stack gap="xl">
+      <Anchor
+        component="button"
+        type="button"
+        onClick={handleBack}
+        fw={600}
+        c="var(--c-text-primary"
+      >
+        <Group gap={2}>
+          <IconChevronLeft stroke={2} />
+          pesanan Saya
+        </Group>
+      </Anchor>
       <Paper withBorder p="md" radius="md">
         <Stack gap="xs">
-          <Group justify="space-between">
-            <Text fw={700} style={{ color: "var(--color-text-primary)" }}>
-              {order.orderCode}
+          <Group justify="space-between" gap="xs">
+            <Text style={{ color: "var(--color-text-primary)" }}>
+              <Text component="span" fw={600}>
+                Nomor Pesanan:
+              </Text>{" "}
+              <Text component="span" fw={700}>
+                {order.orderCode}
+              </Text>
             </Text>
             <Badge
               style={{
@@ -53,10 +77,10 @@ export function OrderDetailView({ id }: { id: string }) {
           </Group>
           <Divider />
           <Text size="sm" c="var(--color-text-secondary)">
-            {order.addressSnapshot}
+           Alamat: {order.addressSnapshot}
           </Text>
           <Text size="sm" c="var(--color-text-secondary)">
-            {order.addressPhoneSnapshot}
+          Telpon: {order.addressPhoneSnapshot}
           </Text>
           <Text size="sm" c="var(--color-text-secondary)">
             Jadwal: {new Date(order.pickupScheduledAt).toLocaleString("id-ID")}
