@@ -2,43 +2,21 @@
 
 import { ActionIcon, Group, Select, TextInput, Tooltip } from "@mantine/core";
 import { IconRefresh, IconSearch } from "@tabler/icons-react";
-import type { LaundryItemQuery } from "@/types/api/laundry-item.types";
-
-type LaundryItemFiltersState = Pick<LaundryItemQuery, "search">;
+import { UseFormReturnType } from "@mantine/form";
+import { FilterLaundryItemValues } from "@/lib/validation/laundry-item.validation";
 
 type Props = {
-  filters: LaundryItemFiltersState;
-  sortBy: NonNullable<LaundryItemQuery["sortBy"]>;
-  sortOrder: NonNullable<LaundryItemQuery["sortOrder"]>;
-  onChange: (key: keyof LaundryItemFiltersState, value: string | null) => void;
-  onSortByChange: (value: NonNullable<LaundryItemQuery["sortBy"]>) => void;
-  onSortOrderChange: (value: NonNullable<LaundryItemQuery["sortOrder"]>) => void;
+  form: UseFormReturnType<FilterLaundryItemValues>;
   onReset: () => void;
 };
 
-export function LaundryItemFilters({ filters, sortBy, sortOrder, onChange, onSortByChange, onSortOrderChange, onReset }: Props) {
+export function LaundryItemFilters({ form, onReset }: Props) {
   return (
     <Group align="flex-end" wrap="wrap">
-      <TextInput
-        label="Cari"
-        placeholder="Cari nama item..."
-        leftSection={<IconSearch size={16} />}
-        value={filters.search ?? ""}
-        onChange={(event) => onChange("search", event.currentTarget.value)}
-        style={{
-          flex: 1,
-          minWidth: 220,
-        }}
-      />
+      <TextInput label="Cari" placeholder="Cari nama item..." leftSection={<IconSearch size={16} />} {...form.getInputProps("search")} style={{ flex: 1, minWidth: 220 }} />
 
       <Select
         label="Urutkan"
-        value={sortBy}
-        onChange={(value) => {
-          if (value === "name" || value === "createdAt") {
-            onSortByChange(value);
-          }
-        }}
         data={[
           {
             value: "createdAt",
@@ -50,16 +28,11 @@ export function LaundryItemFilters({ filters, sortBy, sortOrder, onChange, onSor
           },
         ]}
         w={180}
+        {...form.getInputProps("sortBy")}
       />
 
       <Select
         label="Urutan"
-        value={sortOrder}
-        onChange={(value) => {
-          if (value === "asc" || value === "desc") {
-            onSortOrderChange(value);
-          }
-        }}
         data={[
           {
             value: "desc",
@@ -71,6 +44,7 @@ export function LaundryItemFilters({ filters, sortBy, sortOrder, onChange, onSor
           },
         ]}
         w={180}
+        {...form.getInputProps("sortOrder")}
       />
 
       <Tooltip label="Reset filter">

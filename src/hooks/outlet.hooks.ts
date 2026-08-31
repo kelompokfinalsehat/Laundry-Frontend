@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDebouncedValue } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import { schemaResolver, useForm } from "@mantine/form";
+import { filterOutletSchema, FilterOutletValues } from "@/lib/validation/outlet.validation";
 
 const outletApi = new OutletApi();
 const OUTLETS_QUERY_KEY = ["outlets"];
@@ -72,29 +74,32 @@ export function useOutletHooks() {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<10 | 20 | 50>(10);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch] = useDebouncedValue(search, 400);
-  const [sortBy, setSortBy] = useState<"name" | "createdAt">("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const form = useForm<FilterOutletValues>({
+    mode: "controlled",
+    initialValues: {
+      search: "",
+      sortBy: "createdAt",
+      sortOrder: "desc",
+    },
+    validate: schemaResolver(filterOutletSchema),
+    validateInputOnChange: true,
+    onValuesChange: () => setPage(1),
+  });
+
+  const [debouncedSearch] = useDebouncedValue(form.values.search, 400);
 
   const outlets = useOutlets({
+    ...form.values,
     page,
     pageSize,
-    search: debouncedSearch || undefined,
-    sortBy,
-    sortOrder,
+    search: debouncedSearch,
   });
   const [selectedOutlet, setSelectedOutlet] = useState<Outlet | null>(null);
 
   const deleteOutlet = useDeleteOutlet();
 
   const handleReset = () => {
-    setSearch("");
-
-    setSortBy("createdAt");
-
-    setSortOrder("desc");
-
+    form.reset();
     setPage(1);
   };
 
@@ -121,13 +126,8 @@ export function useOutletHooks() {
   };
   return {
     router,
-    search,
-    sortBy,
-    sortOrder,
-    setSearch,
+    form,
     setPage,
-    setSortBy,
-    setSortOrder,
     handleReset,
     outlets,
     setPageSize,

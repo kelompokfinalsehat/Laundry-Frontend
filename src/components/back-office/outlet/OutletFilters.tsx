@@ -1,36 +1,26 @@
+import { FilterOutletValues } from "@/lib/validation/outlet.validation";
 import { ActionIcon, Group, Select, TextInput, Tooltip } from "@mantine/core";
+import { UseFormReturnType } from "@mantine/form";
 import { IconRefresh, IconSearch } from "@tabler/icons-react";
 
 interface OutletFiltersProps {
-  search: string;
-  sortBy: "name" | "createdAt";
-  sortOrder: "asc" | "desc";
-  onSearchChange: (value: string) => void;
-  onSortByChange: (value: "name" | "createdAt") => void;
-  onSortOrderChange: (value: "asc" | "desc") => void;
+  form: UseFormReturnType<FilterOutletValues>;
   onReset: () => void;
 }
 
-export function OutletFilters({ search, sortBy, sortOrder, onSearchChange, onSortByChange, onSortOrderChange, onReset }: OutletFiltersProps) {
+export function OutletFilters({ form, onReset }: OutletFiltersProps) {
   return (
     <Group align="end" wrap="wrap" gap="sm">
       <TextInput
         label="Cari Outlet"
         placeholder="Cari nama outlet"
         leftSection={<IconSearch size={16} />}
-        value={search}
-        onChange={(event) => onSearchChange(event.currentTarget.value)}
+        {...form.getInputProps('search')}
         style={{ flex: 1, minWidth: 280 }}
       />
 
       <Select
         label="Urutkan"
-        value={sortBy}
-        onChange={(value) => {
-          if (value === "name" || value === "createdAt") {
-            onSortByChange(value);
-          }
-        }}
         data={[
           {
             value: "createdAt",
@@ -42,16 +32,11 @@ export function OutletFilters({ search, sortBy, sortOrder, onSearchChange, onSor
           },
         ]}
         w={180}
+        {...form.getInputProps('sortBy')}
       />
 
       <Select
         label="Urutan"
-        value={sortOrder}
-        onChange={(value) => {
-          if (value === "asc" || value === "desc") {
-            onSortOrderChange(value);
-          }
-        }}
         data={[
           {
             value: "desc",
@@ -63,6 +48,7 @@ export function OutletFilters({ search, sortBy, sortOrder, onSearchChange, onSor
           },
         ]}
         w={180}
+        {...form.getInputProps('sortOrder')}
       />
 
       <Tooltip label="Reset filter">

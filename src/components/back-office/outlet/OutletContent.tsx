@@ -2,7 +2,6 @@
 
 import { Button, Paper, Stack } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
-import { useDisclosure } from "@mantine/hooks";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { useOutletHooks } from "@/hooks/outlet.hooks";
@@ -12,23 +11,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import TableSkeleton from "../shared/TableSkeleton";
 
 export function OutletContent() {
-  const {
-    router,
-    search,
-    sortBy,
-    sortOrder,
-    setSearch,
-    setPage,
-    setSortBy,
-    setSortOrder,
-    handleReset,
-    outlets,
-    setPageSize,
-    setSelectedOutlet,
-    selectedOutlet,
-    deleteOutlet,
-    handleDeactivate,
-  } = useOutletHooks();
+  const { form, router, setPage, handleReset, outlets, setPageSize, setSelectedOutlet, selectedOutlet, deleteOutlet, handleDeactivate } = useOutletHooks();
   return (
     <Stack gap="lg">
       <PageHeader
@@ -50,24 +33,7 @@ export function OutletContent() {
         }}
       >
         <Stack gap="md">
-          <OutletFilters
-            search={search}
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onSearchChange={(value) => {
-              setSearch(value);
-              setPage(1);
-            }}
-            onSortByChange={(value) => {
-              setSortBy(value);
-              setPage(1);
-            }}
-            onSortOrderChange={(value) => {
-              setSortOrder(value);
-              setPage(1);
-            }}
-            onReset={handleReset}
-          />
+          <OutletFilters form={form} onReset={handleReset} />
 
           <AsyncStateView
             isLoading={outlets.isLoading}

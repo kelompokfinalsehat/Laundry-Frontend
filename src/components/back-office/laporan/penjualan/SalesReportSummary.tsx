@@ -5,8 +5,7 @@ import { SalesReport } from "@/types/api/report.types";
 
 type Props = { report: SalesReport };
 
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
+const formatCurrency = (value: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
 
 const formatNumber = (value: number) => new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(value);
 
@@ -26,7 +25,7 @@ function SummaryCard({ label, value, comparison }: { label: string; value: strin
           {value}
         </Text>
         {comparison !== undefined && (
-          <Text size="xs" c={comparison !== null && comparison < 0 ? "red" : "var(--color-text-secondary)"}>
+          <Text size="xs" c={comparison !== null && comparison < 0 ? "red" : comparison !== null && comparison > 0 ? "green" : "var(--color-text-secondary)"}>
             {formatPercent(comparison)}
           </Text>
         )}
@@ -42,11 +41,7 @@ export function SalesReportSummary({ report }: Props) {
     <SimpleGrid cols={{ base: 1, xs: 2, md: 3, xl: 5 }}>
       <SummaryCard label="Total Pendapatan" value={formatCurrency(summary.totalRevenue)} comparison={comparison.revenueChangePercent} />
       <SummaryCard label="Total Pesanan" value={formatNumber(summary.totalOrders)} comparison={comparison.orderChangePercent} />
-      <SummaryCard
-        label="Rata-rata Nilai Pesanan"
-        value={formatCurrency(summary.averageOrderValue)}
-        comparison={comparison.averageOrderValueChangePercent}
-      />
+      <SummaryCard label="Rata-rata Nilai Pesanan" value={formatCurrency(summary.averageOrderValue)} comparison={comparison.averageOrderValueChangePercent} />
       <SummaryCard label="Total Berat Cucian" value={`${formatNumber(summary.totalWeightKg)} kg`} />
       <SummaryCard label="Pelanggan Unik" value={formatNumber(summary.uniqueCustomers)} />
     </SimpleGrid>

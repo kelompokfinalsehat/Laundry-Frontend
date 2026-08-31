@@ -10,7 +10,7 @@ import { SalesReportBreakdown } from "./SalesReportBreakdown";
 import { SalesTrend } from "./SalesTrend";
 import { SalesReportSkeleton } from "./SalesReportSkeleton";
 
-export function SalesReportContent() {
+export function SalesReportContent({role}: {role: string}) {
   const {
     query,
     outletOptions,
@@ -25,6 +25,7 @@ export function SalesReportContent() {
     data,
     refetch,
   } = useSalesHooks();
+  const isSuperAdmin = role === "SUPER_ADMIN"
   return (
     <Stack gap="lg">
       <PageHeader title="Laporan Penjualan" description="Monitor laporan penjualan dalam sistem." />
@@ -32,6 +33,7 @@ export function SalesReportContent() {
       <SalesReportFilters
         query={query}
         outletOptions={outletOptions}
+        isSuperAdmin={isSuperAdmin}
         onPeriodChange={handlePeriodChange}
         onDateChange={handleDateChange}
         onMonthChange={handleMonthChange}
@@ -44,7 +46,7 @@ export function SalesReportContent() {
           <Stack gap="lg">
             <SalesReportSummary report={report} />
             <SalesTrend data={report.trend} period={report.period.type} />
-            <SalesReportBreakdown data={report.breakdown} />
+            {isSuperAdmin && <SalesReportBreakdown data={report.breakdown} />}
           </Stack>
         )}
       </AsyncStateView>

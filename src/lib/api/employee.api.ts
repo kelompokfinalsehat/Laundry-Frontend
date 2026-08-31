@@ -5,6 +5,8 @@ import type {
   Employee,
   EmployeeQuery,
   InviteEmployeePayload,
+  OutletAttendanceQuery,
+  OutletAttendanceResponse,
   OutletTeamItem,
   OutletTeamQuery,
   UpdateEmployeePayload,
@@ -74,7 +76,7 @@ export class EmployeeApi {
     return response.data.data;
   }
 
-  async getCurrentOutletTeam(query: OutletTeamQuery) {
+  async getCurrentOutletTeam(query: OutletTeamQuery): Promise<PaginatedResponse<OutletTeamItem>> {
     const response = await api.get<PaginatedResponse<OutletTeamItem>>(
       "/internal/employees/team",
       {
@@ -83,5 +85,11 @@ export class EmployeeApi {
     );
 
     return response.data;
+  }
+
+  async getCurrentOutletAttendance(query: OutletAttendanceQuery): Promise<OutletAttendanceResponse> {
+    const response = await api.get<OutletAttendanceResponse>("/internal/employees/attendance", {params: query})
+
+    return response.data
   }
 }

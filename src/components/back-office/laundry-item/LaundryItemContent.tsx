@@ -13,13 +13,8 @@ import TableSkeleton from "../shared/TableSkeleton";
 export function LaundryItemContent() {
   const {
     router,
-    filters,
-    sortBy,
-    sortOrder,
-    handleFilterChange,
-    setSortBy,
+    form,
     setPage,
-    setSortOrder,
     handleReset,
     laundryItems,
     setPageSize,
@@ -51,20 +46,7 @@ export function LaundryItemContent() {
         >
           <Stack gap="md">
             <LaundryItemFilters
-              filters={filters}
-              sortBy={sortBy}
-              sortOrder={sortOrder}
-              onChange={handleFilterChange}
-              onSortByChange={(value) => {
-                setSortBy(value);
-
-                setPage(1);
-              }}
-              onSortOrderChange={(value) => {
-                setSortOrder(value);
-
-                setPage(1);
-              }}
+              form={form}
               onReset={handleReset}
             />
 

@@ -2,7 +2,7 @@
 
 import { Group, NumberInput, Paper, Select, Stack } from "@mantine/core";
 import { SalesPeriod, SalesQuery } from "@/types/api/report.types";
-import { DatePickerInput } from "@mantine/dates";
+import { DatePickerInput, MonthPickerInput, YearPickerInput } from "@mantine/dates";
 
 type OutletOption = {
   value: string;
@@ -12,6 +12,7 @@ type OutletOption = {
 type Props = {
   query: SalesQuery;
   outletOptions: OutletOption[];
+  isSuperAdmin: boolean;
   onPeriodChange: (period: SalesPeriod) => void;
   onDateChange: (date: string | null) => void;
   onMonthChange: (month: number | null) => void;
@@ -34,58 +35,8 @@ const periodOptions = [
   },
 ];
 
-const monthOptions = [
-  {
-    value: "1",
-    label: "Januari",
-  },
-  {
-    value: "2",
-    label: "Februari",
-  },
-  {
-    value: "3",
-    label: "Maret",
-  },
-  {
-    value: "4",
-    label: "April",
-  },
-  {
-    value: "5",
-    label: "Mei",
-  },
-  {
-    value: "6",
-    label: "Juni",
-  },
-  {
-    value: "7",
-    label: "Juli",
-  },
-  {
-    value: "8",
-    label: "Agustus",
-  },
-  {
-    value: "9",
-    label: "September",
-  },
-  {
-    value: "10",
-    label: "Oktober",
-  },
-  {
-    value: "11",
-    label: "November",
-  },
-  {
-    value: "12",
-    label: "Desember",
-  },
-];
-
-export function SalesReportFilters({ query, outletOptions, onPeriodChange, onDateChange, onMonthChange, onYearChange, onOutletChange }: Props) {
+export function SalesReportFilters({ query, outletOptions, isSuperAdmin, onPeriodChange, onDateChange, onMonthChange, onYearChange, onOutletChange }: Props) {
+  const initialDate = query.year && query.month ? new Date(Number(query.year), Number(query.month) - 1, 1) : new Date();
   return (
     <Paper
       p="md"
@@ -111,46 +62,30 @@ export function SalesReportFilters({ query, outletOptions, onPeriodChange, onDat
           />
 
           {query.period === "DAY" && (
-            <DatePickerInput
-              label="Tanggal"
-              placeholder="Pilih tanggal"
-              clearable={false}
-              value={query.date ?? null}
-              valueFormat="DD MMM YYYY"
-              onChange={onDateChange}
-            />
+            <DatePickerInput label="Tanggal" placeholder="Pilih tanggal" clearable={false} value={query.date ?? null} valueFormat="DD MMM YYYY" onChange={onDateChange} />
           )}
 
           {query.period === "MONTH" && (
-            <>
-              <Select
-                label="Bulan"
-                data={monthOptions}
-                value={query.month?.toString() ?? null}
-                onChange={(value) => onMonthChange(value ? Number(value) : null)}
-              />
-
-              <NumberInput
-                label="Tahun"
-                min={2025}
-                max={2100}
-                value={query.year ?? ""}
-                onChange={(value) => onYearChange(typeof value === "number" ? value : null)}
-              />
-            </>
-          )}
-
-          {query.period === "YEAR" && (
-            <NumberInput
-              label="Tahun"
-              min={2025}
-              max={2100}
-              value={query.year ?? ""}
-              onChange={(value) => onYearChange(typeof value === "number" ? value : null)}
+            <MonthPickerInput
+              label="Pilih Bulan & Tahun"
+              value={initialDate}
+              onChange={(value) => {
+                onMonthChange(value ? new Date(value).getMonth() + 1 : null);
+                onYearChange(value ? new Date(value).getFullYear() : null);
+              }}
             />
           )}
 
-          <Select label="Outlet" placeholder="Semua outlet" data={outletOptions} value={query.outletId ?? null} onChange={onOutletChange} clearable />
+          {query.period === "YEAR" && (
+            <YearPickerInput
+              label="Tahun"
+              minDate={new Date(2025, 0, 1)}
+              value={query.year ? new Date(query.year, 0, 1) : new Date()}
+              onChange={(value) => onYearChange(value ? new Date(value).getFullYear() : null)}
+            />
+          )}
+
+          {isSuperAdmin && <Select label="Outlet" placeholder="Semua outlet" data={outletOptions} value={query.outletId ?? null} onChange={onOutletChange} clearable />}
         </Group>
       </Stack>
     </Paper>

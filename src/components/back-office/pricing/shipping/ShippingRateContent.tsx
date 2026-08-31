@@ -9,6 +9,7 @@ import { ShippingRateFilters } from "./ShippingRateFilters";
 import { ShippingRateModal } from "./ShippingRateModal";
 import { ShippingRateTable } from "./ShippingRateTable";
 import { DeactivateShippingRateModal } from "./DeactivateShippingRateModal";
+import TableSkeleton from "../../shared/TableSkeleton";
 
 export function ShippingRateContent() {
   const {
@@ -79,6 +80,7 @@ export function ShippingRateContent() {
             data={data}
             onRetry={refetch}
             isEmpty={(result) => result.data.length === 0}
+            skeleton={<TableSkeleton />}
           >
             {(result) => (
               <ShippingRateTable

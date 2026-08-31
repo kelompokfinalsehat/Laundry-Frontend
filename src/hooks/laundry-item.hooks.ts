@@ -1,19 +1,22 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "@tanstack/react-query";
 import { useDebouncedValue } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { LaundryItemApi } from "@/lib/api/laundry-item.api";
 import type { CreateLaundryItemPayload, LaundryItem, LaundryItemQuery, UpdateLaundryItemPayload } from "@/types/api/laundry-item.types";
+import { schemaResolver, useForm } from "@mantine/form";
+import { filterLaundryItemSchema, FilterLaundryItemValues } from "@/lib/validation/laundry-item.validation";
 
 const laundryItemApi = new LaundryItemApi();
 
 export const LAUNDRY_ITEMS_QUERY_KEY = ["laundry-items"];
 
-export function useLaundryItems(params?: LaundryItemQuery) {
+export function useLaundryItems(params?: LaundryItemQuery, options?: {enabled?: boolean}) {
   return useQuery({
     queryKey: [...LAUNDRY_ITEMS_QUERY_KEY, params],
     queryFn: () => laundryItemApi.getLaundryItems(params),
+    enabled: options?.enabled,
   });
 }
 
@@ -43,8 +46,7 @@ export function useUpdateLaundryItem() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ laundryItemId, payload }: { laundryItemId: string; payload: UpdateLaundryItemPayload }) =>
-      laundryItemApi.updateLaundryItem(laundryItemId, payload),
+    mutationFn: ({ laundryItemId, payload }: { laundryItemId: string; payload: UpdateLaundryItemPayload }) => laundryItemApi.updateLaundryItem(laundryItemId, payload),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -72,52 +74,44 @@ export function useDeactivateLaundryItem() {
   });
 }
 
-type LaundryItemFiltersState = Pick<LaundryItemQuery, "search">;
 
 export function useLaundryItemHooks() {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<10 | 20 | 50>(10);
-  const [filters, setFilters] = useState<LaundryItemFiltersState>({});
   const [selectedItem, setSelectedItem] = useState<LaundryItem | null>(null);
-  const [debouncedSearch] = useDebouncedValue(filters.search ?? "", 400);
-  const [sortBy, setSortBy] = useState<NonNullable<LaundryItemQuery["sortBy"]>>("createdAt");
-  const [sortOrder, setSortOrder] = useState<NonNullable<LaundryItemQuery["sortOrder"]>>("desc");
-
-  const laundryItems = useLaundryItems({
-    page,
-    pageSize,
-    ...filters,
-    search: debouncedSearch || undefined,
-    sortBy,
-    sortOrder,
+  const form = useForm<FilterLaundryItemValues>({
+    mode: "controlled",
+    initialValues: {
+      search: "",
+      sortBy: "createdAt",
+      sortOrder: "desc",
+    },
+    validate: schemaResolver(filterLaundryItemSchema),
+    validateInputOnChange: true,
+    onValuesChange: () => setPage(1),
   });
+  const [debouncedSearch] = useDebouncedValue(form.values.search, 400);
+  const laundryItems = useLaundryItems(
+    {
+      ...form.values,
+      page,
+      pageSize,
+      search: debouncedSearch,
+    },
+    { enabled: !form.errors.search },
+  );
 
   const deactivateLaundryItem = useDeactivateLaundryItem();
 
-  const handleFilterChange = (key: keyof LaundryItemFiltersState, value: string | null) => {
-    setFilters((current) => ({
-      ...current,
-      [key]: value || undefined,
-    }));
-
-    setPage(1);
-  };
-
   const handleReset = () => {
-    setFilters({});
-
-    setSortBy("createdAt");
-
-    setSortOrder("desc");
-
+    form.reset();
     setPage(1);
   };
 
   const handleDeactivate = async () => {
-    if (!selectedItem) {
-      return;
-    }
+    if (!selectedItem) return;
+
     await deactivateLaundryItem.mutateAsync(selectedItem.id, {
       onSuccess: () => {
         notifications.show({
@@ -140,13 +134,8 @@ export function useLaundryItemHooks() {
 
   return {
     router,
-    filters,
-    sortBy,
-    sortOrder,
-    handleFilterChange,
-    setSortBy,
+    form,
     setPage,
-    setSortOrder,
     handleReset,
     laundryItems,
     setPageSize,

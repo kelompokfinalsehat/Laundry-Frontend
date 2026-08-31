@@ -1,6 +1,6 @@
 "use client";
 
-import { AppShell, Burger, Group, NavLink, ScrollArea, Stack, Text, ThemeIcon, Box, Title } from "@mantine/core";
+import { AppShell, Burger, Group, NavLink, ScrollArea, Text, ThemeIcon, Box, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconBuildingStore,
@@ -12,11 +12,9 @@ import {
   IconRefresh,
   IconReportAnalytics,
   IconRoute,
-  IconSettings,
   IconShieldCheck,
   IconUsers,
   IconUserCheck,
-  IconClock,
   IconAlertCircle,
   IconReceipt,
 } from "@tabler/icons-react";
@@ -47,14 +45,6 @@ const outlet: MenuGroup[] = [
   {
     label: "OPERASIONAL",
     items: [
-      {
-        label: "Antrean Driver",
-        href: "/internal/outlet-admin/antrean/driver",
-      },
-      {
-        label: "Antrean Station",
-        href: "/internal/outlet-admin/antrean/station",
-      },
       {
         label: "Penerimaan",
         href: "/internal/outlet-admin/penerimaan",
@@ -91,8 +81,12 @@ const outlet: MenuGroup[] = [
     items: [
       {
         label: "Laporan",
-        href: "/internal/outlet-admin/laporan",
+        href: "/internal/outlet-admin/laporan/penjualan",
       },
+      {
+        label: "Kinerja Karyawan",
+        href: "/internal/outlet-admin/laporan/kinerja-karyawan"
+      }
     ],
   },
 ];
@@ -178,8 +172,6 @@ const menuIcons: Record<string, React.ReactNode> = {
   "Kinerja Karyawan": <IconUserCheck size={18} />,
   "Audit Log": <IconShieldCheck size={18} />,
 
-  "Antrean Driver": <IconClock size={18} />,
-  "Antrean Station": <IconSettings size={18} />,
   Penerimaan: <IconReceipt size={18} />,
   Bypass: <IconRefresh size={18} />,
   "Tim Outlet": <IconUsers size={18} />,

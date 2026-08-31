@@ -33,6 +33,17 @@ function BillInformationItem({ label, value }: { label: string; value: React.Rea
   );
 }
 
+function formatDateTime(value: string | null) {
+  if (!value) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat("id-ID", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
+}
+
 export function OrderBillSection({ bill }: Props) {
   if (!bill) {
     return (
@@ -88,6 +99,7 @@ export function OrderBillSection({ bill }: Props) {
           <BillInformationItem label="Tarif Shipping" value={`${formatCurrency(bill.shippingCost)}`} />
 
           <BillInformationItem label="Total Tagihan" value={formatCurrency(bill.totalAmount)} />
+          <BillInformationItem label="Dibayar Pada" value={formatDateTime(bill.paidAt)?? "-"} />
         </SimpleGrid>
       </Stack>
     </Paper>

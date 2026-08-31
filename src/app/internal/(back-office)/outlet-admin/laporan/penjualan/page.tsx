@@ -1,4 +1,4 @@
 import { SalesReportContent } from "@/components/back-office/laporan/penjualan/SalesReportContent";
 export default function Page() {
-  return <SalesReportContent role="SUPER_ADMIN" />;
+  return <SalesReportContent role="OUTLET_ADMIN" />;
 }

@@ -1,3 +1,5 @@
+import { CustomerStatus, StationType } from ".";
+
 export type DashboardSummary = {
   totalOrders: number;
   activeOrders: number;
@@ -11,7 +13,7 @@ export type RevenueTrendItem = {
 };
 
 export type OrderOverviewItem = {
-  status: string;
+  status: CustomerStatus;
   total: number;
 };
 
@@ -19,7 +21,7 @@ export type RecentOrderItem = {
   id: string;
   orderCode: string;
   customerName: string;
-  status: string;
+  status: CustomerStatus;
   createdAt: string;
 };
 
@@ -35,7 +37,7 @@ export type PendingBypassItem = {
   orderId: string;
   orderCode: string;
   workerName: string;
-  stationType: string;
+  stationType: StationType;
   createdAt: string;
 };
 

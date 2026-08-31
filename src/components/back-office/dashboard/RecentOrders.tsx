@@ -1,6 +1,6 @@
 import { Badge, Paper, ScrollArea, Stack, Table, Text } from "@mantine/core";
 import { RecentOrderItem } from "@/types/api/dashboard.types";
-import { DASHBOARD_STATUS_LABEL } from "@/lib/constants/dashboard-status";
+import { CUSTOMER_STATUS } from "@/lib/constants/customer-status";
 
 const formatDate = (date: string) =>
   new Intl.DateTimeFormat("id-ID", {
@@ -42,7 +42,10 @@ export function RecentOrders({ data }: { data: RecentOrderItem[] }) {
             </Table.Thead>
 
             <Table.Tbody>
-              {data.map((order) => (
+              {data.map((order) => {
+                const customerStatus = CUSTOMER_STATUS[order.status];
+                return(
+                
                 <Table.Tr key={order.id}>
                   <Table.Td>
                     <Text size="sm" fw={600}>
@@ -55,8 +58,8 @@ export function RecentOrders({ data }: { data: RecentOrderItem[] }) {
                   </Table.Td>
 
                   <Table.Td>
-                    <Badge variant="light" color="rinseBlue" radius="sm">
-                      {DASHBOARD_STATUS_LABEL[order.status] ?? order.status}
+                    <Badge variant="light" color={customerStatus.color} radius="sm">
+                      {customerStatus.label}
                     </Badge>
                   </Table.Td>
 
@@ -66,7 +69,7 @@ export function RecentOrders({ data }: { data: RecentOrderItem[] }) {
                     </Text>
                   </Table.Td>
                 </Table.Tr>
-              ))}
+              )})}
             </Table.Tbody>
           </Table>
         </ScrollArea>

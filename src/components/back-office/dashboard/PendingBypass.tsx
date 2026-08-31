@@ -1,7 +1,7 @@
 import { Badge, Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { DashboardResponse } from "@/types/api/dashboard.types";
-import { DASHBOARD_STATUS_LABEL } from "@/lib/constants/dashboard-status";
+import { CUSTOMER_STATUS } from "@/lib/constants/customer-status";
 
 type Props = {
   data: DashboardResponse["pendingBypass"];
@@ -66,7 +66,7 @@ export function PendingBypass({ data }: Props) {
                 </Text>
 
                 <Text size="xs" c="var(--color-text-secondary)">
-                  Station: {DASHBOARD_STATUS_LABEL[item.stationType] ?? item.stationType}
+                  Station: {CUSTOMER_STATUS[item.stationType].label}
                 </Text>
               </Paper>
             ))}

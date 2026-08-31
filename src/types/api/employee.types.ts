@@ -1,13 +1,4 @@
-import {
-  AccountStatus,
-  DriverAssignmentStatus,
-  EmployeeRole,
-  PickupDeliveryType,
-  SortOrder,
-  StationType,
-  WorkerAssignmentStatus,
-  WorkStatus,
-} from ".";
+import { AccountStatus, DriverAssignmentStatus, EmployeeRole, PaginatedResponse, PickupDeliveryType, SortOrder, StationType, WorkerAssignmentStatus, WorkStatus } from ".";
 
 export type EmployeeOutlet = {
   id: string;
@@ -89,7 +80,7 @@ export type OutletTeamItem = {
   name: string;
   email: string;
 
-  role: Exclude<EmployeeRole, "OUTLET_ADMIN">
+  role: Exclude<EmployeeRole, "OUTLET_ADMIN">;
 
   accountStatus: AccountStatus;
 
@@ -98,4 +89,49 @@ export type OutletTeamItem = {
   workerTasks: OutletTeamWorkerTask[];
 
   driverTasks: OutletTeamDriverTask[];
+};
+
+export type AttendanceStatus = "NOT_CLOCKED_IN" | "CLOCKED_IN" | "CLOCKED_OUT";
+
+export type OutletAttendanceSortBy = "name" | "clockInAt" | "clockOutAt";
+
+export type OutletAttendanceQuery = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  date?: Date;
+  role?: Exclude<EmployeeRole, "OUTLET_ADMIN">;
+  status?: AttendanceStatus;
+  sortBy?: OutletAttendanceSortBy;
+  sortOrder?: SortOrder;
+};
+
+export type OutletAttendanceItem = {
+  employeeId: string;
+  employeeName: string;
+  employeeEmail: string;
+  role: EmployeeRole;
+  attendanceDate: string;
+  clockInAt: string | null;
+  clockOutAt: string | null;
+  status: AttendanceStatus;
+};
+
+export type OutletAttendanceSummary = {
+  totalEmployees: number;
+  notClockedIn: number;
+  clockedIn: number;
+  clockedOut: number;
+};
+
+export type OutletAttendanceData = {
+  summary: OutletAttendanceSummary;
+  data: OutletAttendanceItem[];
+};
+
+export type OutletAttendanceResponse = {
+  success: boolean;
+  message: string;
+  data: OutletAttendanceData;
+  meta: PaginatedResponse<null>['meta']
 };

@@ -11,6 +11,7 @@ type EmployeePerformanceFiltersState = Pick<EmployeePerformanceQuery, "search" |
 type Props = {
   filters: EmployeePerformanceFiltersState;
   sortBy: NonNullable<EmployeePerformanceQuery["sortBy"]>;
+  isSuperAdmin: boolean;
   sortOrder: NonNullable<EmployeePerformanceQuery["sortOrder"]>;
   outlets?: {
     id: string;
@@ -59,16 +60,7 @@ const SORT_OPTIONS = [
   },
 ];
 
-export function EmployeePerformanceFilters({
-  filters,
-  sortBy,
-  sortOrder,
-  outlets = [],
-  onChange,
-  onSortByChange,
-  onSortOrderChange,
-  onReset,
-}: Props) {
+export function EmployeePerformanceFilters({ filters, sortBy, isSuperAdmin, sortOrder, outlets = [], onChange, onSortByChange, onSortOrderChange, onReset }: Props) {
   return (
     <Paper
       p="md"
@@ -133,14 +125,7 @@ export function EmployeePerformanceFilters({
         </Group>
 
         <Group align="flex-end" grow>
-          <Select
-            label="Role"
-            placeholder="Semua role"
-            clearable
-            data={ROLE_OPTIONS}
-            value={filters.role ?? null}
-            onChange={(value) => onChange("role", value)}
-          />
+          <Select label="Role" placeholder="Semua role" clearable data={ROLE_OPTIONS} value={filters.role ?? null} onChange={(value) => onChange("role", value)} />
 
           <Select
             label="Station"
@@ -152,7 +137,7 @@ export function EmployeePerformanceFilters({
             disabled={filters.role === "DRIVER"}
           />
 
-          <Select
+          {isSuperAdmin && <Select
             label="Outlet"
             placeholder="Semua outlet"
             clearable
@@ -163,7 +148,7 @@ export function EmployeePerformanceFilters({
             }))}
             value={filters.outletId ?? null}
             onChange={(value) => onChange("outletId", value)}
-          />
+          />}
 
           <DatePickerInput
             label="Dari Tanggal"

@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { useEmployeePerformanceHooks } from "@/hooks/report.hooks";
 import { EmployeePerformanceSkeleton } from "./EmployeePerformanceSkeleton";
 
-export function EmployeePerformanceContent() {
+export function EmployeePerformanceContent({role}: {role: string}) {
   const {
     query,
     outletsData,
@@ -25,6 +25,7 @@ export function EmployeePerformanceContent() {
     handlePageChange,
     handlePageSizeChange,
   } = useEmployeePerformanceHooks();
+  const isSuperAdmin = role === "SUPER_ADMIN"
   return (
     <Stack gap="md">
       <PageHeader title="Kinerja Karyawan" description="Monitor kinerja karyawan dalam sistem." />
@@ -38,6 +39,7 @@ export function EmployeePerformanceContent() {
           startDate: query.startDate,
           endDate: query.endDate,
         }}
+        isSuperAdmin={isSuperAdmin}
         sortBy={query.sortBy ?? "completedJobs"}
         sortOrder={query.sortOrder ?? "desc"}
         outlets={outletsData?.data ?? []}

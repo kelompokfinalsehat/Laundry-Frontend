@@ -1,6 +1,6 @@
 import { Group, Paper, Progress, Stack, Text } from "@mantine/core";
 import { OrderOverviewItem } from "@/types/api/dashboard.types";
-import { DASHBOARD_STATUS_LABEL } from "@/lib/constants/dashboard-status";
+import { CUSTOMER_STATUS } from "@/lib/constants/customer-status";
 
 export function OrderOverview({ data }: { data: OrderOverviewItem[] }) {
   const total = data.reduce((sum, item) => sum + item.total, 0);
@@ -35,7 +35,7 @@ export function OrderOverview({ data }: { data: OrderOverviewItem[] }) {
               <Stack key={item.status} gap={5}>
                 <Group justify="space-between" wrap="nowrap">
                   <Text size="sm" c="var(--color-text-primary)">
-                    {DASHBOARD_STATUS_LABEL[item.status] ?? item.status}
+                    {CUSTOMER_STATUS[item.status].label}
                   </Text>
 
                   <Text size="sm" fw={600} c="var(--color-text-primary)">
@@ -43,7 +43,7 @@ export function OrderOverview({ data }: { data: OrderOverviewItem[] }) {
                   </Text>
                 </Group>
 
-                <Progress value={percentage} size={4} radius="xl" color="rinseBlue" />
+                <Progress value={percentage} size={4} radius="xl" color={CUSTOMER_STATUS[item.status].color} />
               </Stack>
             );
           })}
