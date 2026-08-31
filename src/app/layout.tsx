@@ -1,10 +1,12 @@
-import '@mantine/core/styles.css';
-import '@mantine/notifications/styles.css';
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
+import "leaflet/dist/leaflet.css";
 import "@mantine/dates/styles.css";
 import '@mantine/charts/styles.css';
-import './globals.css';
-import { Providers } from '@/providers/Providers';
-import { Baloo_2, Plus_Jakarta_Sans } from 'next/font/google';
+import "./globals.css";
+import { Providers } from "@/providers/Providers";
+import { Baloo_2, Plus_Jakarta_Sans } from "next/font/google";
+
 
 export const metadata = {
   title: "Popo Laundry",
@@ -20,14 +22,27 @@ export const metadata = {
   manifest: "/favicon/site.webmanifest",
 };
 
-const display = Baloo_2({ subsets: ['latin'], weight: ['600', '700', '800'], variable: '--font-display' });
-const body = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-body' });
+const display = Baloo_2({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-display",
+});
+const body = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-body",
+});
 
-
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id" className={`${display.variable} ${body.variable}`}>
-      <body><Providers>{children}</Providers></body>
+      <body>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 }

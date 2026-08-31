@@ -1,5 +1,4 @@
-// src/utils/safe-redirect.ts
-import { z } from "zod";
+import * as z from "zod"
 
 const FALLBACK_PATH = "/beranda";
 

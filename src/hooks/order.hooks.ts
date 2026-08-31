@@ -4,12 +4,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDebouncedValue } from "@mantine/hooks";
 import { useOutlets } from "./outlet.hooks";
+import { CreatePaymentResponse, ListOrderQuery } from "@/types/api/orders.types";
+import { ApiError } from "@/lib/api/axios";
 import type { CreateOrderPayload, OrderQuery } from "@/types/api/order.types";
 
 const orderApi = new OrderApi();
 export const ORDERS_QUERY_KEY = ["orders"] as const;
 
-export function useOrders(params: OrderQuery) {
+export function useOrderList(params: OrderQuery) {
   return useQuery({
     queryKey: [...ORDERS_QUERY_KEY, params],
     queryFn: () => orderApi.getOrders(params),
@@ -47,11 +49,11 @@ type CreateOrderVariables = {
   payload: CreateOrderPayload;
 };
 
-export function useCreateOrder() {
+export function useCreateOrderAdmin() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ orderId, payload }: CreateOrderVariables) => orderApi.createOrder(orderId, payload),
+    mutationFn: ({ orderId, payload }: CreateOrderVariables) => orderApi.createOrderAdmin(orderId, payload),
 
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({
@@ -76,7 +78,7 @@ export function useOrderHooks(role: string) {
   const [sortBy, setSortBy] = useState<NonNullable<OrderQuery["sortBy"]>>("createdAt");
   const [sortOrder, setSortOrder] = useState<NonNullable<OrderQuery["sortOrder"]>>("desc");
 
-  const orders = useOrders({
+  const orders = useOrderList({
     page,
     pageSize,
     ...filters,
@@ -117,3 +119,39 @@ export function useOrderHooks(role: string) {
   return { filters, sortBy, sortOrder, outlets, handleFilterChange, setSortBy, setPage, setSortOrder, orders, setPageSize, handleView, handleReset };
 }
 
+export function useCreateOrder() {
+  return useMutation({ mutationFn: orderApi.createOrder });
+}
+
+export function useOrders(query: ListOrderQuery) {
+  return useQuery({
+    queryKey: ["orders", query],
+    queryFn: () => orderApi.listOrders(query),
+  });
+}
+
+export function useOrderDetail(id: string) {
+  return useQuery({
+    queryKey: ["orders", id],
+    queryFn: () => orderApi.getOrderDetail(id),
+    enabled: !!id,
+  });
+}
+
+export function useCreatePayment(id: string) {
+  return useMutation<
+    CreatePaymentResponse,
+    ApiError,
+    void
+  >({
+    mutationFn: () => orderApi.paymentAttempt(id),
+  });
+}
+
+export function useLatestPayment(id: string) {
+  return useQuery({
+    queryKey: ["payment", id],
+    queryFn: () => orderApi.getLastestPayment(id),
+    enabled: !!id,
+  });
+}

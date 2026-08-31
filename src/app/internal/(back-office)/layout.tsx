@@ -1,9 +1,9 @@
-// import { requireRole } from "@/lib/auth/AuthGateCustomer";
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  // await requireRole(["OUTLET_ADMIN", "SUPER_ADMIN"]);
-  return children;
+import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee"
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthGateEmployee allowedRoles={["OUTLET_ADMIN", "SUPER_ADMIN"]}>
+      {children}
+    </AuthGateEmployee>
+  );
 }

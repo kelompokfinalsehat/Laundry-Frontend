@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { Center, Loader } from "@mantine/core";
 import { useCurrentUser } from "@/hooks/authCustomer.hooks";
 
-type AuthGateProps = {
+export type AuthGateCustomerProps = {
   children: React.ReactNode;
 };
 
-export function AuthGate({ children }: AuthGateProps) {
+export function AuthGateCustomer({ children }: AuthGateCustomerProps) {
   const router = useRouter();
 
   const { data: user, isLoading, isError } = useCurrentUser();

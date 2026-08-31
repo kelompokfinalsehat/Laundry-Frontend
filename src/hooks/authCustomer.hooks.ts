@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthApi } from "@/lib/api/authCustomer.api";
+import { AuthApi } from "@/lib/api/auth.api";
 import {
   RegisterCustomerSchema,
 } from "@/lib/validation/auth.validation";

@@ -18,7 +18,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <Paper
       maw={420}
       mx="auto"
-      mt={64}
+      mt={60}
       p={32}
       radius="md"
       withBorder
