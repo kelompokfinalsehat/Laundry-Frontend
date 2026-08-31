@@ -1,138 +1,80 @@
 "use client";
 
-import {
-  Card,
-  Skeleton,
-  Stack,
-} from "@mantine/core";
-
-import { useRouter } from "next/navigation";
-
-import { DriverActiveContent } from "@/components/field-ops/driver/DriverActiveContent";
-
+import { DriverActiveSummary } from "@/components/field-ops/driver/DriverActiveSummary";
+import { DriverActiveTaskView } from "@/components/field-ops/driver/DriverActiveTaskView";
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
 
-import {
-  useCompleteDriverDelivery,
-  useConfirmDriverPickup,
-  useDriverActiveAssignment,
-  useStartDriverAssignment,
-} from "@/hooks/driver.hooks";
+import { useActive, useCompleteDelivery, usePickup, useStart } from "@/hooks/driver.hooks";
+
+import { Button, Card, Skeleton, Stack } from "@mantine/core";
+
+import { IconArrowLeft } from "@tabler/icons-react";
+import Link from "next/link";
 
 export default function Page() {
-  const router = useRouter();
+  const activeQuery = useActive();
 
-  const activeQuery =
-    useDriverActiveAssignment();
-
-  const startMutation =
-    useStartDriverAssignment();
-
-  const pickupMutation =
-    useConfirmDriverPickup();
-
-  const completeDeliveryMutation =
-    useCompleteDriverDelivery();
+  const startMutation = useStart();
+  const pickupMutation = usePickup();
+  const completeMutation = useCompleteDelivery();
 
   return (
-    <AsyncStateView
-      isLoading={
-        activeQuery.isPending
-      }
-      isError={
-        activeQuery.isError
-      }
-      error={
-        activeQuery.error
-      }
-      data={
-        activeQuery.data
-      }
-      onRetry={() =>
-        activeQuery.refetch()
-      }
-      emptyTitle="Belum ada tugas aktif"
-      emptyDescription="Ambil tugas dari daftar tugas tersedia terlebih dahulu."
-      skeleton={
-        <Card
-          withBorder
-          shadow="sm"
-          radius="lg"
-          p="lg"
-        >
+    <Stack gap="md">
+      <Button component={Link} href="/internal/driver/tugas" variant="subtle" leftSection={<IconArrowLeft size={16} />} w="fit-content">
+        Kembali ke Daftar Tugas
+      </Button>
+
+      <AsyncStateView
+        isLoading={activeQuery.isPending}
+        isError={activeQuery.isError}
+        error={activeQuery.error}
+        data={activeQuery.data}
+        onRetry={() => activeQuery.refetch()}
+        emptyTitle="Belum ada tugas aktif"
+        emptyDescription="Ambil tugas dari daftar tugas tersedia terlebih dahulu."
+        skeleton={
           <Stack gap="md">
-            <Skeleton
-              height={24}
-              width="45%"
-            />
+            <Card withBorder radius="lg" p="lg">
+              <Stack gap="md">
+                <Skeleton height={24} width="45%" />
+                <Skeleton height={1} />
+                <Skeleton height={20} />
+              </Stack>
+            </Card>
 
-            <Skeleton
-              height={1}
-            />
+            <Card withBorder radius="lg" p="lg">
+              <Stack gap="md">
+                <Skeleton height={24} width="40%" />
+                <Skeleton height={20} width="60%" />
+                <Skeleton height={20} />
+                <Skeleton height={40} />
+              </Stack>
+            </Card>
+          </Stack>
+        }
+      >
+        {(assignment) => (
+          <Stack gap="md">
+            <DriverActiveSummary assignment={assignment} />
 
-            <Skeleton
-              height={20}
-            />
-
-            <Skeleton
-              height={20}
-            />
-
-            <Skeleton
-              height={120}
-            />
-
-            <Skeleton
-              height={40}
+            <DriverActiveTaskView
+              assignment={assignment}
+              isStarting={startMutation.isPending}
+              isPickingUp={pickupMutation.isPending}
+              onStart={() => {
+                startMutation.mutate(assignment.id);
+              }}
+              onPickup={() => {
+                pickupMutation.mutate(assignment.id);
+              }}
+              isCompleting={completeMutation.isPending}
+              onComplete={() => {
+                completeMutation.mutate(assignment.id);
+              }}
             />
           </Stack>
-        </Card>
-      }
-    >
-      {(assignment) => (
-        <DriverActiveContent
-          assignment={
-            assignment
-          }
-
-          isStarting={
-            startMutation.isPending
-          }
-
-          isConfirmingPickup={
-            pickupMutation.isPending
-          }
-
-          isCompletingDelivery={
-            completeDeliveryMutation.isPending
-          }
-
-          onStart={() => {
-            startMutation.mutate(
-              assignment.id,
-            );
-          }}
-
-          onConfirmPickup={() => {
-            pickupMutation.mutate(
-              assignment.id,
-            );
-          }}
-
-          onCompleteDelivery={() => {
-            completeDeliveryMutation.mutate(
-              assignment.id,
-              {
-                onSuccess: () => {
-                  router.push(
-                    "/internal/driver/tugas",
-                  );
-                },
-              },
-            );
-          }}
-        />
-      )}
-    </AsyncStateView>
+        )}
+      </AsyncStateView>
+    </Stack>
   );
 }

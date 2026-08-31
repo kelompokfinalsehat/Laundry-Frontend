@@ -12,6 +12,7 @@ export type AuthUser = {
   profilePhotoUrl?: string | null;
   phone?: string | null;
   authProvider: string;
+  currentOutletId?: string | null;
 };
 
 type AuthState = {

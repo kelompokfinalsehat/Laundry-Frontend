@@ -122,3 +122,46 @@ export type WorkerCompleteResponse = {
     orderCode: string;
   };
 };
+
+//history
+
+export type WorkerHistoryItem = {
+  id: string;
+  completedAt: string;
+  stationType: StationType;
+  order: {
+    id: string;
+    orderCode: string;
+  };
+};
+
+export interface WorkerHistoryQuery extends Pick<ListQuery, "page" | "pageSize" | "sortOrder"> {
+  stationType?: StationType;
+  period:string
+}
+
+export type WorkerHistoryPaginated = {
+  success: boolean;
+  message: string;
+  data: {
+    historyList: WorkerHistoryItem[];
+    summary: {
+      totalCompleted: number;
+    };
+  };
+  meta: PaginationMeta;
+};
+
+export type WorkerHistoryDetailResponse = {
+  id: string;
+  stationType: StationType;
+  orderCode: string;
+  assignedAt: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  items: {
+    id: string;
+    name: string;
+    quantity: number;
+  }[];
+};

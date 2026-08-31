@@ -1,15 +1,18 @@
 import type { ApiResponse } from "@/types/api";
 import { api } from "./axios";
 import type {
-  WorkerAvailableQuery,
-  WorkerClaimResponse,
-  WorkerAvailablePaginated,
-  WorkerActiveResponse,
-  WorkerValidatePayload,
-  WorkerValidateResponse,
-  WorkerCompleteResponse,
-  WorkerBypassPayload,
-  WorkerBypassResponse,
+   WorkerAvailableQuery,
+   WorkerClaimResponse,
+   WorkerAvailablePaginated,
+   WorkerActiveResponse,
+   WorkerValidatePayload,
+   WorkerValidateResponse,
+   WorkerCompleteResponse,
+   WorkerBypassPayload,
+   WorkerBypassResponse,
+   WorkerHistoryPaginated,
+   WorkerHistoryQuery,
+   WorkerHistoryDetailResponse,
 } from "@/types/api/worker.types";
 
 const BASE_PATH = "/internal/worker/jobs";
@@ -46,6 +49,16 @@ export class WorkerApi {
 
   async complete(assignmentId: string) {
     const { data } = await api.post<ApiResponse<WorkerCompleteResponse>>(`${BASE_PATH}/${assignmentId}/complete`, {});
+    return data.data;
+  }
+
+  async getHistoryList(query: WorkerHistoryQuery) {
+    const { data } = await api.get<WorkerHistoryPaginated>(`${BASE_PATH}/history`, { params: query });
+    return { data: data.data, meta: data.meta };
+  }
+
+  async getHistoryDetail(assignmentId: string) {
+    const { data } = await api.get<ApiResponse<WorkerHistoryDetailResponse>>(`${BASE_PATH}/history/${assignmentId}`);
     return data.data;
   }
 }

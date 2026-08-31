@@ -1,13 +1,16 @@
 import { ApiError } from "@/lib/api/axios";
 import { WorkerApi } from "@/lib/api/worker.api";
-import { StationType, type WorkerAvailableQuery, type WorkerBypassPayload, type WorkerValidatePayload } from "@/types/api/worker.types";
+import type { StationType, WorkerAvailableQuery, WorkerBypassPayload, WorkerHistoryQuery, WorkerValidatePayload } from "@/types/api/worker.types";
 import { notifications } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { useState } from "react";
 
 export const WORKER_QUERY_KEY = ["worker"] as const;
 export const WORKER_AVAILABLE_QUERY_KEY = [...WORKER_QUERY_KEY, "available"] as const;
 export const WORKER_ACTIVE_QUERY_KEY = [...WORKER_QUERY_KEY, "active"] as const;
+export const WORKER_HISTORY_QUERY_KEY = [...WORKER_QUERY_KEY, "history"] as const;
+
 type StationFilter = StationType | "ALL";
 const workerApi = new WorkerApi();
 
@@ -152,5 +155,64 @@ export function useComplete() {
         color: "red",
       });
     },
+  });
+}
+
+export function useHistoryList() {
+  const HISTORY_PAGE_SIZE = 5;
+
+  const [page, setPage] = useState<number>(1);
+  const [stationType, setStationType] = useState<StationFilter>("ALL");
+  const [period, setPeriod] = useState<string>(() => dayjs().format("YYYY-MM"));
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  // query params
+  const query: WorkerHistoryQuery = {
+    page: page,
+    pageSize: HISTORY_PAGE_SIZE,
+    period,
+    ...(stationType !== "ALL" && { stationType }),
+    sortOrder,
+  };
+  const historyQuery = useQuery({
+    queryKey: [...WORKER_HISTORY_QUERY_KEY, query],
+    queryFn: () => workerApi.getHistoryList(query),
+  });
+
+  function handlePeriodChange(value: string) {
+    setPeriod(value);
+    setPage(1);
+  }
+
+  function handleStationFilter(value: string | null) {
+    if (!value) return;
+    setStationType(value as StationFilter);
+    setPage(1);
+  }
+
+  function handleSortChange(value: "asc" | "desc") {
+    setSortOrder(value);
+    setPage(1);
+  }
+
+  return {
+    historyQuery,
+
+    page,
+    period,
+    stationType,
+    sortOrder,
+
+    setPage,
+    handlePeriodChange,
+    handleStationFilter,
+    handleSortChange,
+  };
+}
+
+export function useHistoryDetail(assignmentId: string) {
+  return useQuery({
+    queryKey: [...WORKER_HISTORY_QUERY_KEY, "detail", assignmentId],
+    queryFn: () => workerApi.getHistoryDetail(assignmentId),
   });
 }

@@ -1,9 +1,10 @@
-"use client"
+"use client";
 import { FieldOpsHome } from "@/components/field-ops/shared/FieldOpsHome";
 import { WorkerActiveSummary } from "@/components/field-ops/worker/WorkerActiveSummary";
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { useActive } from "@/hooks/worker.hooks";
-import { Card, Skeleton, Stack } from "@mantine/core";
+import { Button, Card, Skeleton, Stack } from "@mantine/core";
+import Link from "next/link";
 
 export default function Page() {
   const activeQuery = useActive();
@@ -27,7 +28,15 @@ export default function Page() {
           </Card>
         }
       >
-        {(assignment) => <WorkerActiveSummary assignment={assignment} />}
+        {(assignment) => (
+          <Stack gap="sm">
+            <WorkerActiveSummary assignment={assignment} />
+
+            <Button component={Link} href="/internal/worker/tugas/aktif" variant="light">
+              Lihat Tugas Aktif
+            </Button>
+          </Stack>
+        )}
       </AsyncStateView>
     </FieldOpsHome>
   );
