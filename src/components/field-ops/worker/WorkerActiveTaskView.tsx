@@ -2,7 +2,6 @@ import type { WorkerActiveAssignment, WorkerBypassPayload, WorkerValidatePayload
 import { WorkerAssignedTask } from "./active/WorkerAssignedTask";
 import { WorkerInProgressTask } from "./active/WorkerInProgressTask";
 import { WorkerOnHoldBypassTask } from "./active/WorkerOnHoldBypassTask";
-import { boolean } from "zod";
 
 type WorkerActiveTaskViewProps = {
   assignment: WorkerActiveAssignment;

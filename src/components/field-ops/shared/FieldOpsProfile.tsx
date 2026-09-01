@@ -1,28 +1,12 @@
 "use client";
 
-import {
-  Avatar,
-  Badge,
-  Button,
-  Divider,
-  Fieldset,
-  FileInput,
-  Group,
-  Modal,
-  Paper,
-  Skeleton,
-  Stack,
-  Text,
-  TextInput,
-  ThemeIcon,
-  Title,
-} from "@mantine/core";
+import { Avatar, Button, Divider, Fieldset, FileInput, Group, Modal, Paper, Skeleton, Stack, Text, TextInput, ThemeIcon, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconBuilding, IconLogout, IconMail, IconPencil, IconPhone, IconUser } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 
-import { useFieldOpsProfile, useFieldOpsProfileEdit } from "@/hooks/fieldOpsProfile.hooks";
 import { useLogout } from "@/hooks/authEmployee.hooks";
+import { useFieldOpsProfile, useFieldOpsProfileEdit } from "@/hooks/fieldOpsProfile.hooks";
 import type { FieldOpsProfile as FieldOpsProfileData } from "@/types/api/fieldOpsProfile.types";
 
 import { AsyncStateView } from "@/components/ui/AsyncStateView";

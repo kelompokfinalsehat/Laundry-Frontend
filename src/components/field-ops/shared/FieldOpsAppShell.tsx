@@ -1,33 +1,20 @@
 "use client";
 
 import { AppShell, Group, Title } from "@mantine/core";
-import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { useFieldOpsTaskNotification } from "@/hooks/fieldOpsTaskNotification.hooks";
 import { BottomNav } from "./BottomNav";
 
-export function FieldOpsAppShell({
-  children,
-  role,
-  basePath,
-}: {
-  children: React.ReactNode;
-  role: "Worker" | "Driver";
-  basePath: string;
-}) {
-  const pathname = usePathname();
-
+export function FieldOpsAppShell({ children, role, basePath }: { children: React.ReactNode; role: "Worker" | "Driver"; basePath: string }) {
   const [hasNewTask, setHasNewTask] = useState(false);
-
-  const taskPath = `${basePath}/tugas`;
-
-  const isTaskPage =
-    pathname === taskPath ||
-    pathname.startsWith(`${taskPath}/`);
 
   const handleNewTask = useCallback(() => {
     setHasNewTask(true);
+  }, []);
+
+  const handleTaskOpen = useCallback(() => {
+    setHasNewTask(false);
   }, []);
 
   useFieldOpsTaskNotification({
@@ -35,18 +22,8 @@ export function FieldOpsAppShell({
     onNewTask: handleNewTask,
   });
 
-  useEffect(() => {
-    if (isTaskPage) {
-      setHasNewTask(false);
-    }
-  }, [isTaskPage]);
-
   return (
-    <AppShell
-      header={{ height: 56 }}
-      footer={{ height: 64 }}
-      padding="md"
-    >
+    <AppShell header={{ height: 56 }} footer={{ height: 64 }} padding="md">
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Title
@@ -76,10 +53,7 @@ export function FieldOpsAppShell({
       </AppShell.Main>
 
       <AppShell.Footer>
-        <BottomNav
-          basePath={basePath}
-          tugasNew={hasNewTask}
-        />
+        <BottomNav basePath={basePath} tugasNew={hasNewTask} onTaskOpen={handleTaskOpen} />
       </AppShell.Footer>
     </AppShell>
   );

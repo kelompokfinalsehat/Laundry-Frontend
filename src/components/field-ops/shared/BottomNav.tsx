@@ -17,6 +17,12 @@ type NavItem = {
   isTask?: boolean;
 };
 
+type BottomNavProps = {
+  basePath: string;
+  tugasNew?: boolean;
+  onTaskOpen?: () => void;
+};
+
 function buildNavItems(basePath: string): NavItem[] {
   return [
     {
@@ -48,7 +54,7 @@ function buildNavItems(basePath: string): NavItem[] {
   ];
 }
 
-export function BottomNav({ basePath, tugasNew = false }: { basePath: string; tugasNew?: boolean }) {
+export function BottomNav({ basePath, tugasNew = false, onTaskOpen }: BottomNavProps) {
   const pathname = usePathname();
 
   const items = buildNavItems(basePath);
@@ -74,6 +80,7 @@ export function BottomNav({ basePath, tugasNew = false }: { basePath: string; tu
             key={item.href}
             component={Link}
             href={item.href}
+            onClick={item.isTask ? onTaskOpen : undefined}
             style={{
               minWidth: 64,
               minHeight: 44,

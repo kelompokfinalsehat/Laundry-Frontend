@@ -2,29 +2,12 @@ import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useAttendanceHistory } from "@/hooks/attendance.hooks";
 import { formatFieldOpsDate, formatFieldOpsTime } from "@/utils/fieldops.date";
-import {
-  ActionIcon,
-  Group,
-  Pagination,
-  Paper,
-  SimpleGrid,
-  Skeleton,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { ActionIcon, Group, Pagination, Paper, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
 import { MonthPickerInput } from "@mantine/dates";
-import {
-  IconArrowNarrowDown,
-  IconArrowNarrowLeft,
-  IconArrowNarrowUp,
-  IconArrowsDown,
-  IconArrowsUp,
-  IconCalendar,
-} from "@tabler/icons-react";
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconCalendar } from "@tabler/icons-react";
 
 export function AttendanceHistory() {
-  const { historyQuery, period, sortOrder, setPage, handlePeriodChange, handleSortChange } =
-    useAttendanceHistory();
+  const { historyQuery, period, sortOrder, setPage, handlePeriodChange, handleSortChange } = useAttendanceHistory();
   return (
     <Stack gap={"md"}>
       {/* filter */}
@@ -87,28 +70,28 @@ export function AttendanceHistory() {
               {/* summary statistic requested by mentor */}
               <SimpleGrid cols={3}>
                 <Paper withBorder p={"sm"} radius={"md"} shadow="md">
-                  <Text size="xs" c="dimmed" ta={'center'}>
+                  <Text size="xs" c="dimmed" ta={"center"}>
                     Hari Efektif
                   </Text>
-                  <Text fw={600} size="lg" ta={'center'}>
+                  <Text fw={600} size="lg" ta={"center"}>
                     {summary.totalDays}
                   </Text>
                 </Paper>
 
                 <Paper withBorder p={"sm"} radius={"md"} shadow="md">
-                  <Text size="xs" c="dimmed" ta={'center'}>
+                  <Text size="xs" c="dimmed" ta={"center"}>
                     Hadir
                   </Text>
-                  <Text fw={600} size="lg" ta={'center'}>
+                  <Text fw={600} size="lg" ta={"center"}>
                     {summary.presentDays}
                   </Text>
                 </Paper>
 
-                <Paper withBorder p={"sm"} radius={"md"} shadow="md"  >
-                  <Text size="xs" c="dimmed" ta={'center'}>
+                <Paper withBorder p={"sm"} radius={"md"} shadow="md">
+                  <Text size="xs" c="dimmed" ta={"center"}>
                     Tidak Hadir
                   </Text>
-                  <Text fw={600} size="lg" ta={'center'}>
+                  <Text fw={600} size="lg" ta={"center"}>
                     {summary.absentDays}
                   </Text>
                 </Paper>
@@ -116,10 +99,7 @@ export function AttendanceHistory() {
 
               {/* history list untuk paginationnya */}
               {items.length === 0 ? (
-                <EmptyState
-                  title="Belum ada riwayat"
-                  description="Belum ada riwayat absensi pada bulan ini."
-                />
+                <EmptyState title="Belum ada riwayat" description="Belum ada riwayat absensi pada bulan ini." />
               ) : (
                 <Stack gap="sm">
                   {items.map((attendance) => (
@@ -159,12 +139,7 @@ export function AttendanceHistory() {
               {/* button pagination */}
               {meta.totalPages > 1 && (
                 <Group justify="center">
-                  <Pagination
-                    value={meta.page}
-                    total={meta.totalPages}
-                    onChange={setPage}
-                    size={"sm"}
-                  />
+                  <Pagination value={meta.page} total={meta.totalPages} onChange={setPage} size={"sm"} />
                 </Group>
               )}
             </Stack>
