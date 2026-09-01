@@ -21,22 +21,14 @@ const workerApi = new WorkerApi();
 
 const POLLING_INTERVAL = 30_000;
 
-export function useFieldOpsTaskNotification({
-  role,
-  onNewTask,
-}: UseFieldOpsTaskNotificationProps) {
-  // Menyimpan waktu task terbaru
-  // yang sudah pernah diketahui sebelumnya.
+export function useFieldOpsTaskNotification({ role, onNewTask }: UseFieldOpsTaskNotificationProps) {
+  // Menyimpan createdAt terbaru yang sudah pernah difetch simpan sebelumnya.
   const knownTaskTimeRef = useRef<string | null>(null);
 
-  // Menandai bahwa response pertama
-  // sudah pernah dijadikan baseline.
+  // Menandai bahwa response pertama sudah pernah dijadikan baseline.
   const hasBaselineRef = useRef(false);
 
-  const notificationQueryKey =
-    role === "Driver"
-      ? [...DRIVER_AVAILABLE_QUERY_KEY, "notification"]
-      : [...WORKER_AVAILABLE_QUERY_KEY, "notification"];
+  const notificationQueryKey = role === "Driver" ? [...DRIVER_AVAILABLE_QUERY_KEY, "notification"] : [...WORKER_AVAILABLE_QUERY_KEY, "notification"];
 
   const notificationQuery = useQuery({
     queryKey: notificationQueryKey,
@@ -70,16 +62,11 @@ export function useFieldOpsTaskNotification({
     // index 0 adalah task paling baru.
     const newestTask = notificationQuery.data.data[0];
 
-    const incomingCreatedAt =
-      newestTask?.createdAt ?? null;
+    const incomingCreatedAt = newestTask?.createdAt ?? null;
 
-    // =========================================
     // RESPONSE PERTAMA
-    // =========================================
-
     // Response pertama hanya dijadikan baseline.
-    // Task yang sudah ada sebelum user membuka aplikasi
-    // tidak dianggap sebagai task baru.
+    // Task yang sudah ada sebelum user membuka aplikasi tidak dianggap sebagai task baru.
     if (!hasBaselineRef.current) {
       knownTaskTimeRef.current = incomingCreatedAt;
       hasBaselineRef.current = true;
@@ -87,10 +74,7 @@ export function useFieldOpsTaskNotification({
       return;
     }
 
-    // =========================================
     // RESPONSE BERIKUTNYA
-    // =========================================
-
     // Kalau sekarang tidak ada available task,
     // tidak ada yang perlu dibandingkan.
     if (!incomingCreatedAt) {
@@ -110,11 +94,9 @@ export function useFieldOpsTaskNotification({
 
     // Ubah tanggal string menjadi timestamp number
     // supaya bisa dibandingkan.
-    const knownTimestamp =
-      new Date(knownTaskTimeRef.current).getTime();
+    const knownTimestamp = new Date(knownTaskTimeRef.current).getTime();
 
-    const incomingTimestamp =
-      new Date(incomingCreatedAt).getTime();
+    const incomingTimestamp = new Date(incomingCreatedAt).getTime();
 
     // Kalau waktu task dari API sekarang
     // lebih baru daripada waktu task yang sudah dikenal,

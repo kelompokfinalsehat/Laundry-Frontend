@@ -96,7 +96,7 @@ export function DriverAvailableAssignments() {
                 <Paper key={assignment.id} withBorder radius="md" p="md">
                   <Group justify="space-between">
                     <Stack gap={4}>
-                      <Badge color="yellow.7" variant="light" w="fit-content">
+                      <Badge color="orange" variant="light" w={150}>
                         {getTaskLabel(assignment.taskType)}
                       </Badge>
 

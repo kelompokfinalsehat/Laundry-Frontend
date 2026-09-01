@@ -5,7 +5,7 @@ import { useRef } from "react";
 import { useCurrentEmploye } from "@/hooks/authEmployee.hooks";
 
 import { Carousel } from "@mantine/carousel";
-import { Box, Group, Marquee, Paper, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Box, Divider, Group, Marquee, Paper, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconBolt, IconClipboardCheck, IconCloudFilled, IconMedal, IconSun } from "@tabler/icons-react";
 import Autoplay from "embla-carousel-autoplay";
 
@@ -54,30 +54,30 @@ export function FieldOpsGreeting() {
               "linear-gradient(135deg, var(--mantine-color-orange-6) 0%, var(--mantine-color-orange-5) 45%, var(--mantine-color-yellow-5) 100%)",
           }}
         >
-          {/* Background clouds - baris atas, jalan ke kanan, pelan */}
+          {/* Background clouds - baris atas, jalan ke kanan, pelan
           <Box pos="absolute" top="-10%" left={0} right={0} style={{ zIndex: 0, pointerEvents: "none" }}>
             <Marquee duration={5000} gap="xl" fadeEdges={false}>
               {CLOUD_ROW_TOP.map((size, index) => (
                 <IconCloudFilled key={index} size={size} color="white" style={{ opacity: 0.16 }} />
               ))}
             </Marquee>
-          </Box>
-
-          {/* Background clouds - baris bawah, jalan ke kiri, beda kecepatan */}
+          </Box> */}
+          {/* Background clouds - baris bawah, jalan ke kiri, beda kecepatan 
           <Box pos="absolute" bottom="-8%" left={0} right={0} style={{ zIndex: 0, pointerEvents: "none" }}>
             <Marquee duration={10000} gap="xl" reverse fadeEdges={false}>
               {CLOUD_ROW_BOTTOM.map((size, index) => (
                 <IconCloudFilled key={index} size={size} color="white" style={{ opacity: 0.12 }} />
               ))}
             </Marquee>
-          </Box>
+          </Box> */}
 
           {/* Main content, di atas awan */}
-          <Stack gap="xs" p={15} pos="relative" style={{ zIndex: 1 }}>
+          <Stack gap='lg' p={15} pos="relative" style={{ zIndex: 1 }}>
             <Text fw={600} fz="xl" c="white">
               Halo, {employeeQuery.data.name}!
             </Text>
 
+            
             <Carousel
               withControls={false}
               withKeyboardEvents={false}
