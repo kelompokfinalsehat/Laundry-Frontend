@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Alert,
   Anchor,
   Button,
   Divider,
@@ -9,6 +8,7 @@ import {
   Stack,
   TextInput,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { useForm, schemaResolver } from "@mantine/form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -28,56 +28,88 @@ type LoginCustomerFormProps = {
 
 export function LoginCustomerForm({ intendedUrl }: LoginCustomerFormProps) {
   const router = useRouter();
-  const { mutate, isPending, error } = useLoginCustomer();
+
+  const { mutate, isPending } = useLoginCustomer();
+  const { mutate: mutateGoogle, isPending: isGooglePending } =
+    useLoginWithGoogle();
 
   const form = useForm({
-    initialValues: { email: "", password: "" },
+    initialValues: {
+      email: "",
+      password: "",
+    },
     validate: schemaResolver(loginCustomerSchema),
   });
 
   const redirectAfterLogin = (homeUrl: string) => {
     const safePath = getSafeRedirectPath(intendedUrl ?? null);
+
     router.replace(safePath !== "/beranda" ? safePath : homeUrl);
   };
 
   const submit = form.onSubmit((values) => {
     mutate(values, {
-      onSuccess: (data) => redirectAfterLogin(data.homeUrl),
+      onSuccess: (data) => {
+        notifications.show({
+          title: "Berhasil",
+          message: "Login berhasil.",
+          color: "green",
+        });
+
+        redirectAfterLogin(data.homeUrl);
+      },
+
+      onError: (error) => {
+        const message =
+          error instanceof ApiError
+            ? error.code === "INVALID_CREDENTIALS"
+              ? "Email atau password salah."
+              : error.code === "EMAIL_NOT_VERIFIED"
+                ? "Email kamu belum diverifikasi."
+                : error.message
+            : "Gagal masuk. Silakan coba lagi.";
+
+        notifications.show({
+          title: "Login gagal",
+          message,
+          color: "red",
+        });
+      },
     });
   });
-
-  const { mutate: mutateGoogle, error: googleError } = useLoginWithGoogle();
 
   function handleGoogleIdToken(idToken: string) {
     mutateGoogle(
       { idToken },
-      { onSuccess: (data) => redirectAfterLogin(data.homeUrl) },
+      {
+        onSuccess: (data) => {
+          notifications.show({
+            title: "Berhasil",
+            message: "Login dengan Google berhasil.",
+            color: "green",
+          });
+
+          redirectAfterLogin(data.homeUrl);
+        },
+
+        onError: (error) => {
+          const message =
+            error instanceof ApiError
+              ? error.message
+              : "Gagal login dengan Google. Silakan coba lagi.";
+
+          notifications.show({
+            title: "Login Google gagal",
+            message,
+            color: "red",
+          });
+        },
+      },
     );
   }
 
-  const errorMessage =
-    error instanceof ApiError
-      ? error.code === "INVALID_CREDENTIALS"
-        ? "Email atau password salah."
-        : error.code === "EMAIL_NOT_VERIFIED"
-          ? "Email kamu belum diverifikasi."
-          : error.message
-      : null;
-
   return (
     <Stack gap="md">
-      {errorMessage && (
-        <Alert
-          color="red"
-          style={{
-            backgroundColor: "var(--color-error-light)",
-            color: "var(--color-error)",
-          }}
-        >
-          {errorMessage}
-        </Alert>
-      )}
-
       <form onSubmit={submit}>
         <Stack gap="md">
           <TextInput
@@ -118,7 +150,10 @@ export function LoginCustomerForm({ intendedUrl }: LoginCustomerFormProps) {
 
       <Divider label="atau" labelPosition="center" />
 
-      <GoogleSignInButton onIdToken={handleGoogleIdToken} text="signin_with" />
+      <GoogleSignInButton
+        onIdToken={handleGoogleIdToken}
+        text="signin_with"
+      />
 
       <Anchor
         component={Link}

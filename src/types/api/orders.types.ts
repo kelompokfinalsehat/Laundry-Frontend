@@ -66,7 +66,7 @@ export type OrderDetail = {
     shippingFeeSnapshot: number;
   } | null;
   orderItems: { id: string; quantity: number; laundryItem: { name: string } }[];
-  complaint: { category: string; status: string } | null;
+  complaint: Complaint | null;
   timeline: TimelineEntry[];
   allowedActions: {
     canPay: boolean;
@@ -91,3 +91,37 @@ export type PaymentAttempt = {
   paidAt: string | null;
   billPaymentStatus: "PAID" | "UNPAID";
 };
+
+export type ConfirmResponse = {
+  success: true;
+  message: string;
+};
+
+
+
+export const COMPLAINT_CATEGORIES = ["TIDAK_SESUAI", "RUSAK", "HILANG"] as const;
+ 
+export type ComplaintCategory = (typeof COMPLAINT_CATEGORIES)[number];
+ 
+export const COMPLAINT_CATEGORY_LABELS: Record<ComplaintCategory, string> = {
+  TIDAK_SESUAI: "Tidak Sesuai Pesanan",
+  RUSAK: "Barang Rusak",
+  HILANG: "Barang Hilang",
+};
+ 
+export type ComplaintStatus = "OPEN" | "IN_REVIEW" | "RESOLVED" | "REJECTED";
+ 
+export type Complaint = {
+  id: string;
+  orderId: string;
+  customerId: string;
+  category: ComplaintCategory;
+  description: string;
+  proofPhotoUrl: string;
+  status: ComplaintStatus;
+  handledBy: string | null;
+  responseNote: string | null;
+  decidedAt: string | null;
+  createdAt: string;
+};
+ 

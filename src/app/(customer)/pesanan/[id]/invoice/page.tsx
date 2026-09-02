@@ -1,5 +1,4 @@
-import { Box, Paper } from "@mantine/core";
-import { OrderDetailView } from "@/components/customer/order/orderDetail";
+import { Box} from "@mantine/core";
 import { BillDetailView } from "@/components/customer/order/billDetailView";
 
 export default async function OrderDetailPage({

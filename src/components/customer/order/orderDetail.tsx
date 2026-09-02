@@ -11,15 +11,20 @@ import {
   Loader,
   Anchor,
 } from "@mantine/core";
-import { useOrderDetail } from "@/hooks/order.hooks";
+import { useConfirmOrder, useOrderDetail } from "@/hooks/order/order.hooks";
 import { OrderTimeline } from "./orderTimeLine";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { IconChevronLeft, IconPhone } from "@tabler/icons-react";
+import { IconChevronLeft } from "@tabler/icons-react";
+import { ApiError } from "@/lib/api/axios";
+import { notifications } from "@mantine/notifications";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function OrderDetailView({ id }: { id: string }) {
   const { data: order, isLoading } = useOrderDetail(id);
   const router = useRouter();
+  const { mutate: confirmOrder, isPending } = useConfirmOrder();
+  const queryClient = useQueryClient();
 
   function handleBack() {
     router.replace("/pesanan");
@@ -40,6 +45,50 @@ export function OrderDetailView({ id }: { id: string }) {
       </Text>
     );
   }
+
+  const handleConfirm = () => {
+    confirmOrder(id, {
+      onSuccess: (result) => {
+        notifications.show({
+          title: "Order berhasil dikonfirmasi",
+          message: result.message,
+          color: "green",
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["orders", id],
+        });
+      },
+
+      onError: (error) => {
+        let message = "Gagal mengonfirmasi order.";
+
+        if (error instanceof ApiError) {
+          switch (error.code) {
+            case "ORDER_FORBIDDEN":
+              message = "Order tidak ditemukan atau bukan milik kamu.";
+              break;
+
+            case "CONFLICT":
+              message = "Order belum siap dikonfirmasi.";
+              break;
+
+            case "COMPLAINT_NOT_ALLOWED":
+              message = "Tidak bisa konfirmasi selagi komplain masih diproses.";
+              break;
+
+            default:
+              message = error.message;
+          }
+        }
+
+        notifications.show({
+          title: "Konfirmasi order gagal",
+          message,
+          color: "red",
+        });
+      },
+    });
+  };
 
   return (
     <Stack gap="xl">
@@ -77,10 +126,10 @@ export function OrderDetailView({ id }: { id: string }) {
           </Group>
           <Divider />
           <Text size="sm" c="var(--color-text-secondary)">
-           Alamat: {order.addressSnapshot}
+            Alamat: {order.addressSnapshot}
           </Text>
           <Text size="sm" c="var(--color-text-secondary)">
-          Telpon: {order.addressPhoneSnapshot}
+            Telpon: {order.addressPhoneSnapshot}
           </Text>
           <Text size="sm" c="var(--color-text-secondary)">
             Jadwal: {new Date(order.pickupScheduledAt).toLocaleString("id-ID")}
@@ -143,22 +192,36 @@ export function OrderDetailView({ id }: { id: string }) {
         <Text fw={600} mb="md" style={{ color: "var(--color-text-primary)" }}>
           Tracking
         </Text>
-        <OrderTimeline timeline={order.timeline} />
+        <OrderTimeline timeline={order.timeline} complaint={order.complaint} />
       </div>
 
-      {order.allowedActions.canConfirmReceived && (
+      {order.complaint && (
+        <Anchor component={Link} href={`/pesanan/${order.id}/komplain`} fw={600}>
+          Lihat status komplain kamu →
+        </Anchor>
+      )}
+
+      {order.allowedActions.canConfirmReceived && order.complaint?.status !== "OPEN"  && (
         <Button
+          onClick={handleConfirm}
+          disabled={isPending}
           style={{
             backgroundColor: "var(--color-accent)",
             color: "var(--color-text-on-accent)",
           }}
         >
-          Konfirmasi Diterima
+          {isPending ? "Mengonfirmasi..." : "Konfirmasi Diterima"}
         </Button>
       )}
 
-      {order.allowedActions.canFileComplaint && (
-        <Button variant="outline">Ajukan Komplain</Button>
+      {order.allowedActions.canFileComplaint && !order.complaint && (
+        <Button
+          component={Link}
+          href={`/pesanan/${order.id}/komplain`}
+          variant="outline"
+        >
+          Ajukan Komplain
+        </Button>
       )}
     </Stack>
   );
