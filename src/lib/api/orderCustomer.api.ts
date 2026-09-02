@@ -1,4 +1,6 @@
 import {
+  Complaint,
+  ConfirmResponse,
   CreateOrderResponse,
   CreatePaymentResponse,
   ListOrderQuery,
@@ -43,6 +45,25 @@ export class OrderApi {
     const { data } = await api.get<{ data: PaymentAttempt }>(
       `/order/${id}/payment`,
     );
+    return data.data;
+  }
+
+  async confirm(id: string) {
+    const { data } = await api.patch<ConfirmResponse>(`/order/${id}/confirm`);
+    return data;
+  }
+
+  async complaint(id: string, formData: FormData) {
+    const { data } = await api.post<{ data: Complaint }>(
+      `/order/${id}/complaint`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
     return data.data;
   }
 }

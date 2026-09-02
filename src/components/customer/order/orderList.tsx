@@ -16,7 +16,7 @@ import {
 } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 
-import { useOrders } from "@/hooks/order.hooks";
+import { useOrders } from "@/hooks/order/order.hooks";
 import {
   ORDER_STATUS_GROUP_LABELS,
   type OrderStatusGroupKey,
@@ -41,12 +41,12 @@ const SORT_OPTIONS = [
   },
 ];
 
-const STATUS_GROUP_OPTIONS = Object.entries(
-  ORDER_STATUS_GROUP_LABELS,
-).map(([value, label]) => ({
-  value,
-  label,
-}));
+const STATUS_GROUP_OPTIONS = Object.entries(ORDER_STATUS_GROUP_LABELS).map(
+  ([value, label]) => ({
+    value,
+    label,
+  }),
+);
 
 export function OrderList() {
   const [page, setPage] = useState(1);
@@ -54,8 +54,9 @@ export function OrderList() {
   const [searchInput, setSearchInput] = useState("");
   const [search] = useDebouncedValue(searchInput, 400);
 
-  const [statusGroup, setStatusGroup] =
-    useState<OrderStatusGroupKey | null>(null);
+  const [statusGroup, setStatusGroup] = useState<OrderStatusGroupKey | null>(
+    null,
+  );
 
   const [sort, setSort] = useState("createdAt:desc");
 
@@ -96,9 +97,7 @@ export function OrderList() {
         <TextInput
           placeholder="Cari nomor order..."
           value={searchInput}
-          onChange={(e) =>
-            handleSearchChange(e.currentTarget.value)
-          }
+          onChange={(e) => handleSearchChange(e.currentTarget.value)}
         />
 
         <Select
@@ -122,11 +121,7 @@ export function OrderList() {
           <Loader color="var(--color-primary)" />
         </Group>
       ) : data?.data.length === 0 ? (
-        <Text
-          c="var(--color-text-secondary)"
-          ta="center"
-          py="xl"
-        >
+        <Text c="var(--color-text-secondary)" ta="center" py="xl">
           Belum ada order.
         </Text>
       ) : (
@@ -155,16 +150,13 @@ export function OrderList() {
                 </Table.Td>
 
                 <Table.Td>
-                  {new Date(order.pickupDate).toLocaleDateString(
-                    "id-ID",
-                  )}
+                  {new Date(order.pickupDate).toLocaleDateString("id-ID")}
                 </Table.Td>
 
                 <Table.Td>
                   <Badge
                     style={{
-                      backgroundColor:
-                        "var(--color-primary-light)",
+                      backgroundColor: "var(--color-primary-light)",
                       color: "var(--color-primary)",
                     }}
                   >
