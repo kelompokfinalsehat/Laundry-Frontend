@@ -13,7 +13,7 @@ import { MessageResponse } from "@/types/api";
 
 export class ProfileApi {
   async updateProfile(payload: UpdateProfileSchema) {
-    const body: Record<string, string> = { name: payload.name };
+    const body: Record<string, string> = { name: payload.name! };
     if (payload.phone) body.phone = payload.phone;
     if (payload.newPassword) {
       body.newPassword = payload.newPassword;
