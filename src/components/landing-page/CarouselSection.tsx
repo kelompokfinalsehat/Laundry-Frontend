@@ -70,17 +70,25 @@ export default function CarouselSection() {
               verticalSpacing="lg"
             >
               {/* Kolom gambar */}
-              <Box style={{ position: "relative", aspectRatio: "16 / 9" }}>
+              <Box
+                style={{
+                  position: "relative",
+                  aspectRatio: "16 / 9",
+                  borderRadius: 24,
+                  overflow: "hidden",
+                }}
+              >
                 <Image
                   src={slide.src}
                   alt="ilustrasi"
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
                   priority={i === 0}
-                  style={{ objectFit: "contain" }}
+                  style={{
+                    objectFit: "cover",
+                  }}
                 />
               </Box>
-
               {/* Kolom konten */}
               <Stack justify="center" gap="md">
                 <Title
