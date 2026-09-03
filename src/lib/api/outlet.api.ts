@@ -4,6 +4,7 @@ import {
   CreateOutletPayload,
   Outlet,
   OutletQuery,
+  UpdateOutletPayload,
 } from "@/types/api/outlet.types";
 
 export class OutletApi {
@@ -27,7 +28,7 @@ export class OutletApi {
   }
   async updateOutlet(
     outletId: string,
-    payload: CreateOutletPayload,
+    payload: UpdateOutletPayload,
   ): Promise<Outlet> {
     const response = await api.patch<ApiResponse<Outlet>>(`/internal/outlets/${outletId}`, payload);
 

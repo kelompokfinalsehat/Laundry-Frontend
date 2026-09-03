@@ -92,6 +92,7 @@ export function ReceptionContent() {
         </Paper>
       </Stack>
       <ReceiveOrderModal
+      key={selectedOrderToReceive?.id || "receive-modal"}
         opened={selectedOrderToReceive !== null}
         order={selectedOrderToReceive}
         isLoading={receiveOrderMutation.isPending}
@@ -100,6 +101,7 @@ export function ReceptionContent() {
       />
 
       <CreateOrderModal
+      key={selectedOrderToCreate?.id || "create-modal"}
         opened={selectedOrderToCreate !== null}
         order={selectedOrderToCreate}
         isSubmitting={createOrderMutation.isPending}

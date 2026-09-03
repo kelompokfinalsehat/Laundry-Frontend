@@ -4,7 +4,7 @@ import {
   useCreatePayment,
   useLatestPayment,
   useOrderDetail,
-} from "@/hooks/order.hooks";
+} from "@/hooks/order/order.hooks";
 import { OrderDetail } from "@/types/api/orders.types";
 import {
   Anchor,

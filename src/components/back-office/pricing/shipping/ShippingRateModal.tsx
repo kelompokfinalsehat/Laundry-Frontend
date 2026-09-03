@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Group, Modal, NumberInput, Stack } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { CreateShippingRatePayload, ShippingRate, UpdateShippingRatePayload } from "@/types/api/pricing.types";
 
 type Props = {
@@ -14,50 +14,26 @@ type Props = {
 };
 
 export function ShippingRateModal({ opened, shippingRate, isSubmitting, onClose, onCreate, onUpdate }: Props) {
-  const [maxDistanceMeters, setMaxDistanceMeters] = useState<number | string>("");
-  const [price, setPrice] = useState<number | string>("");
   const isEditMode = shippingRate !== null;
 
-  useEffect(() => {
-    if (!opened) {
-      return;
-    }
-
-    if (shippingRate) {
-      setMaxDistanceMeters(shippingRate.maxDistanceMeters);
-
-      setPrice(Number(shippingRate.price));
-
-      return;
-    }
-
-    setMaxDistanceMeters("");
-    setPrice("");
-  }, [opened, shippingRate]);
+  // Inisialisasi state langsung dari prop shippingRate
+  const [maxDistanceMeters, setMaxDistanceMeters] = useState<number | string>(shippingRate ? shippingRate.maxDistanceMeters : "");
+  const [price, setPrice] = useState<number | string>(shippingRate ? Number(shippingRate.price) : "");
 
   const handleClose = () => {
-    if (isSubmitting) {
-      return;
-    }
-
+    if (isSubmitting) return;
     onClose();
   };
 
   const handleSubmit = async () => {
-    if (typeof maxDistanceMeters !== "number" || maxDistanceMeters <= 0) {
-      return;
-    }
-
-    if (typeof price !== "number" || price <= 0) {
-      return;
-    }
+    if (typeof maxDistanceMeters !== "number" || maxDistanceMeters <= 0) return;
+    if (typeof price !== "number" || price <= 0) return;
 
     if (isEditMode) {
       await onUpdate(shippingRate.id, {
         maxDistanceMeters,
         price,
       });
-
       return;
     }
 

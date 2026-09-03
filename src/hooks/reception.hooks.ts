@@ -1,8 +1,8 @@
 import { CreateOrderPayload, OrderListItem, OrderQuery } from "@/types/api/order.types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLaundryItems } from "./laundry-item.hooks";
 import { CustomerStatus } from "@/types/api";
-import { useCreateOrder, useOrders, useReceiveOrder } from "./order.hooks";
+import { useCreateOrderAdmin, useOrderList, useReceiveOrder } from "./order.hooks";
 import { notifications } from "@mantine/notifications";
 import { useDebouncedValue } from "@mantine/hooks";
 import { useRouter } from "next/navigation";
@@ -25,7 +25,7 @@ type CreateOrderProps = {
   onSubmit: (orderId: string, payload: CreateOrderPayload) => Promise<void>;
 };
 
-export function useCreateOrderHooks({ opened, order, isSubmitting, onClose, onSubmit }: CreateOrderProps) {
+export function useCreateOrderHooks({ order, isSubmitting, onClose, onSubmit }: CreateOrderProps) {
   const [weightKg, setWeightKg] = useState<number | string>("");
   const [items, setItems] = useState<CreateOrderItemForm[]>([
     {
@@ -40,7 +40,6 @@ export function useCreateOrderHooks({ opened, order, isSubmitting, onClose, onSu
 
   const resetForm = () => {
     setWeightKg("");
-
     setItems([
       {
         ...INITIAL_ITEM,
@@ -48,17 +47,12 @@ export function useCreateOrderHooks({ opened, order, isSubmitting, onClose, onSu
     ]);
   };
 
-  useEffect(() => {
-    if (!opened) {
-      resetForm();
-    }
-  }, [opened]);
-
   const handleClose = () => {
     if (isSubmitting) {
       return;
     }
 
+    resetForm(); 
     onClose();
   };
 
@@ -146,7 +140,9 @@ export function useCreateOrderHooks({ opened, order, isSubmitting, onClose, onSu
     };
 
     await onSubmit(order.id, payload);
+    resetForm(); 
   };
+
   return {
     handleClose,
     weightKg,
@@ -161,11 +157,11 @@ export function useCreateOrderHooks({ opened, order, isSubmitting, onClose, onSu
     handleSubmit,
   };
 }
+
 type ReceptionStage = "WAITING_RECEIPT" | "READY_TO_CREATE";
 type ReceptionTableMode = "RECEIVE" | "CREATE_ORDER";
 const STAGE_STATUS: Record<ReceptionStage, CustomerStatus> = {
   WAITING_RECEIPT: "ON_THE_WAY_TO_OUTLET",
-
   READY_TO_CREATE: "ARRIVED_AT_OUTLET",
 };
 
@@ -174,7 +170,7 @@ export function useReceiveOrderHooks() {
   const [stage, setStage] = useState<ReceptionStage>("WAITING_RECEIPT");
   const [selectedOrderToReceive, setSelectedOrderToReceive] = useState<OrderListItem | null>(null);
   const [selectedOrderToCreate, setSelectedOrderToCreate] = useState<OrderListItem | null>(null);
-  const tableMode:  ReceptionTableMode= stage === "WAITING_RECEIPT" ? "RECEIVE" : "CREATE_ORDER";
+  const tableMode: ReceptionTableMode = stage === "WAITING_RECEIPT" ? "RECEIVE" : "CREATE_ORDER";
   const [query, setQuery] = useState<OrderQuery>({
     page: 1,
     pageSize: 10,
@@ -184,9 +180,9 @@ export function useReceiveOrderHooks() {
   });
 
   const [debouncedSearch] = useDebouncedValue(query.search ?? "", 400);
-  const { data, isLoading, isError, error, refetch } = useOrders({ ...query, search: debouncedSearch });
+  const { data, isLoading, isError, error, refetch } = useOrderList({ ...query, search: debouncedSearch });
   const receiveOrderMutation = useReceiveOrder();
-  const createOrderMutation = useCreateOrder();
+  const createOrderMutation = useCreateOrderAdmin();
 
   const handleStageChange = (value: string | null) => {
     if (value !== "WAITING_RECEIPT" && value !== "READY_TO_CREATE") {
@@ -324,5 +320,5 @@ export function useReceiveOrderHooks() {
     createOrderMutation,
     setSelectedOrderToCreate,
     handleCreateOrderSubmit,
-  }
+  };
 }

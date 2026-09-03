@@ -23,7 +23,7 @@ export function LaundryPricingContent() {
   const laundryPricing = useLaundryPricing();
   const createLaundryPricing = useCreateLaundryPricing();
   const updateLaundryPricing = useUpdateLaundryPricing();
-  
+
   const handleSubmit = async (pricePerKg: number, pricing: LaundryPricing | null) => {
     try {
       if (pricing) {
@@ -121,6 +121,7 @@ export function LaundryPricingContent() {
       </Stack>
 
       <LaundryPricingModal
+        key={laundryPricing ? laundryPricing.data?.id : "new-pricing"}
         opened={opened}
         pricing={laundryPricing.data ?? null}
         isSubmitting={isSubmitting}

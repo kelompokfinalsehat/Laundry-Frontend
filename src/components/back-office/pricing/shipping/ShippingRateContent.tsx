@@ -96,6 +96,7 @@ export function ShippingRateContent() {
         </Stack>
       </Paper>
       <ShippingRateModal
+        key={selectedShippingRate ? selectedShippingRate.id : "create-shipping-rate"}
         opened={modalOpened}
         shippingRate={selectedShippingRate}
         isSubmitting={isSubmitting}

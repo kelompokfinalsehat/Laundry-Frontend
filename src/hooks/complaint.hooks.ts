@@ -11,7 +11,6 @@ import type {
 import {
   ComplaintCategory,
   ComplaintStatus,
-  Role,
   SortOrder,
 } from "@/types/api";
 import { useState } from "react";
@@ -63,7 +62,7 @@ export function useDecideComplaint() {
   });
 }
 
-export function useComplaintHooks(role: String) {
+export function useComplaintHooks(role: string) {
   const canDecideComplaint = role === "OUTLET_ADMIN";
   const [query, setQuery] = useState<ComplaintQuery>({
     page: 1,

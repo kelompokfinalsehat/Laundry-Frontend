@@ -1,6 +1,6 @@
 "use client";
 
-import { Paper, Stack } from "@mantine/core";
+import { Image, Modal, Paper, Stack } from "@mantine/core";
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { useComplaintHooks } from "@/hooks/complaint.hooks";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -8,8 +8,11 @@ import { ComplaintDecisionModal } from "./ComplaintDecisionModal";
 import { ComplaintFilters } from "./ComplaintFilters";
 import { ComplaintTable } from "./ComplaintTable";
 import TableSkeleton from "../shared/TableSkeleton";
+import { useState } from "react";
 
 export function ComplaintContent({ role }: { role: string }) {
+  const [proofOpened, setProofOpened] = useState(false);
+  const onOpenedProof = () => setProofOpened(true);
   const {
     query,
     canDecideComplaint,
@@ -79,12 +82,16 @@ export function ComplaintContent({ role }: { role: string }) {
         </Stack>
       </Paper>
       <ComplaintDecisionModal
+        onOpenedProof={onOpenedProof}
         opened={decisionModalOpened}
         complaint={selectedComplaint}
         isSubmitting={decideComplaint.isPending}
         onClose={handleDecisionModalClose}
         onSubmit={handleDecisionSubmit}
       />
+      <Modal opened={proofOpened} onClose={() => setProofOpened(false)} title="Bukti Komplain" centered size="lg">
+        <Image src={selectedComplaint?.proofPhotoUrl} alt="Bukti komplain" radius="md" />
+      </Modal>
     </Stack>
   );
 }

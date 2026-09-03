@@ -1,8 +1,9 @@
 "use client";
 
 import { Badge, Button, Group, Modal, Radio, Stack, Text, Textarea } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ComplaintListItem, DecideComplaintPayload } from "@/types/api/complaint.types";
+import { IconExternalLink } from "@tabler/icons-react";
 
 type Decision = "APPROVED" | "REJECTED";
 
@@ -10,6 +11,7 @@ type Props = {
   opened: boolean;
   complaint: ComplaintListItem | null;
   isSubmitting: boolean;
+  onOpenedProof: () => void;
   onClose: () => void;
   onSubmit: (payload: DecideComplaintPayload) => Promise<void>;
 };
@@ -24,7 +26,7 @@ function getCategoryLabel(category: ComplaintListItem["category"]) {
   return categoryMap[category];
 }
 
-export function ComplaintDecisionModal({ opened, complaint, isSubmitting, onClose, onSubmit }: Props) {
+export function ComplaintDecisionModal({ opened, complaint, isSubmitting, onClose, onSubmit, onOpenedProof }: Props) {
   const [decision, setDecision] = useState<Decision | null>(null);
   const [responseNote, setResponseNote] = useState("");
 
@@ -33,17 +35,12 @@ export function ComplaintDecisionModal({ opened, complaint, isSubmitting, onClos
     setResponseNote("");
   };
 
-  useEffect(() => {
-    if (!opened) {
-      resetForm();
-    }
-  }, [opened]);
-
   const handleClose = () => {
     if (isSubmitting) {
       return;
     }
 
+    resetForm();
     onClose();
   };
 
@@ -56,6 +53,8 @@ export function ComplaintDecisionModal({ opened, complaint, isSubmitting, onClos
       decision,
       responseNote: responseNote.trim(),
     });
+
+    resetForm();
   };
 
   return (
@@ -88,6 +87,15 @@ export function ComplaintDecisionModal({ opened, complaint, isSubmitting, onClos
           </Stack>
         )}
 
+        <Stack gap={4}>
+          <Text size="sm" fw={600}>
+            Bukti Foto
+          </Text>
+
+          <Button variant="light" rightSection={<IconExternalLink size={16} />} w="fit-content" onClick={onOpenedProof}>
+            Lihat Bukti
+          </Button>
+        </Stack>
         <Radio.Group label="Keputusan" value={decision} onChange={(value) => setDecision(value as Decision)} required>
           <Stack gap="xs" mt="xs">
             <Radio value="APPROVED" label="Terima komplain" />

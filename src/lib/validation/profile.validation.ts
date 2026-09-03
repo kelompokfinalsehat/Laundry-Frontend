@@ -2,7 +2,7 @@ import * as z from "zod"
 
 export const updateProfileSchema = z
   .object({
-    name: z.string().min(1, "Nama tidak boleh kosong").max(100),
+    name: z.string().min(1, "Nama tidak boleh kosong").max(100).optional(),
     phone: z
       .string()
       .min(8, "Nomor telepon tidak valid")

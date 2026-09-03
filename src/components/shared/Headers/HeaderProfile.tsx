@@ -4,13 +4,15 @@ import {
   Avatar, Group, Menu, Skeleton, Text, UnstyledButton, Button, Box,
 } from "@mantine/core";
 import {
-  IconChevronDown, IconLogout, IconUser, IconPackage,
+  IconChevronDown,
+  IconLogout,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useLogout } from "@/hooks/authCustomer.hooks";
 import { NAV_LINKS } from "./nav-links";
+import { notifications } from "@mantine/notifications";
 
 export function HeaderProfile() {
   const user = useAuthStore((s) => s.user);
@@ -53,13 +55,31 @@ export function HeaderProfile() {
     : "?";
 
   const handleLogout = () => {
-    logout(undefined, {
-      onSuccess: () => {
-        useAuthStore.getState().clearUser();
-        router.replace("/login");
-      },
-    });
-  };
+  logout(undefined, {
+    onSuccess: () => {
+      useAuthStore.getState().clearUser();
+
+      notifications.show({
+        title: "Berhasil",
+        message: "Kamu berhasil keluar dari akun.",
+        color: "green",
+      });
+
+      router.replace("/login");
+    },
+
+    onError: (error) => {
+      notifications.show({
+        title: "Gagal",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Gagal keluar dari akun. Silakan coba lagi.",
+        color: "red",
+      });
+    },
+  });
+};
 
   return (
     <Menu shadow="md" width={220} position="bottom-end">

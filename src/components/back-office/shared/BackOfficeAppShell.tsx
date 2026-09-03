@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Role } from "@/types/api";
+import { BackOfficeProfileMenu } from "./BackOfficeProfileMenu";
 
 type MenuItem = {
   label: string;
@@ -85,8 +86,8 @@ const outlet: MenuGroup[] = [
       },
       {
         label: "Kinerja Karyawan",
-        href: "/internal/outlet-admin/laporan/kinerja-karyawan"
-      }
+        href: "/internal/outlet-admin/laporan/kinerja-karyawan",
+      },
     ],
   },
 ];
@@ -215,12 +216,15 @@ export function BackOfficeAppShell({ children, role }: { children: React.ReactNo
           </ThemeIcon>
 
           <Box>
-            <Title fw={800} size="lg" style={{ color: "var(--color-primary-dark)", letterSpacing: -0.5}} order={3}>
+            <Title fw={800} size="lg" style={{ color: "var(--color-primary-dark)", letterSpacing: -0.5 }} order={3}>
               Popo Laundry
             </Title>
             <Text size="xs" c="dimmed">
               Back Office
             </Text>
+          </Box>
+          <Box ml="auto">
+            <BackOfficeProfileMenu role={role} />
           </Box>
         </Group>
       </AppShell.Header>

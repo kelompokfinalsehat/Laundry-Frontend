@@ -1,6 +1,6 @@
 "use client";
 
-import { Group, NumberInput, Paper, Select, Stack } from "@mantine/core";
+import { Group, Paper, Select, Stack } from "@mantine/core";
 import { SalesPeriod, SalesQuery } from "@/types/api/report.types";
 import { DatePickerInput, MonthPickerInput, YearPickerInput } from "@mantine/dates";
 

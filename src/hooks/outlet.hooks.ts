@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { OutletApi } from "@/lib/api/outlet.api";
-import { CreateOutletPayload, Outlet, OutletQuery } from "@/types/api/outlet.types";
+import { CreateOutletPayload, Outlet, OutletQuery, UpdateOutletPayload } from "@/types/api/outlet.types";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDebouncedValue } from "@mantine/hooks";
@@ -43,7 +43,7 @@ export function useUpdateOutlet() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ outletId, payload }: { outletId: string; payload: CreateOutletPayload }) => outletApi.updateOutlet(outletId, payload),
+    mutationFn: ({ outletId, payload }: { outletId: string; payload: UpdateOutletPayload }) => outletApi.updateOutlet(outletId, payload),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({

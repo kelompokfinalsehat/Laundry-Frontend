@@ -1,4 +1,4 @@
-import { Box, Card, Flex, Group, SimpleGrid, Skeleton, Stack } from "@mantine/core";
+import { Box, Card, Group, SimpleGrid, Skeleton, Stack } from "@mantine/core";
 
 export default function DashboardSkeleton() {
   return (

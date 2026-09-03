@@ -19,4 +19,13 @@ export type OutletQuery = {
 export type CreateOutletPayload = {
   name: string;
   address: string;
+  latitude: number;
+  longitude: number;
+};
+
+export type UpdateOutletPayload = {
+  name?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
 };

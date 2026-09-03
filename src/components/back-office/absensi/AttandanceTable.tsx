@@ -77,7 +77,7 @@ function SortableHeader({
   onSort: (column: OutletAttendanceSortBy) => void;
 }) {
   const isActive = sortBy === column;
-    const {hovered, ref} = useHover()
+    const {ref} = useHover()
   return (
     <Table.Th>
       <UnstyledButton

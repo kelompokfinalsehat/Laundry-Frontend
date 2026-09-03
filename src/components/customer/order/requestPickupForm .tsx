@@ -1,108 +1,67 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import Link from "next/link";
-import {
-  Stack,
-  Radio,
-  Group,
-  Text,
-  Button,
-  Alert,
-  Paper,
-  Divider,
-  Loader,
-  Select,
-} from "@mantine/core";
-import { useForm, schemaResolver } from "@mantine/form";
-import { createOrderSchema } from "@/lib/validation/order.validation";
-import { ApiError } from "@/lib/api/axios";
-import { useAddresses } from "@/hooks/address.hooks";
-import { useCreateOrder } from "@/hooks/order.hooks";
-import { useLocationPermission } from "@/components/shared/Location/LocationPermission/hooks/useLocationPermission";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
-import { getPickupTimeOptions } from "./pickupTimeHelper";
+
+import { notifications } from "@mantine/notifications";
+import {
+  Alert,
+  Button,
+  Divider,
+  Group,
+  Loader,
+  Paper,
+  Radio,
+  Select,
+  Stack,
+  Text,
+} from "@mantine/core";
+
+import { useRequestPickup } from "@/hooks/order/request-pickup.hooks";
+import { getCreateOrderErrorMessage } from "@/lib/utils/order-error.util";
 
 dayjs.locale("id");
 
-const TODAY = dayjs().format("YYYY-MM-DD");
-
-type FormValues = {
-  addressId: string;
-  pickupDate: string;
-  pickupTime: string;
-};
-
 export function RequestPickupForm() {
-  const router = useRouter();
-  const locationStatus = useLocationPermission();
-  const { data: addresses, isLoading: isLoadingAddresses } = useAddresses();
-  const [isReviewing, setIsReviewing] = useState(false);
-  const [isChangingAddress, setIsChangingAddress] = useState(false);
+  const {
+    form,
+    addresses,
+    selectedAddress,
 
-  const { mutate, isPending, error } = useCreateOrder();
+    isLoadingAddresses,
+    isLocationBlocked,
 
-  const form = useForm<FormValues>({
-    initialValues: {
-      addressId: "",
-      pickupDate: TODAY, // dikunci ke hari ini, tidak bisa dipilih customer
-      pickupTime: "",
-    },
-    validate: schemaResolver(createOrderSchema),
-  });
+    isReviewing,
+    setIsReviewing,
+
+    isChangingAddress,
+    setIsChangingAddress,
+
+    pickupTimeOptions,
+    pickupDate,
+
+    isPending,
+    error,
+
+    handleReview,
+    handleConfirm,
+  } = useRequestPickup();
+
+  const errorMessage = getCreateOrderErrorMessage(error);
 
   useEffect(() => {
-    if (addresses && addresses.length > 0 && !form.values.addressId) {
-      const primaryAddress = addresses.find((a) => a.isPrimary) ?? addresses[0];
-      form.setFieldValue("addressId", primaryAddress.id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addresses]);
+    if (!errorMessage) return;
 
-  const selectedAddress = addresses?.find(
-    (a) => a.id === form.values.addressId,
-  );
-
-  const isLocationBlocked = locationStatus.status !== "granted";
-
-  async function handleReview() {
-    const result = await form.validate();
-    if (result.hasErrors) return;
-    setIsReviewing(true);
-  }
-
-  const pickupTimeOptions = getPickupTimeOptions(form.values.pickupDate);
-
-  function handleConfirm() {
-    const values = form.values;
-    const payload = {
-      addressId: values.addressId,
-      pickupDate: values.pickupDate,
-      pickupTime: values.pickupTime,
-      locationPermissionGranted: locationStatus.status === "granted",
-    };
-
-    mutate(payload, {
-      onSuccess: (result) => {
-        router.push(`/pesanan/${result.id}`);
-      },
+    notifications.show({
+      id: "request-pickup-error",
+      title: "Gagal membuat request pickup",
+      message: errorMessage,
+      color: "red",
+      autoClose: 5000,
     });
-  }
-
-  const errorMessage =
-    error instanceof ApiError
-      ? error.code === "OUTLET_OUT_OF_RANGE"
-        ? "Alamat ini berada di luar jangkauan 10 km dari outlet manapun."
-        : error.code === "NO_ACTIVE_OUTLET"
-          ? "Tidak ada outlet aktif yang bisa melayani saat ini."
-          : error.code === "PRICING_NOT_AVAILABLE"
-            ? "Layanan sedang tidak tersedia. Coba lagi nanti."
-            : error.code === "OUTSIDE_OPERATIONAL_HOURS"
-              ? "Request pickup hanya bisa dibuat pada jam operasional."
-              : error.message
-      : null;
+  }, [errorMessage]);
 
   if (isLoadingAddresses) {
     return (
@@ -119,6 +78,7 @@ export function RequestPickupForm() {
           Kamu belum punya alamat tersimpan. Tambah alamat dulu sebelum request
           pickup.
         </Text>
+
         <Button
           component={Link}
           href="/alamat"
@@ -141,8 +101,7 @@ export function RequestPickupForm() {
           color: "var(--color-primary)",
         }}
       >
-        Izinkan akses lokasi browser dulu untuk membuat request pickup. Klik
-        ikon 🔒 di address bar → izinkan lokasi → refresh halaman.
+        Izinkan akses lokasi browser dulu untuk membuat request pickup.
       </Alert>
     );
   }
@@ -152,22 +111,25 @@ export function RequestPickupForm() {
       <Stack gap="md">
         <Paper withBorder p="md" radius="md">
           <Stack gap="xs">
-            <Text fw={50} style={{ color: "var(--color-text-primary)" }}>
+            <Text fw={500} c="var(--color-text-primary)">
               {selectedAddress.label || "Alamat"}
             </Text>
+
             <Text size="sm" c="var(--color-text-secondary)">
               {selectedAddress.formattedAddress}
             </Text>
+
             <Text size="sm" c="var(--color-text-secondary)">
               {selectedAddress.phone}
             </Text>
+
             <Divider my={4} />
+
             <Text size="sm" c="var(--color-text-secondary)">
               Tanggal:{" "}
-              <strong>
-                {dayjs(form.values.pickupDate).format("dddd, D MMMM YYYY")}
-              </strong>
+              <strong>{dayjs(pickupDate).format("dddd, D MMMM YYYY")}</strong>
             </Text>
+
             <Text size="sm" c="var(--color-text-secondary)">
               Jam: <strong>{form.values.pickupTime}</strong>
             </Text>
@@ -184,18 +146,6 @@ export function RequestPickupForm() {
           dibuat tidak dapat dibatalkan atau diubah.
         </Alert>
 
-        {errorMessage && (
-          <Alert
-            color="red"
-            style={{
-              backgroundColor: "var(--color-error-light)",
-              color: "var(--color-error)",
-            }}
-          >
-            {errorMessage}
-          </Alert>
-        )}
-
         <Group grow>
           <Button
             variant="subtle"
@@ -204,6 +154,7 @@ export function RequestPickupForm() {
           >
             Kembali
           </Button>
+
           <Button
             loading={isPending}
             onClick={handleConfirm}
@@ -221,6 +172,7 @@ export function RequestPickupForm() {
 
   return (
     <Stack gap="md">
+      {/* Address */}
       <div style={{ width: "100%", maxWidth: "600px" }}>
         <Group
           justify="space-between"
@@ -263,6 +215,7 @@ export function RequestPickupForm() {
                           {address.label || "Alamat"}{" "}
                           {address.isPrimary && "(Utama)"}
                         </Text>
+
                         <Text size="xs" c="var(--color-text-secondary)">
                           <Text component="span" fw={600}>
                             Alamat:
@@ -284,6 +237,7 @@ export function RequestPickupForm() {
                   {selectedAddress.label || "Alamat"}{" "}
                   {selectedAddress.isPrimary && "(Utama)"}
                 </Text>
+
                 <Text size="xs" c="var(--color-text-secondary)">
                   <Text component="span" fw={600}>
                     Alamat:
@@ -296,6 +250,7 @@ export function RequestPickupForm() {
         )}
       </div>
 
+      {/* Pickup Date */}
       <div style={{ width: "100%" }}>
         <Text size="sm" fw={500} mb={4}>
           Tanggal Pickup
@@ -310,17 +265,13 @@ export function RequestPickupForm() {
             backgroundColor: "var(--color-surface-muted, #f8f9fa)",
           }}
         >
-          <Text
-            size="sm"
-            style={{
-              color: "var(--color-text-primary)",
-            }}
-          >
-            {dayjs(TODAY).format("dddd, D MMMM YYYY")}
+          <Text size="sm" c="var(--color-text-primary)">
+            {dayjs(pickupDate).format("dddd, D MMMM YYYY")}
           </Text>
         </Paper>
       </div>
 
+      {/* Pickup Time */}
       <Select
         label="Jam Pickup"
         placeholder="Pilih jam pickup"
