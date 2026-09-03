@@ -1,2 +1,5 @@
-import { ListPageScaffold } from '@/components/shared/ListPageScaffold';
-export default function Page(){return <ListPageScaffold title='Pesanan Outlet' description='Semua pesanan outlet sendiri.'/>}
+import { OrderContent } from "@/components/back-office/order/OrderContent";
+
+export default function Page() {
+  return <OrderContent role="OUTLET_ADMIN" />;
+}

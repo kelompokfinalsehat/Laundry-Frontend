@@ -1,2 +1,5 @@
-import { ListPageScaffold } from '@/components/shared/ListPageScaffold';
-export default function Page(){return <ListPageScaffold title='Item Laundry' description='Master item untuk tracking quantity.'/>}
+import { LaundryItemContent } from "@/components/back-office/laundry-item/LaundryItemContent";
+
+export default function Page() {
+  return <LaundryItemContent />;
+}

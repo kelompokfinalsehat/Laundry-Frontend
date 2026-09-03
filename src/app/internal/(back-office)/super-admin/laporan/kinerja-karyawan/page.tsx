@@ -1,2 +1,4 @@
-import { ListPageScaffold } from '@/components/shared/ListPageScaffold';
-export default function Page(){return <ListPageScaffold title='Kinerja Karyawan' description='Pekerjaan selesai per worker/driver.'/>}
+import { EmployeePerformanceContent } from "@/components/back-office/laporan/kinerja-karyawan/EmployeePerformanceContent";
+export default function Page() {
+  return <EmployeePerformanceContent role="SUPER_ADMIN" />;
+}

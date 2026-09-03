@@ -13,13 +13,13 @@ import { notifications } from "@mantine/notifications";
 import { schemaResolver, useForm } from "@mantine/form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 import {
   employeeLoginSchema,
   EmployeeLoginSchema,
 } from "@/lib/validation/auth.validation";
 import { ApiError } from "@/lib/api/axios";
 import { getEmployeeHome } from "@/utils";
+
 import { useLoginEmployee } from "@/hooks/authEmployee.hooks";
 
 export function EmployeeLoginForm() {
@@ -37,6 +37,11 @@ export function EmployeeLoginForm() {
   const submit = form.onSubmit((values) => {
     mutate(values, {
       onSuccess: (employee) => {
+        notifications.show({
+            title: "Berhasil",
+            message: "Login berhasil.",
+            color: "green"
+        })
         router.push(getEmployeeHome(employee.role));
       },
 

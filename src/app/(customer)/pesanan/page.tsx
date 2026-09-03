@@ -1,6 +1,6 @@
 "use client";
 
-import { Title, Text, Stack, Container, Anchor, Group } from "@mantine/core";
+import { Title, Text, Stack, Anchor, Group } from "@mantine/core";
 import { OrderList } from "@/components/customer/order/orderList";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";

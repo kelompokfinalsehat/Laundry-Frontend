@@ -1,2 +1,5 @@
-import { ListPageScaffold } from '@/components/shared/ListPageScaffold';
-export default function Page(){return <ListPageScaffold title='Harga Laundry' description='History dan pergantian harga per kilogram.'/>}
+import { LaundryPricingContent } from "@/components/back-office/pricing/laundry/LaundryPricingContent";
+
+export default function Page() {
+  return <LaundryPricingContent />;
+}

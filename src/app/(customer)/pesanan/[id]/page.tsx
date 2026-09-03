@@ -1,4 +1,4 @@
-import { Box, Paper } from "@mantine/core";
+import { Box } from "@mantine/core";
 import { OrderDetailView } from "@/components/customer/order/orderDetail";
 
 

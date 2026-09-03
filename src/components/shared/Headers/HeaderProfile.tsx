@@ -1,14 +1,7 @@
 "use client";
 
 import {
-  Avatar,
-  Group,
-  Menu,
-  Skeleton,
-  Text,
-  UnstyledButton,
-  Button,
-  Box,
+  Avatar, Group, Menu, Skeleton, Text, UnstyledButton, Button, Box,
 } from "@mantine/core";
 import {
   IconChevronDown,
@@ -58,12 +51,7 @@ export function HeaderProfile() {
   }
 
   const initials = user.name
-    ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase()
+    ? user.name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
     : "?";
 
   const handleLogout = () => {
@@ -106,18 +94,9 @@ export function HeaderProfile() {
             >
               {initials}
             </Avatar>
-            <Text fw={500} size="lg" visibleFrom="sm">
-              {user.name}
-            </Text>
-            <Box
-              visibleFrom="sm"
-              component="span"
-              style={{ display: "inline-flex" }}
-            >
-              <IconChevronDown
-                size={16}
-                style={{ color: "var(--color-text-secondary)" }}
-              />
+            <Text fw={500} size="lg" visibleFrom="sm">{user.name}</Text>
+            <Box visibleFrom="sm" component="span" style={{ display: "inline-flex" }}>
+              <IconChevronDown size={16} style={{ color: "var(--color-text-secondary)" }} />
             </Box>
           </Group>
         </UnstyledButton>

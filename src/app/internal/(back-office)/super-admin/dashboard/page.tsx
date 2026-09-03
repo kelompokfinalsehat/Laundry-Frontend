@@ -1,2 +1,12 @@
-import { FeaturePlaceholder } from '@/components/shared/FeaturePlaceholder';
-export default function Page(){return <FeaturePlaceholder title='Dashboard Super Admin' description='Ringkasan lintas outlet.'/>}
+"use client";
+
+import { DashboardContent } from "@/components/back-office/dashboard/DashboardContent";
+
+export default function Page() {
+  return (
+    <DashboardContent
+      title="Dashboard Super Admin"
+      description="Ringkasan operasional seluruh outlet."
+    />
+  );
+}

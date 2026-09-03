@@ -1,2 +1,13 @@
-import { FeaturePlaceholder } from '@/components/shared/FeaturePlaceholder';
-export default function Page(){return <FeaturePlaceholder title='Keputusan Bypass' description='Approve membutuhkan password ulang dan keterangan; reject tidak.'/>}
+import { BypassDetailContent } from "@/components/back-office/bypass/BypassDetailContent";
+
+type Props = {
+  params: Promise<{
+    bypassId: string;
+  }>;
+};
+
+export default async function Page({ params }: Props) {
+  const { bypassId } = await params;
+
+  return <BypassDetailContent bypassId={bypassId} />;
+}

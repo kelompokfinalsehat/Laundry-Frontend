@@ -1,0 +1,114 @@
+"use client";
+
+import { ActionIcon, Group, Menu, Table, Text } from "@mantine/core";
+import { IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons-react";
+import { ServerPagination } from "@/components/ui/ServerPagination";
+import { PaginatedResponse } from "@/types/api";
+import type { ShippingRate } from "@/types/api/pricing.types";
+
+type Props = {
+  data: ShippingRate[];
+  meta: PaginatedResponse<ShippingRate>["meta"];
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: 10 | 20 | 50) => void;
+  onEdit: (shippingRate: ShippingRate) => void;
+  onDeactivate: (shippingRate: ShippingRate) => void;
+};
+
+function formatCurrency(value: string) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(Number(value));
+}
+
+function formatDistance(value: number) {
+  const kilometers = value / 1000;
+
+  return `≤ ${kilometers} km`;
+}
+
+function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat("id-ID", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
+}
+
+export function ShippingRateTable({ data, meta, onPageChange, onPageSizeChange, onEdit, onDeactivate }: Props) {
+  return (
+    <>
+      <Table.ScrollContainer minWidth={700}>
+        <Table highlightOnHover verticalSpacing="sm">
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Batas Jarak</Table.Th>
+
+              <Table.Th>Harga</Table.Th>
+
+              <Table.Th>Dibuat Pada</Table.Th>
+
+              <Table.Th ta="right">Aksi</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+
+          <Table.Tbody>
+            {data.map((shippingRate) => (
+              <Table.Tr key={shippingRate.id}>
+                <Table.Td>
+                  <Text size="sm" fw={600} c="var(--color-text-primary)">
+                    {formatDistance(shippingRate.maxDistanceMeters)}
+                  </Text>
+                </Table.Td>
+
+                <Table.Td>
+                  <Text size="sm" fw={600} c="var(--color-text-primary)">
+                    {formatCurrency(shippingRate.price)}
+                  </Text>
+                </Table.Td>
+
+                <Table.Td>
+                  <Text size="sm" c="var(--color-text-secondary)">
+                    {formatDateTime(shippingRate.createdAt)}
+                  </Text>
+                </Table.Td>
+
+                <Table.Td>
+                  <Group justify="flex-end" gap={4}>
+                    <Menu shadow="md" width={160} position="bottom-end">
+                      <Menu.Target>
+                        <ActionIcon variant="subtle" aria-label="Aksi item">
+                          <IconDotsVertical size={18} />
+                        </ActionIcon>
+                      </Menu.Target>
+
+                      <Menu.Dropdown>
+                        <Menu.Item leftSection={<IconEdit size={16} />} onClick={() => onEdit(shippingRate)}>
+                          Edit
+                        </Menu.Item>
+
+                        <Menu.Item color="red" leftSection={<IconTrash size={16} />} onClick={() => onDeactivate(shippingRate)}>
+                          Nonaktifkan
+                        </Menu.Item>
+                      </Menu.Dropdown>
+                    </Menu>
+                  </Group>
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </Table.ScrollContainer>
+
+      <ServerPagination
+        page={meta.page}
+        pageSize={meta.pageSize as 10 | 20 | 50}
+        totalItems={meta.totalItems}
+        totalPages={meta.totalPages}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
+      />
+    </>
+  );
+}

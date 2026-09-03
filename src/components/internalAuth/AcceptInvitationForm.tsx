@@ -10,7 +10,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm, schemaResolver } from "@mantine/form";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 import { acceptInvitationSchema } from "@/lib/validation/auth.validation";
@@ -18,7 +18,6 @@ import { ApiError } from "@/lib/api/axios";
 import { useAcceptEmployeeInvitation } from "@/hooks/authEmployee.hooks";
 
 export function AcceptInvitationForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 

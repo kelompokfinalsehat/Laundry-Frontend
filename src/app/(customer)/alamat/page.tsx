@@ -1,7 +1,7 @@
 "use client";
 
 
-import { Title, Text, Stack, Paper, Anchor, Group } from "@mantine/core";
+import { Title, Text, Stack, Anchor, Group } from "@mantine/core";
 import { AddressList } from "@/components/customer/alamat/AddressList";
 import { useRouter, useSearchParams } from "next/navigation";
 import { IconChevronLeft } from "@tabler/icons-react";

@@ -45,7 +45,7 @@ export function useRequestPickup() {
       addresses.find((address) => address.isPrimary) ?? addresses[0];
 
     form.setFieldValue("addressId", primaryAddress.id);
-  }, [addresses]);
+  }, [addresses, form]);
 
   const selectedAddress = addresses?.find(
     (address) => address.id === form.values.addressId,

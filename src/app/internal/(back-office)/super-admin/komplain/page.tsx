@@ -1,2 +1,7 @@
-import { ListPageScaffold } from '@/components/shared/ListPageScaffold';
-export default function Page(){return <ListPageScaffold title='Monitoring Komplain' description='Read-only untuk Super Admin.'/>}
+import { ComplaintContent } from "@/components/back-office/komplain/ComplaintContent";
+
+export default function Page() {
+  return (
+    <ComplaintContent role="SUPER_ADMIN" />
+  );
+}

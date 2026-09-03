@@ -1,4 +1,9 @@
-import { Group, Stack, Text, Title } from "@mantine/core";
+import {
+  Group,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
 
 export function PageHeader({
   title,
@@ -10,11 +15,30 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <Group justify="space-between" align="flex-start" mb="lg">
+    <Group
+      justify="space-between"
+      align="flex-end"
+      wrap="wrap"
+      gap="md"
+    >
       <Stack gap={4}>
-        <Title order={2}>{title}</Title>
-        {description && <Text c="dimmed">{description}</Text>}
+        <Title
+          order={2}
+          c="var(--color-text-primary)"
+        >
+          {title}
+        </Title>
+
+        {description && (
+          <Text
+            size="sm"
+            c="var(--color-text-secondary)"
+          >
+            {description}
+          </Text>
+        )}
       </Stack>
+
       {action}
     </Group>
   );

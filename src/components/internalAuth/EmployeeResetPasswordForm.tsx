@@ -11,14 +11,13 @@ import {
 } from "@mantine/core";
 import { useForm, schemaResolver } from "@mantine/form";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { resetPasswordSchema } from "@/lib/validation/auth.validation";
 import { ApiError } from "@/lib/api/axios";
 import { useResetPasswordEmployee } from "@/hooks/authEmployee.hooks";
 
 export function EmployeeResetPasswordForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const token = searchParams.get("token");

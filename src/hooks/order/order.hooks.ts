@@ -6,7 +6,6 @@ import {
 } from "@/types/api/orders.types";
 import { ApiError } from "@/lib/api/axios";
 import { CreateComplaintSchema } from "@/lib/validation/order.validation";
-import { id } from "zod/v4/locales";
 
 const orderApi = new OrderApi();
 
