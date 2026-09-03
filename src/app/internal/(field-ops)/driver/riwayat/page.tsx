@@ -1,2 +1,6 @@
-import { ListPageScaffold } from '@/components/shared/ListPageScaffold';
-export default function Page(){return <ListPageScaffold title='Riwayat Driver' description='Riwayat pickup dan delivery.'/>}
+"use client";
+import { DriverHistory } from "@/components/field-ops/driver/DriverHistory";
+
+export default function Page() {
+  return <DriverHistory />;
+}

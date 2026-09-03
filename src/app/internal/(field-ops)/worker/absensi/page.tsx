@@ -1,2 +1,14 @@
-import { ListPageScaffold } from '@/components/shared/ListPageScaffold';
-export default function Page(){return <ListPageScaffold title='Riwayat Absensi Worker' description='Riwayat absen datang dan pulang.'/>}
+"use client";
+import {  Stack  } from "@mantine/core";
+import { AttendanceStatusCard } from "@/components/field-ops/shared/AttendanceStatusCard";
+import { AttendanceHistory } from "@/components/field-ops/shared/AttendanceHistory";
+
+export default function Page() {
+  return (
+    <Stack gap="md">
+      <AttendanceStatusCard />
+
+      <AttendanceHistory/>
+    </Stack>
+  );
+}

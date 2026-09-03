@@ -1,9 +1,4 @@
-export type Role =
-  | "CUSTOMER"
-  | "WORKER"
-  | "DRIVER"
-  | "OUTLET_ADMIN"
-  | "SUPER_ADMIN";
+export type Role = "CUSTOMER" | "WORKER" | "DRIVER" | "OUTLET_ADMIN" | "SUPER_ADMIN";
 
 export type RegisterCustomerResponse = {
   customerId: string;
@@ -77,13 +72,7 @@ export type MeResponse = {
 export type AccountStatus = "INVITED" | "ACTIVE" | "INACTIVE";
 export type AttendanceStatus = "OFF_DUTY" | "ON_DUTY";
 export type AvailabilityStatus = "AVAILABLE" | "BUSY";
-export type PaymentStatus =
-  | "UNPAID"
-  | "PENDING"
-  | "PAID"
-  | "FAILED"
-  | "CANCELLED"
-  | "EXPIRED";
+export type PaymentStatus = "UNPAID" | "PENDING" | "PAID" | "FAILED" | "CANCELLED" | "EXPIRED";
 export type InternalOrderState = "ON_HOLD_BYPASS" | "PAUSED_OFF_HOURS";
 export type CustomerOrderStatus =
   | "MENUNGGU_PENJEMPUTAN_DRIVER"
@@ -113,7 +102,7 @@ export interface SessionUser {
 
 export interface ListQuery {
   page: number;
-  pageSize: 10 | 20 | 50;
+  pageSize: 10 | 20 | 50 | number;
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
@@ -149,6 +138,14 @@ export interface OrderListItem {
   total?: number;
 }
 
+export type PaginationMeta = {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+};
 export type EmployeeRole = "OUTLET_ADMIN" | "WORKER" | "DRIVER";
 export type WorkStatus = "OFF_DUTY" | "AVAILABLE" | "BUSY";
 export type BypassStatus = "PENDING" | "APPROVED" | "REJECTED";

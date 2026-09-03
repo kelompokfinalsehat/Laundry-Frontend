@@ -1,9 +1,5 @@
-import { ListPageScaffold } from "@/components/shared/ListPageScaffold";
+import { WorkerHistory } from "@/components/field-ops/worker/WorkerHistory";
+
 export default function Page() {
-  return (
-    <ListPageScaffold
-      title="Riwayat Pekerjaan Worker"
-      description="Riwayat assignment yang selesai."
-    />
-  );
+  return <WorkerHistory />;
 }

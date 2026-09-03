@@ -8,7 +8,9 @@ export default async function Layout({
 }) {
   return (
     <AuthGateEmployee allowedRoles={["DRIVER"]}>
-      <FieldOpsAppShell role="Driver">{children}</FieldOpsAppShell>
+      <FieldOpsAppShell role="Driver" basePath="/internal/driver">
+        {children}
+      </FieldOpsAppShell>
     </AuthGateEmployee>
   );
 }
