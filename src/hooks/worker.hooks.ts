@@ -84,6 +84,7 @@ export function useActive() {
   return useQuery({
     queryKey: WORKER_ACTIVE_QUERY_KEY,
     queryFn: () => workerApi.getActive(),
+    refetchInterval:10_000 // supaya ketika ON_HOLD_BYPASS terapprove atau tereject, page tidak diam di situ saja.
   });
 }
 
