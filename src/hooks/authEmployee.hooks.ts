@@ -4,7 +4,7 @@ import {
   ResetPasswordCustomerPayload,
   VerificationPayload,
 } from "@/types/api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AUTH_ME_QUERY_KEY } from "./authCustomer.hooks";
 
 const authEmployeeApi = new AuthEmployeeApi();
@@ -41,22 +41,6 @@ export function useResetPasswordEmployee() {
   });
 }
 
-export function useCurrentEmploye() {
-  return useQuery({
-    queryKey: AUTH_ME_QUERY_KEY,
-    queryFn: authEmployeeApi.me,
-    retry: false,
-  });
-}
 
-export function useLogout() {
-  const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: authEmployeeApi.logout,
-    onSuccess: () => {
-      queryClient.setQueryData(["auth", "me"], null);
-      queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
-    },
-  });
-}
+

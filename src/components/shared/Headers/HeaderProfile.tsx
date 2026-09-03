@@ -13,13 +13,13 @@ import {
 import {
   IconChevronDown,
   IconLogout,
-  IconUser,
-  IconPackage,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useLogout } from "@/hooks/authCustomer.hooks";
+import { NAV_LINKS } from "./nav-links";
+import { notifications } from "@mantine/notifications";
 
 export function HeaderProfile() {
   const user = useAuthStore((s) => s.user);
@@ -67,13 +67,31 @@ export function HeaderProfile() {
     : "?";
 
   const handleLogout = () => {
-    logout(undefined, {
-      onSuccess: () => {
-        useAuthStore.getState().clearUser();
-        router.replace("/login");
-      },
-    });
-  };
+  logout(undefined, {
+    onSuccess: () => {
+      useAuthStore.getState().clearUser();
+
+      notifications.show({
+        title: "Berhasil",
+        message: "Kamu berhasil keluar dari akun.",
+        color: "green",
+      });
+
+      router.replace("/login");
+    },
+
+    onError: (error) => {
+      notifications.show({
+        title: "Gagal",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Gagal keluar dari akun. Silakan coba lagi.",
+        color: "red",
+      });
+    },
+  });
+};
 
   return (
     <Menu shadow="md" width={220} position="bottom-end">
@@ -107,20 +125,17 @@ export function HeaderProfile() {
 
       <Menu.Dropdown>
         <Menu.Label style={{ wordBreak: "break-all" }}>{user.email}</Menu.Label>
-        <Menu.Item
-          component={Link}
-          href="/profil"
-          leftSection={<IconUser size={16} />}
-        >
-          Profil Saya
-        </Menu.Item>
-        <Menu.Item
-          component={Link}
-          href="/pesanan"
-          leftSection={<IconPackage size={16} />}
-        >
-          Pesanan Saya
-        </Menu.Item>
+
+        {NAV_LINKS.map(({ label, href, icon: Icon }) => (
+          <Menu.Item
+            key={href}
+            component={Link}
+            href={href}
+            leftSection={<Icon size={16} />}
+          >
+            {label}
+          </Menu.Item>
+        ))}
         <Menu.Divider />
         <Menu.Item
           color="red"

@@ -6,8 +6,10 @@ import { modals } from "@mantine/modals";
 
 import { AddressCard } from "./AddressCard";
 import { AddressForm } from "./AddressForm";
-import type { Address } from "@/types/api/address.types";
+import type { Address, AddressFormSubmitValues, AddressFormValues } from "@/types/api/address.types";
 import { useAddresses, useCreateAddress, useDeleteAddress, useSetPrimaryAddress, useUpdateAddress } from "@/hooks/address.hooks";
+import { notifications } from "@mantine/notifications";
+import { ApiError } from "@/lib/api/axios";
 
 const MAX_ADDRESSES = 5; // samain sama batas backend (address.service.ts)
 
@@ -36,31 +38,92 @@ export function AddressList() {
     setModalMode("edit");
   }
 
-  function handleSubmit(values: { label: string; formattedAddress: string; phone: string }) {
-    if (modalMode === "edit" && editingAddress) {
-      updateMutation.mutate(
-        { id: editingAddress.id, payload: values },
-        { onSuccess: closeModal }
-      );
-    } else {
-      createMutation.mutate(values, { onSuccess: closeModal });
-    }
-  }
+ function handleSubmit(values: AddressFormSubmitValues) {
+  if (modalMode === "edit" && editingAddress) {
+    updateMutation.mutate(
+      { id: editingAddress.id, payload: values },
+      {
+        onSuccess: () => {
+          notifications.show({
+            title: "Berhasil",
+            message: "Alamat berhasil diperbarui.",
+            color: "green",
+          });
 
-  function handleDelete(address: Address) {
-    modals.openConfirmModal({
-      title: "Hapus alamat?",
-      children: (
-        <Text size="sm">
-          Alamat "{address.label || address.formattedAddress}" akan dihapus. Order yang sudah
-          berjalan tidak akan terpengaruh.
-        </Text>
-      ),
-      labels: { confirm: "Hapus", cancel: "Batal" },
-      confirmProps: { style: { backgroundColor: "var(--color-error)" } },
-      onConfirm: () => deleteMutation.mutate(address.id),
+          closeModal();
+        },
+        onError: (error) => {
+          notifications.show({
+            title: "Gagal",
+            message:
+              error instanceof Error
+                ? error.message
+                : "Gagal memperbarui alamat.",
+            color: "red",
+          });
+        },
+      },
+    );
+  } else {
+    createMutation.mutate(values, {
+      onSuccess: () => {
+        notifications.show({
+          title: "Berhasil",
+          message: "Alamat berhasil ditambahkan.",
+          color: "green",
+        });
+
+        closeModal();
+      },
+      onError: (error) => {
+        notifications.show({
+          title: "Gagal",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Gagal menambahkan alamat.",
+          color: "red",
+        });
+      },
     });
   }
+}
+
+ function handleDelete(address: Address) {
+  modals.openConfirmModal({
+    title: "Hapus alamat?",
+    children: (
+      <Text size="sm">
+        Alamat "{address.label || address.formattedAddress}" akan dihapus. Order
+        yang sudah berjalan tidak akan terpengaruh.
+      </Text>
+    ),
+    labels: { confirm: "Hapus", cancel: "Batal" },
+    confirmProps: {
+      style: { backgroundColor: "var(--color-error)" },
+    },
+    onConfirm: () =>
+      deleteMutation.mutate(address.id, {
+        onSuccess: () => {
+          notifications.show({
+            title: "Berhasil",
+            message: "Alamat berhasil dihapus.",
+            color: "green",
+          });
+        },
+        onError: (error) => {
+          notifications.show({
+            title: "Gagal",
+            message:
+              error instanceof ApiError
+                ? error.message
+                : "Gagal menghapus alamat.",
+            color: "red",
+          });
+        },
+      }),
+  });
+}
 
   if (isLoading) {
     return (

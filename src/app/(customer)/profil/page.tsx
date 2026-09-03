@@ -22,7 +22,6 @@ import {
   IconUser,
   IconMail,
   IconPhone,
-  IconLock,
   IconChevronLeft,
 } from "@tabler/icons-react";
 import Link from "next/link";
@@ -65,7 +64,7 @@ export default function ProfilPage({
   }
 
   return (
-    <Stack gap="xl" maw={640} mx="auto">
+    <Stack gap="xl" mx="auto" py={{ base: 16, sm: 32 }}>
       <Anchor
         component="button"
         type="button"

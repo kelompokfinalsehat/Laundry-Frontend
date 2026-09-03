@@ -2,8 +2,6 @@ import {
   AcceptInvitationPayload,
   ApiResponse,
   EmployeeLoginResponse,
-  MeResponse,
-  MessageResponse,
   ResetPasswordCustomerPayload,
   VerificationPayload,
 } from "@/types/api";
@@ -46,6 +44,7 @@ export class AuthEmployeeApi {
     );
     return data;
   }
+<<<<<<< HEAD
 
   async me() {
     const { data } = await api.get<MeResponse>("/auth/employee/me");
@@ -58,4 +57,7 @@ export class AuthEmployeeApi {
     );
     return data.data;
   }
+=======
+ 
+>>>>>>> origin/develop
 }

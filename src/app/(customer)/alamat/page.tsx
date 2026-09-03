@@ -1,9 +1,38 @@
-import { Title, Text, Stack, Paper } from "@mantine/core";
+"use client";
+
+
+import { Title, Text, Stack, Paper, Anchor, Group } from "@mantine/core";
 import { AddressList } from "@/components/customer/alamat/AddressList";
+import { useRouter, useSearchParams } from "next/navigation";
+import { IconChevronLeft } from "@tabler/icons-react";
 
 export default function AddressesPage() {
+  const router = useRouter();
+    const searchParams = useSearchParams();
+    const from = searchParams.get("from");
+  
+    function handleBack() {
+      if (from) {
+        router.replace(from);
+        return;
+      }
+  
+      router.back();
+    }
   return (
-    <Stack gap="xl" maw={960} mx="auto" p={{ base: 16, sm: 32 }}>
+    <Stack gap="xl" mx="auto" p={{ base: 16, sm: 32 }}>
+      <Anchor
+        component="button"
+        type="button"
+        onClick={handleBack}
+        fw={600}
+        c="var(--color-text-primary)"
+      >
+        <Group gap={2}>
+          <IconChevronLeft size={16} stroke={2} />
+          Kembali
+        </Group>
+      </Anchor>
       <div>
         <Title order={3} style={{ color: "var(--color-text-primary)" }}>
           Alamat Saya

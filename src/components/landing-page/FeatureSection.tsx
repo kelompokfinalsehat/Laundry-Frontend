@@ -1,11 +1,6 @@
-import { Box, Title, Text, Paper, } from "@mantine/core";
+import { Box, Title, Text, Paper } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
-import {
-  IconTruck,
-  IconActivity,
-  IconMapPin,
-  Icon,
-} from "@tabler/icons-react";
+import { IconTruck, IconActivity, IconMapPin, Icon } from "@tabler/icons-react";
 import Link from "next/link";
 
 export const FEATURES: {
@@ -30,10 +25,10 @@ export const FEATURES: {
   },
   {
     icon: IconMapPin,
-    title: "Outlet Terdekat",
+    title: "Kelola Alamat",
     description:
-      "Temukan outlet Popo Laundry terdekat dan nikmati layanan laundry yang cepat, mudah, dan nyaman.",
-    href: "/beranda",
+      "Kelola alamat pengiriman dan penjemputan laundry dengan mudah dan praktis.",
+    href: "/alamat",
   },
 ];
 
@@ -48,7 +43,7 @@ export default function FeatureCard({
   return (
     <Paper
       ref={ref}
-      component={Link} 
+      component={Link}
       href={href}
       withBorder
       p="lg"

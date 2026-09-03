@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Alert,
   Anchor,
   Button,
   PasswordInput,
@@ -10,6 +9,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { schemaResolver, useForm } from "@mantine/form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,7 +24,7 @@ import { useLoginEmployee } from "@/hooks/authEmployee.hooks";
 
 export function EmployeeLoginForm() {
   const router = useRouter();
-  const { mutate, isPending, error } = useLoginEmployee();
+  const { mutate, isPending } = useLoginEmployee();
 
   const form = useForm<EmployeeLoginSchema>({
     initialValues: {
@@ -37,8 +37,20 @@ export function EmployeeLoginForm() {
   const submit = form.onSubmit((values) => {
     mutate(values, {
       onSuccess: (employee) => {
-        console.log(employee);
         router.push(getEmployeeHome(employee.role));
+      },
+
+      onError: (error) => {
+        const message =
+          error instanceof ApiError
+            ? error.message
+            : "Gagal login. Silakan coba lagi.";
+
+        notifications.show({
+          title: "Login gagal",
+          message,
+          color: "red",
+        });
       },
     });
   });
@@ -52,8 +64,6 @@ export function EmployeeLoginForm() {
           Masuk untuk mengakses portal operasional Popo Laundry.
         </Text>
       </div>
-
-      {error instanceof ApiError && <Alert color="red">{error.message}</Alert>}
 
       <form onSubmit={submit}>
         <Stack gap="md">
