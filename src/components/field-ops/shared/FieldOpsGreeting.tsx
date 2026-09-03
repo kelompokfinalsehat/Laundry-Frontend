@@ -1,9 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-
-import { useCurrentEmploye } from "@/hooks/authEmployee.hooks";
-
+import { useCurrentUser } from "@/hooks/authCustomer.hooks";
 import { Carousel } from "@mantine/carousel";
 import { Group, Paper, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconBolt, IconClipboardCheck, IconMedal, IconSun } from "@tabler/icons-react";
@@ -31,7 +29,7 @@ const STATIC_GREETINGS = [
 ];
 
 export function FieldOpsGreeting() {
-  const employeeQuery = useCurrentEmploye();
+  const employeeQuery = useCurrentUser();
 
   const autoplay = useMemo(
     () =>

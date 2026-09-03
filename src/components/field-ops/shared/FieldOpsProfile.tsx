@@ -4,8 +4,7 @@ import { Avatar, Button, Divider, Fieldset, FileInput, Group, Modal, Paper, Skel
 import { useDisclosure } from "@mantine/hooks";
 import { IconBuilding, IconLogout, IconMail, IconPencil, IconPhone, IconUser } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
-
-import { useLogout } from "@/hooks/authEmployee.hooks";
+import { useLogout } from "@/hooks/authCustomer.hooks";
 import { useFieldOpsProfile, useFieldOpsProfileEdit } from "@/hooks/fieldOpsProfile.hooks";
 import type { FieldOpsProfile as FieldOpsProfileData } from "@/types/api/fieldOpsProfile.types";
 
