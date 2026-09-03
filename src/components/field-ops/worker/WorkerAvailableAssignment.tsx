@@ -101,7 +101,7 @@ export function WorkerAvailableAssignments() {
                 <Paper key={assignment.id} withBorder radius="md" p="md">
                   <Group justify="space-between">
                     <Stack gap={4}>
-                      <Badge color="orange" variant="light" w={'100'}>
+                      <Badge color={"orange"} variant="light" w={"100"} h={25}>
                         {getStationLabel(assignment.stationType)}
                       </Badge>
 
@@ -112,8 +112,9 @@ export function WorkerAvailableAssignments() {
 
                     <Button
                       size="xs"
-                      variant="light"
+                      color="blue"
                       loading={claim.isPending}
+                      loaderProps={{ type: "dots" }}
                       onClick={() =>
                         openActionConfirmModal({
                           title: "Ambil tugas?",

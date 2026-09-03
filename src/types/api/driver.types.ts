@@ -11,6 +11,8 @@ export type DriverAvailableItem = {
   order: {
     id: string;
     orderCode: string;
+    addressSnapshot: string;
+    pickupScheduledAt?: string;
   };
   taskType: TaskType;
 };
