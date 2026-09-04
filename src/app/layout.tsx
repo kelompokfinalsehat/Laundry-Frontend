@@ -1,32 +1,43 @@
-import '@mantine/core/styles.css';
-
-import type { Metadata } from "next";
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
+import "@mantine/notifications/styles.css";
+import "leaflet/dist/leaflet.css";
+import "@mantine/dates/styles.css";
+import '@mantine/charts/styles.css';
 import "./globals.css";
-import { ColorSchemeScript, MantineProvider, mantineHtmlProps, createTheme } from '@mantine/core';
+import { Providers } from "@/providers/Providers";
+import { Baloo_2, Plus_Jakarta_Sans } from "next/font/google";
 
-
-export const metadata: Metadata = {
-  title: 'Laundry App',
-  description: 'Aplikasi laundry pickup',
+export const metadata = {
+  title: "Popo Laundry",
+  description: "Laundry pickup, tracking, payment, dan delivery.",
+  icons: {
+    icon: [
+      { url: "/favicon/favicon.ico", sizes: "any" },
+      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/favicon/apple-touch-icon.png",
+  },
+  manifest: "/favicon/site.webmanifest",
 };
 
-
-const theme = createTheme({
-  /** custom theme override kamu di sini */
+const display = Baloo_2({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-display",
+});
+const body = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-body",
 });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id" {...mantineHtmlProps}>
-      <head>
-        <ColorSchemeScript defaultColorScheme="auto" />
-      </head>
+    <html lang="id" className={`${display.variable} ${body.variable}`}>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

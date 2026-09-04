@@ -1,3 +1,70 @@
 @import "tailwindcss";
 
+:root { color-scheme: light; }
+html, body { margin: 0; min-height: 100%; background: #f8fafc; }
+body { font-family: var(--font-body), sans-serif; }
+a { color: inherit; text-decoration: none; }
+* { box-sizing: border-box; }
+
+/* ============================================================
+   Popo Laundry — Brand Colors (Fresh Line-Dry)
+   Taruh di src/app/globals.css, atau import terpisah lalu
+   panggil di layout.tsx paling atas.
+   ============================================================ */
+ 
+:root {
+  /* Primary */
+  --color-primary: #30afff;;         /* Rinse Blue — nav, header, elemen struktural */
+  --color-primary-dark: #3e83e2;    /* hover/active state tombol/link primary */
+  --color-primary-light: #eaf4fb;   /* background lembut, badge, highlight ringan */
+ 
+  /* Accent / CTA */
+  --color-accent: #f2a93b;          /* Sundry Yellow — tombol aksi utama */
+  --color-accent-dark: #d6900f;     /* hover/active state tombol accent */
+  --color-accent-light: #fdf1de;    /* background lembut untuk badge/alert info */
+ 
+  /* Base */
+  --color-background: #eaf4fb;      /* Chalk Linen — background utama */
+  --color-background-dark: #4d6270;
+  --color-surface: #ffffff;         /* kartu/panel di atas background */
+  --color-border: #e2e3de;          /* garis pembatas halus */
+ 
+  /* Text */
+  --color-text-primary: #26313a;    /* Wet Slate — teks utama */
+  --color-text-secondary: #5f6b72;  /* teks sekunder/caption */
+  --color-text-on-primary: #ffffff; /* teks di atas background Rinse Blue */
+  --color-text-on-accent: #412402;  /* teks di atas background Sundry Yellow */
+ 
+  /* Status */
+  --color-success: #6b9e78;         /* Fresh Sage — status selesai/berhasil */
+  --color-success-light: #eaf3ec;
+  --color-error: #c4483b;           /* Stain Red — alert, komplain, error */
+  --color-error-light: #fbeae8;
+  --color-warning: var(--color-accent);
+  --color-warning-light: var(--color-accent-light);
+ 
+  /* Radius & elevation (opsional, mengikuti gaya flat design brand) */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 1px 2px rgba(38, 49, 58, 0.06);
+  --shadow-md: 0 4px 12px rgba(38, 49, 58, 0.08);
+}
+ 
+.button-primary {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  border-radius: var(--radius-sm);
+}
+
+.page {
+  --bg: #eaf4fb;
+  --surface: #ffffff;
+  --ink: #10304f;
+  --primary: #2f7fc1;
+  --accent: #f5b942;
+  --teal: #4fa895;
+  --ink-soft: #4c6884;
+}
+/* Dark mode belum dirancang untuk brand ini — override di sini nanti kalau dibutuhkan. */
 
