@@ -38,13 +38,6 @@ export function BackOfficeProfileForm({ name, phone, onCancel }: Props) {
     },
   });
 
-  useEffect(() => {
-    form.setValues({
-      name,
-      phone: phone ?? "",
-    });
-  }, [form, name, phone]);
-
   const handleSubmit = form.onSubmit(async (values) => {
     try {
       await updateProfile.mutateAsync({
