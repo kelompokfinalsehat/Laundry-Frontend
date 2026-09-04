@@ -15,6 +15,8 @@ export function useOrderList(params: OrderQuery) {
   return useQuery({
     queryKey: [...ORDERS_QUERY_KEY, params],
     queryFn: () => orderApi.getOrders(params),
+    refetchInterval: 15_000,
+    refetchOnWindowFocus: true
   });
 }
 

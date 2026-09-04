@@ -29,8 +29,9 @@ const bypassApi = new BypassApi();
 export function useBypassRequests(query: BypassQuery) {
   return useQuery({
     queryKey: bypassKeys.list(query),
-
     queryFn: () => bypassApi.getBypassRequests(query),
+    refetchInterval: 15_000,
+    refetchOnWindowFocus: true
   });
 }
 

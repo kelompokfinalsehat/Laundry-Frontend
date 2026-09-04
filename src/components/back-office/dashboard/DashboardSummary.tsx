@@ -1,5 +1,5 @@
 import { Grid, Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
-import { IconClipboardList, IconClock, IconCircleCheck, IconCash } from "@tabler/icons-react";
+import { IconCash, IconCircleCheck, IconClipboardList, IconClock } from "@tabler/icons-react";
 import type { DashboardSummary as DashboardSummaryType } from "@/types/api/dashboard.types";
 
 const formatCurrency = (value: number) =>
@@ -38,7 +38,7 @@ export function DashboardSummary({ summary }: { summary: DashboardSummaryType })
   ];
 
   return (
-    <Grid gap="md">
+    <Grid gap={"md"}>
       {items.map((item) => {
         const Icon = item.icon;
 
@@ -46,25 +46,26 @@ export function DashboardSummary({ summary }: { summary: DashboardSummaryType })
           <Grid.Col key={item.label} span={{ base: 12, sm: 6, lg: 3 }}>
             <Paper
               withBorder
-              p="lg"
               radius="md"
+              p="md"
               h="100%"
               style={{
                 backgroundColor: "var(--color-surface)",
               }}
             >
               <Group justify="space-between" align="flex-start" wrap="nowrap">
-                <Stack gap={6}>
+                <Stack gap={4} style={{ minWidth: 0 }}>
                   <Text size="sm" fw={500} c="var(--color-text-secondary)">
                     {item.label}
                   </Text>
 
                   <Text
-                    fw={700}
                     size="xl"
+                    fw={700}
                     c="var(--color-text-primary)"
                     style={{
-                      lineHeight: 1.2,
+                      lineHeight: 1.25,
+                      overflowWrap: "anywhere",
                     }}
                   >
                     {item.value}
@@ -72,7 +73,7 @@ export function DashboardSummary({ summary }: { summary: DashboardSummaryType })
                 </Stack>
 
                 <ThemeIcon
-                  size={44}
+                  size={40}
                   radius="md"
                   variant="light"
                   color={item.color}
@@ -80,7 +81,7 @@ export function DashboardSummary({ summary }: { summary: DashboardSummaryType })
                     flexShrink: 0,
                   }}
                 >
-                  <Icon size={22} stroke={1.8} />
+                  <Icon size={20} stroke={1.8} />
                 </ThemeIcon>
               </Group>
             </Paper>

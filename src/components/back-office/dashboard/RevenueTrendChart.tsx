@@ -2,7 +2,7 @@
 
 import { Paper, Stack, Text } from "@mantine/core";
 import { AreaChart } from "@mantine/charts";
-import { RevenueTrendItem } from "@/types/api/dashboard.types";
+import type { RevenueTrendItem } from "@/types/api/dashboard.types";
 
 interface RevenueTrendChartProps {
   data: RevenueTrendItem[];
@@ -37,6 +37,8 @@ export function RevenueTrendChart({ data }: RevenueTrendChartProps) {
     }).format(new Date(`${item.date}T00:00:00`)),
   }));
 
+  const highestRevenue = Math.max(...data.map((item) => item.revenue), 0);
+
   return (
     <Paper
       withBorder
@@ -49,7 +51,9 @@ export function RevenueTrendChart({ data }: RevenueTrendChartProps) {
     >
       <Stack gap="sm">
         <div>
-          <Text fw={600}>Tren Pendapatan</Text>
+          <Text fw={600} c="var(--color-text-primary)">
+            Tren Pendapatan
+          </Text>
 
           <Text size="sm" c="var(--color-text-secondary)">
             Pendapatan 7 hari terakhir
@@ -77,7 +81,9 @@ export function RevenueTrendChart({ data }: RevenueTrendChartProps) {
           }}
           tooltipProps={{
             content: ({ label, payload }) => {
-              if (!payload?.length) return null;
+              if (!payload?.length) {
+                return null;
+              }
 
               const revenue = payload[0]?.value;
 
@@ -99,7 +105,10 @@ export function RevenueTrendChart({ data }: RevenueTrendChartProps) {
         />
 
         <Text size="sm" c="var(--color-text-secondary)">
-          Pendapatan tertinggi: {formatCurrency(Math.max(...data.map((item) => item.revenue), 0))}
+          Pendapatan tertinggi:{" "}
+          <Text span fw={600} c="var(--color-text-primary)">
+            {formatCurrency(highestRevenue)}
+          </Text>
         </Text>
       </Stack>
     </Paper>

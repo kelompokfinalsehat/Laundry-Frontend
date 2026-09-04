@@ -8,5 +8,7 @@ export function useDashboard(params?: DashboardQuery) {
   return useQuery({
     queryKey: ["dashboard", params],
     queryFn: () => dashboardApi.getDashboard(params),
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: true
   });
 }

@@ -5,9 +5,11 @@ import { CUSTOMER_STATUS } from "@/lib/constants/customer-status";
 
 type Props = {
   data: DashboardResponse["pendingBypass"];
+  onSelect: (bypassId: string, orderId: string) => void;
+  onViewAll: () => void;
 };
 
-export function PendingBypass({ data }: Props) {
+export function PendingBypass({ data, onSelect, onViewAll }: Props) {
   return (
     <Paper
       withBorder
@@ -53,7 +55,9 @@ export function PendingBypass({ data }: Props) {
                 p="sm"
                 radius="sm"
                 withBorder
+                onClick={() => onSelect(item.id, item.orderId)}
                 style={{
+                  cursor: "pointer",
                   backgroundColor: "var(--color-surface)",
                 }}
               >

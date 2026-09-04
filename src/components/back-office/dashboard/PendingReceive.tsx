@@ -1,12 +1,14 @@
-import { Badge, Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Badge, Button, Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconTruckDelivery } from "@tabler/icons-react";
 import { DashboardResponse } from "@/types/api/dashboard.types";
 
 type Props = {
   data: DashboardResponse["pendingReceive"];
+  onSelect: (orderId: string) => void;
+  onViewAll: () => void;
 };
 
-export function PendingReceive({ data }: Props) {
+export function PendingReceive({ data, onSelect, onViewAll }: Props) {
   return (
     <Paper
       withBorder
@@ -35,9 +37,14 @@ export function PendingReceive({ data }: Props) {
             </div>
           </Group>
 
-          <Badge color="orange" variant="light" radius="sm">
-            {data.total}
-          </Badge>
+          <Group gap="xs">
+            <Badge color="orange" variant="light" radius="sm">
+              {data.total}
+            </Badge>
+            <Button variant="subtle" size="xs" onClick={onViewAll}>
+              Lihat
+            </Button>
+          </Group>
         </Group>
 
         {data.items.length === 0 ? (
@@ -52,7 +59,9 @@ export function PendingReceive({ data }: Props) {
                 p="sm"
                 radius="sm"
                 withBorder
+                onClick={() => onSelect(item.id)}
                 style={{
+                  cursor: "pointer",
                   backgroundColor: "var(--color-surface)",
                 }}
               >
