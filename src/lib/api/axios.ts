@@ -114,7 +114,6 @@ api.interceptors.response.use(
         await refreshAccessToken();
         return api(originalRequest);
       } catch (refreshError) {
-        console.error("❌ Refresh gagal:", refreshError);
 
         // Hindari infinite reload: cuma redirect kalau BELUM di /login,
         // dan pakai client-side navigation, bukan full reload.

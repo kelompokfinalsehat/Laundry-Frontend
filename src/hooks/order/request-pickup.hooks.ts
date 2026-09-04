@@ -4,11 +4,11 @@ import dayjs from "dayjs";
 import { useForm, schemaResolver } from "@mantine/form";
 
 import { createOrderSchema } from "@/lib/validation/order.validation";
-import { useAddresses } from "@/hooks/address.hooks";
+import { useAddresses } from "../addressCustomer/address.hooks";
 import { useCreateOrder } from "./order.hooks";
 import { useLocationPermission } from "@/components/shared/Location/LocationPermission/hooks/useLocationPermission";
 
-import { getPickupTimeOptions } from "@/components/customer/order/pickupTimeHelper";
+import { getPickupTimeOptions } from "@/components/customer/order/RequestPickup/pickupTimeHelper";
 import { notifications } from "@mantine/notifications";
 
 const TODAY = dayjs().format("YYYY-MM-DD");
@@ -23,7 +23,13 @@ export function useRequestPickup() {
   const router = useRouter();
 
   const locationStatus = useLocationPermission();
-  const { data: addresses, isLoading: isLoadingAddresses } = useAddresses();
+  const {
+    data: addresses,
+    isLoading: isLoadingAddresses,
+    isError: isErrorAddresses,
+    error: addressesError,
+    refetch: refetchAddresses,
+  } = useAddresses();
   const { mutate, isPending, error } = useCreateOrder();
 
   const [isReviewing, setIsReviewing] = useState(false);
@@ -73,15 +79,15 @@ export function useRequestPickup() {
         pickupTime: values.pickupTime,
       },
       {
-       onSuccess: (result) => {
-        notifications.show({
-          title: "Berhasil",
-          message: "Request pickup berhasil dibuat.",
-          color: "green",
-        });
+        onSuccess: (result) => {
+          notifications.show({
+            title: "Berhasil",
+            message: "Request pickup berhasil dibuat.",
+            color: "green",
+          });
 
-        router.push(`/pesanan/${result.id}`);
-      },
+          router.push(`/pesanan/${result.id}`);
+        },
       },
     );
   }
@@ -93,6 +99,9 @@ export function useRequestPickup() {
     selectedAddress,
 
     isLoadingAddresses,
+    isErrorAddresses,
+    addressesError,
+    refetchAddresses,
     isLocationBlocked,
     locationStatus,
 

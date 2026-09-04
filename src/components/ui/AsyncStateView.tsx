@@ -1,4 +1,3 @@
-// src/components/ui/AsyncStateView.tsx
 "use client";
 
 import { Skeleton, Stack } from "@mantine/core";

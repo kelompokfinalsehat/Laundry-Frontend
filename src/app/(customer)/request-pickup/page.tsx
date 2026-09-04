@@ -1,7 +1,7 @@
 "use client";
 
 import { Title, Text, Stack, Anchor, Group } from "@mantine/core";
-import { RequestPickupForm } from "@/components/customer/order/requestPickupForm ";
+import { RequestPickupForm } from "@/components/customer/order/RequestPickup/requestPickupForm ";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { IconChevronLeft } from "@tabler/icons-react";

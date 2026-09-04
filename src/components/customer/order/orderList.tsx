@@ -10,12 +10,11 @@ import {
   Badge,
   Pagination,
   Group,
-  Loader,
-  Text,
   Anchor,
 } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 
+import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { useOrders } from "@/hooks/order/order.hooks";
 import {
   ORDER_STATUS_GROUP_LABELS,
@@ -65,7 +64,7 @@ export function OrderList() {
     "asc" | "desc",
   ];
 
-  const { data, isLoading } = useOrders({
+  const { data, isLoading, isError, error, refetch } = useOrders({
     page,
     limit: 10,
     ...(search ? { search } : {}),
@@ -116,74 +115,79 @@ export function OrderList() {
         />
       </Group>
 
-      {isLoading ? (
-        <Group justify="center" py="xl">
-          <Loader color="var(--color-primary)" />
-        </Group>
-      ) : data?.data.length === 0 ? (
-        <Text c="var(--color-text-secondary)" ta="center" py="xl">
-          Belum ada order.
-        </Text>
-      ) : (
-        <Table>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>No. Order</Table.Th>
-              <Table.Th>Tanggal Pickup</Table.Th>
-              <Table.Th>Status</Table.Th>
-              <Table.Th>Total</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
+      <AsyncStateView
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
+        data={data}
+        onRetry={() => refetch()}
+        isEmpty={(res) => res.data.length === 0}
+        emptyTitle="Belum ada order"
+        emptyDescription="Order yang kamu buat akan muncul di sini."
+      >
+        {(res) => (
+          <>
+            <Table>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>No. Order</Table.Th>
+                  <Table.Th>Tanggal Pickup</Table.Th>
+                  <Table.Th>Status</Table.Th>
+                  <Table.Th>Total</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
 
-          <Table.Tbody>
-            {data?.data.map((order) => (
-              <Table.Tr key={order.id}>
-                <Table.Td>
-                  <Anchor
-                    component={Link}
-                    href={`/pesanan/${order.id}`}
-                    size="sm"
-                    c="var(--color-primary)"
-                  >
-                    {order.orderCode}
-                  </Anchor>
-                </Table.Td>
+              <Table.Tbody>
+                {res.data.map((order) => (
+                  <Table.Tr key={order.id}>
+                    <Table.Td>
+                      <Anchor
+                        component={Link}
+                        href={`/pesanan/${order.id}`}
+                        size="sm"
+                        c="var(--color-primary)"
+                      >
+                        {order.orderCode}
+                      </Anchor>
+                    </Table.Td>
 
-                <Table.Td>
-                  {new Date(order.pickupDate).toLocaleDateString("id-ID")}
-                </Table.Td>
+                    <Table.Td>
+                      {new Date(order.pickupDate).toLocaleDateString("id-ID")}
+                    </Table.Td>
 
-                <Table.Td>
-                  <Badge
-                    style={{
-                      backgroundColor: "var(--color-primary-light)",
-                      color: "var(--color-primary)",
-                    }}
-                  >
-                    {order.customerStatusLabel}
-                  </Badge>
-                </Table.Td>
+                    <Table.Td>
+                      <Badge
+                        style={{
+                          backgroundColor: "var(--color-primary-light)",
+                          color: "var(--color-primary)",
+                        }}
+                      >
+                        {order.customerStatusLabel}
+                      </Badge>
+                    </Table.Td>
 
-                <Table.Td>
-                  {order.totalAmount !== null
-                    ? `Rp${order.totalAmount.toLocaleString("id-ID")}`
-                    : "-"}
-                </Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      )}
+                    <Table.Td>
+                      {order.totalAmount !== null
+                        ? `Rp${order.totalAmount.toLocaleString("id-ID")}`
+                        : "-"}
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
 
-      {data && data.meta.totalPage > 1 && (
-        <Group justify="center">
-          <Pagination
-            value={page}
-            onChange={setPage}
-            total={data.meta.totalPage}
-          />
-        </Group>
-      )}
+            {res.meta.totalPage > 1 && (
+              <Group justify="center">
+                <Pagination
+                  value={page}
+                  onChange={setPage}
+                  total={res.meta.totalPage}
+                />
+              </Group>
+            )}
+          </>
+        )}
+      </AsyncStateView>
     </Stack>
   );
 }

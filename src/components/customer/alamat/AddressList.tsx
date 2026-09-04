@@ -1,20 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { Stack, Text, Button, Modal, Loader, Alert, Group } from "@mantine/core";
+import { Stack, Text, Button, Modal, Alert } from "@mantine/core";
 import { modals } from "@mantine/modals";
 
 import { AddressCard } from "./AddressCard";
 import { AddressForm } from "./AddressForm";
-import type { Address, AddressFormSubmitValues, AddressFormValues } from "@/types/api/address.types";
-import { useAddresses, useCreateAddress, useDeleteAddress, useSetPrimaryAddress, useUpdateAddress } from "@/hooks/address.hooks";
+import { AsyncStateView } from "@/components/ui/AsyncStateView";
+import type { Address, AddressFormSubmitValues } from "@/types/api/address.types";
 import { notifications } from "@mantine/notifications";
 import { ApiError } from "@/lib/api/axios";
+import { useAddresses, useCreateAddress, useDeleteAddress, useSetPrimaryAddress, useUpdateAddress } from "@/hooks/addressCustomer/address.hooks";
 
 const MAX_ADDRESSES = 5; // samain sama batas backend (address.service.ts)
 
 export function AddressList() {
-  const { data: addresses, isLoading } = useAddresses();
+  const {
+    data: addresses,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useAddresses();
   const [modalMode, setModalMode] = useState<"create" | "edit" | null>(null);
   const [editingAddress, setEditingAddress] = useState<Address | undefined>(undefined);
 
@@ -94,7 +101,7 @@ export function AddressList() {
     title: "Hapus alamat?",
     children: (
       <Text size="sm">
-        Alamat "{address.label || address.formattedAddress}" akan dihapus. Order
+        Alamat &quot;{address.label || address.formattedAddress}&quot; akan dihapus. Order
         yang sudah berjalan tidak akan terpengaruh.
       </Text>
     ),
@@ -125,45 +132,50 @@ export function AddressList() {
   });
 }
 
-  if (isLoading) {
-    return (
-      <Group justify="center" py="xl">
-        <Loader color="var(--color-primary)" />
-      </Group>
-    );
-  }
-
-  const isAtLimit = (addresses?.length ?? 0) >= MAX_ADDRESSES;
   const mutation = modalMode === "edit" ? updateMutation : createMutation;
 
   return (
     <Stack gap="md">
-      {addresses?.length === 0 && (
-        <Text size="sm" c="var(--color-text-secondary)">
-          Belum ada alamat tersimpan.
-        </Text>
-      )}
+      <AsyncStateView
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
+        data={addresses}
+        onRetry={() => refetch()}
+        isEmpty={(data) => data.length === 0}
+        emptyTitle="Belum ada alamat"
+        emptyDescription="Tambahkan alamat pertama kamu untuk mulai pesan laundry."
+        emptyAction={{ label: "+ Tambah Alamat", onClick: openCreateModal }}
+      >
+        {(addressList) => {
+          const isAtLimit = addressList.length >= MAX_ADDRESSES;
 
-      {addresses?.map((address) => (
-        <AddressCard
-          key={address.id}
-          address={address}
-          onEdit={() => openEditModal(address)}
-          onDelete={() => handleDelete(address)}
-          onSetPrimary={() => setPrimaryMutation.mutate(address.id)}
-          isSettingPrimary={setPrimaryMutation.isPending}
-        />
-      ))}
+          return (
+            <Stack gap="md">
+              {addressList.map((address) => (
+                <AddressCard
+                  key={address.id}
+                  address={address}
+                  onEdit={() => openEditModal(address)}
+                  onDelete={() => handleDelete(address)}
+                  onSetPrimary={() => setPrimaryMutation.mutate(address.id)}
+                  isSettingPrimary={setPrimaryMutation.isPending}
+                />
+              ))}
 
-      {isAtLimit ? (
-        <Alert style={{ backgroundColor: "var(--color-primary-light)", color: "var(--color-primary)" }}>
-          Maksimal {MAX_ADDRESSES} alamat tersimpan. Hapus salah satu untuk menambah yang baru.
-        </Alert>
-      ) : (
-        <Button variant="outline" onClick={openCreateModal}>
-          + Tambah Alamat
-        </Button>
-      )}
+              {isAtLimit ? (
+                <Alert style={{ backgroundColor: "var(--color-primary-light)", color: "var(--color-primary)" }}>
+                  Maksimal {MAX_ADDRESSES} alamat tersimpan. Hapus salah satu untuk menambah yang baru.
+                </Alert>
+              ) : (
+                <Button variant="outline" onClick={openCreateModal}>
+                  + Tambah Alamat
+                </Button>
+              )}
+            </Stack>
+          );
+        }}
+      </AsyncStateView>
 
       <Modal
         opened={modalMode !== null}

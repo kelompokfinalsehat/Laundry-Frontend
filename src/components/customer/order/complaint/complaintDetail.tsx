@@ -1,42 +1,92 @@
 "use client";
 
 import { useState } from "react";
-import { Paper, Stack, Text, Badge, Image, Group, Modal } from "@mantine/core";
-import { COMPLAINT_CATEGORY_LABELS, type Complaint } from "@/types/api/orders.types";
+import {
+  Paper,
+  Stack,
+  Text,
+  Badge,
+  Image,
+  Group,
+  Modal,
+} from "@mantine/core";
+import {
+  COMPLAINT_CATEGORY_LABELS,
+  type Complaint,
+} from "@/types/api/orders.types";
 
-const STATUS_LABELS: Record<Complaint["status"], string> = {
-  OPEN: "Menunggu Ditinjau",
-  IN_REVIEW: "Sedang Ditinjau",
-  RESOLVED: "Selesai",
-  REJECTED: "Ditolak",
+const STATUS_CONFIG: Record<
+  Complaint["status"],
+  {
+    label: string;
+    bg: string;
+    text: string;
+  }
+> = {
+  OPEN: {
+    label: "Menunggu Ditinjau",
+    bg: "var(--color-primary-light)",
+    text: "var(--color-primary)",
+  },
+  IN_REVIEW: {
+    label: "Sedang Ditinjau",
+    bg: "var(--color-primary-light)",
+    text: "var(--color-primary)",
+  },
+  RESOLVED: {
+    label: "Selesai",
+    bg: "var(--color-success-light, #e6f4ea)",
+    text: "var(--color-success, #1a7f37)",
+  },
+  REJECTED: {
+    label: "Ditolak",
+    bg: "var(--color-error-light)",
+    text: "var(--color-error)",
+  },
 };
 
-const STATUS_COLORS: Record<Complaint["status"], { bg: string; text: string }> = {
-  OPEN: { bg: "var(--color-primary-light)", text: "var(--color-primary)" },
-  IN_REVIEW: { bg: "var(--color-primary-light)", text: "var(--color-primary)" },
-  RESOLVED: { bg: "var(--color-success-light, #e6f4ea)", text: "var(--color-success, #1a7f37)" },
-  REJECTED: { bg: "var(--color-error-light)", text: "var(--color-error)" },
+const DEFAULT_STATUS_CONFIG = {
+  label: "Status Tidak Diketahui",
+  bg: "var(--color-surface)",
+  text: "var(--color-text-secondary)",
 };
 
-export function ComplaintDetail({ complaint }: { complaint: Complaint }) {
+export function ComplaintDetail({
+  complaint,
+}: {
+  complaint: Complaint;
+}) {
   const [isPhotoOpen, setIsPhotoOpen] = useState(false);
-  const color = STATUS_COLORS[complaint.status];
+
+  const statusConfig =
+    STATUS_CONFIG[complaint.status] ?? DEFAULT_STATUS_CONFIG;
 
   return (
     <Paper withBorder p="md" radius="md">
       <Stack gap="xs">
         <Group justify="space-between">
-          <Text fw={600} style={{ color: "var(--color-text-primary)" }}>
+          <Text
+            fw={600}
+            style={{ color: "var(--color-text-primary)" }}
+          >
             Komplain Kamu
           </Text>
-          <Badge style={{ backgroundColor: color.bg, color: color.text }}>
-            {STATUS_LABELS[complaint.status]}
+
+          <Badge
+            style={{
+              backgroundColor: statusConfig.bg,
+              color: statusConfig.text,
+            }}
+          >
+            {statusConfig.label}
           </Badge>
         </Group>
 
         <Text size="sm" c="var(--color-text-secondary)">
-          Kategori: {COMPLAINT_CATEGORY_LABELS[complaint.category]}
+          Kategori:{" "}
+          {COMPLAINT_CATEGORY_LABELS[complaint.category]}
         </Text>
+
         <Text size="sm" c="var(--color-text-secondary)">
           {complaint.description}
         </Text>
@@ -52,17 +102,37 @@ export function ComplaintDetail({ complaint }: { complaint: Complaint }) {
             onClick={() => setIsPhotoOpen(true)}
             style={{ cursor: "pointer" }}
           />
-          <Text size="xs" c="var(--color-text-secondary)" mt={4}>
+
+          <Text
+            size="xs"
+            c="var(--color-text-secondary)"
+            mt={4}
+          >
             Klik foto untuk memperbesar.
           </Text>
         </div>
 
         {complaint.responseNote && (
-          <Paper withBorder p="sm" radius="md" style={{ backgroundColor: "var(--color-surface)" }}>
-            <Text size="xs" fw={600} c="var(--color-text-secondary)" mb={4}>
+          <Paper
+            withBorder
+            p="sm"
+            radius="md"
+            style={{
+              backgroundColor: "var(--color-surface)",
+            }}
+          >
+            <Text
+              size="xs"
+              fw={600}
+              c="var(--color-text-secondary)"
+              mb={4}
+            >
               Tanggapan Tim Kami
             </Text>
-            <Text size="sm">{complaint.responseNote}</Text>
+
+            <Text size="sm">
+              {complaint.responseNote}
+            </Text>
           </Paper>
         )}
       </Stack>
