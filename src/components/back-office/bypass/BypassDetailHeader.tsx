@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Group, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Badge, Group, Stack, Text, Title } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { BypassDetail } from "@/types/api/bypass.types";
@@ -25,34 +25,26 @@ const STATUS_COLOR: Record<BypassStatus, string> = {
 export function BypassDetailHeader({ bypass }: Props) {
   const router = useRouter();
   return (
-    <Stack gap="xs">
-      <Group gap="xs">
-        <IconArrowLeft
-          size={20}
-          style={{
-            cursor: "pointer",
-          }}
-          onClick={() => router.back()}
-        />
+    <Group justify="space-between" align="center">
+      <Group gap="md"> 
+        <ActionIcon variant="default" onClick={() => router.back()} aria-label="Kembali">
+          <IconArrowLeft size={18} />
+        </ActionIcon>
 
-        <Text size="sm" c="var(--color-text-secondary)">
-          Kembali ke Permintaan Bypass
-        </Text>
-      </Group>
-
-      <Group justify="space-between" align="flex-start">
-        <div>
-          <Title order={2}>Permintaan Bypass</Title>
-
-          <Text size="sm" c="var(--color-text-secondary)" mt={4}>
+        <Stack gap={2}>
+          <Text fw={700} size="xl" c="var(--color-text-primary)">
             {bypass.order.orderCode}
           </Text>
-        </div>
 
-        <Badge color={STATUS_COLOR[bypass.status]} variant="light" size="lg">
-          {STATUS_LABEL[bypass.status]}
-        </Badge>
+          <Text size="sm" c="var(--color-text-secondary)">
+            Pengajuan bypass oleh {bypass.worker.name}
+          </Text>
+        </Stack>
       </Group>
-    </Stack>
+
+      <Badge color={STATUS_COLOR[bypass.status]} variant="light">
+        {STATUS_LABEL[bypass.status]}
+      </Badge>
+    </Group>
   );
 }
