@@ -2,7 +2,7 @@
 
 import { Button, Group, Text, Title } from "@mantine/core";
 import Image from "next/image";
-import heroImage from "@/../public/images/popomaskot.png";
+import heroImage from "@/../public/images/popoTeam.png";
 import Link from "next/link";
 
 const STATS = [
@@ -148,7 +148,10 @@ export default function HeroSection() {
           fill
           sizes="(max-width: 768px) 100vw, 40vw"
           priority
-          style={{ objectFit: "contain" }}
+          style={{
+            objectFit: "contain",
+            borderRadius: "24px",
+          }}
         />
       </div>
     </div>

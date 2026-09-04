@@ -4,10 +4,6 @@ import { schemaResolver, useForm } from "@mantine/form";
 import type { WorkerActiveAssigned, WorkerBypassPayload, WorkerValidatePayload } from "@/types/api/worker.types";
 import { workerQuantitySchema } from "@/lib/validation/worker.validation";
 
-
-
-
-
 type WorkerAssignedTaskProps = {
   assignment: WorkerActiveAssigned;
   isValidating: boolean;
@@ -117,7 +113,7 @@ export function WorkerAssignedTask({
             Validasi & Mulai Proses
           </Button>
 
-          {quantityMismatch && assignment.canRequestBypass && (
+          {assignment.canRequestBypass && (
             <Button type="button" variant="light" color="orange" loading={isRequestingBypass} disabled={isValidating} onClick={handleBypass}>
               Ajukan Bypass
             </Button>
