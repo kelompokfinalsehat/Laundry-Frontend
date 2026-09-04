@@ -17,6 +17,7 @@ import { useOutlets } from "./outlet.hooks";
 import { filterOutletAttendanceSchema, FilterOutletAttendanceValues } from "@/lib/validation/employee.validation";
 import { SortOrder } from "@/types/api";
 import { schemaResolver, useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
 
 export const EMPLOYEES_QUERY_KEY = ["employees"];
 const employeeApi = new EmployeeApi();
@@ -122,6 +123,13 @@ export function useAssignEmployee() {
         queryKey: [...EMPLOYEES_QUERY_KEY, "detail", variables.employeeId],
       });
     },
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal memindahkan karyawan.",
+        color: "red"
+      })
+    }
   });
 }
 
