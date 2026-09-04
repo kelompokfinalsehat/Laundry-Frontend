@@ -12,7 +12,6 @@ export function useLocationPermission() {
   const [status, setStatus] = useState<LocationPermissionStatus>("unknown");
 
   const requestPermission = useCallback(() => {
-    console.log("requestPermission dipanggil"); // cek di console browser
     if (!("geolocation" in navigator)) {
       setStatus("unsupported");
       return;
@@ -20,11 +19,9 @@ export function useLocationPermission() {
 
     navigator.geolocation.getCurrentPosition(
       () => {
-        console.log("granted");
         setStatus("granted");
       },
       (err) => {
-        console.log("denied", err); // lihat error code-nya
         setStatus("denied");
       },
       { timeout: 8000 },

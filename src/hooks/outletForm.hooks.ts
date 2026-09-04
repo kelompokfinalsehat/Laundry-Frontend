@@ -1,11 +1,27 @@
-import { editOutletSchema, OutletFormValues, outletSchema } from "@/lib/validation/outlet.validation";
+import {
+  editOutletSchema,
+  OutletFormValues,
+  outletSchema,
+} from "@/lib/validation/outlet.validation";
 import { useForm } from "@mantine/form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useCities, useDistrict, usePreviewLocation, useProvinces, useSubDistrict } from "./address.hooks";
+import {
+  useCities,
+  useDistrict,
+  usePreviewLocation,
+  useProvinces,
+  useSubDistrict,
+} from "./addressCustomer/address.hooks";
 import { previewLocationSchema } from "@/lib/validation/address.validation";
 
-export function useOutletFormHooks({ initialValues, mode }: { initialValues: OutletFormValues; mode: "create" | "edit" }) {
+export function useOutletFormHooks({
+  initialValues,
+  mode,
+}: {
+  initialValues: OutletFormValues;
+  mode: "create" | "edit";
+}) {
   const router = useRouter();
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isEditingLocation, setIsEditingLocation] = useState(mode === "create");
@@ -15,22 +31,26 @@ export function useOutletFormHooks({ initialValues, mode }: { initialValues: Out
     initialValues, // Otomatis terisi saat pertama kali render/remount
 
     validate: (values) => {
-      const schema = mode === "edit" && !isEditingLocation ? editOutletSchema : outletSchema;
+      const schema =
+        mode === "edit" && !isEditingLocation ? editOutletSchema : outletSchema;
       const result = schema.safeParse(values);
 
       if (result.success) {
         return {};
       }
 
-      return result.error.issues.reduce<Record<string, string>>((errors, issue) => {
-        const field = issue.path[0];
+      return result.error.issues.reduce<Record<string, string>>(
+        (errors, issue) => {
+          const field = issue.path[0];
 
-        if (typeof field === "string" && !errors[field]) {
-          errors[field] = issue.message;
-        }
+          if (typeof field === "string" && !errors[field]) {
+            errors[field] = issue.message;
+          }
 
-        return errors;
-      }, {});
+          return errors;
+        },
+        {},
+      );
     },
 
     validateInputOnChange: true,
@@ -39,9 +59,14 @@ export function useOutletFormHooks({ initialValues, mode }: { initialValues: Out
   // Hapus useEffect yang memanggil form.setValues(initialValues)
 
   const { data: provinces, isLoading: isLoadingProvinces } = useProvinces();
-  const { data: cities, isLoading: isLoadingCities } = useCities(form.values.provinceId || null);
-  const { data: districts, isLoading: isLoadingDistricts } = useDistrict(form.values.cityId || null);
-  const { data: subDistricts, isLoading: isLoadingSubDistricts } = useSubDistrict(form.values.districtId || null);
+  const { data: cities, isLoading: isLoadingCities } = useCities(
+    form.values.provinceId || null,
+  );
+  const { data: districts, isLoading: isLoadingDistricts } = useDistrict(
+    form.values.cityId || null,
+  );
+  const { data: subDistricts, isLoading: isLoadingSubDistricts } =
+    useSubDistrict(form.values.districtId || null);
   const previewLocation = usePreviewLocation();
 
   const handleProvinceChange = (value: string | null) => {
@@ -139,8 +164,14 @@ export function useOutletFormHooks({ initialValues, mode }: { initialValues: Out
         streetDetail: form.values.streetDetail,
       });
 
-      if (!result.found || result.latitude === undefined || result.longitude === undefined) {
-        setLocationError("Lokasi tidak ditemukan. Periksa kembali alamat yang dimasukkan.");
+      if (
+        !result.found ||
+        result.latitude === undefined ||
+        result.longitude === undefined
+      ) {
+        setLocationError(
+          "Lokasi tidak ditemukan. Periksa kembali alamat yang dimasukkan.",
+        );
         return;
       }
 
@@ -149,7 +180,9 @@ export function useOutletFormHooks({ initialValues, mode }: { initialValues: Out
         longitude: result.longitude,
       });
     } catch (error) {
-      setLocationError(error instanceof Error ? error.message : "Gagal mencari lokasi.");
+      setLocationError(
+        error instanceof Error ? error.message : "Gagal mencari lokasi.",
+      );
     }
   };
 
@@ -169,7 +202,9 @@ export function useOutletFormHooks({ initialValues, mode }: { initialValues: Out
     form.clearErrors();
   };
 
-  const hasPosition = typeof form.values.latitude === "number" && typeof form.values.longitude === "number";
+  const hasPosition =
+    typeof form.values.latitude === "number" &&
+    typeof form.values.longitude === "number";
 
   return {
     form,

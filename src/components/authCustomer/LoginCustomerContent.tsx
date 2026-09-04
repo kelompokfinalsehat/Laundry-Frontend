@@ -1,7 +1,7 @@
 "use client";
 
-import { ForgotPasswordForm } from "@/components/authCustomer/ForgotPasswordForm";
 import {
+  Alert,
   Anchor,
   Center,
   Group,
@@ -11,13 +11,21 @@ import {
   Title,
 } from "@mantine/core";
 import { IconChevronLeft } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function ForgotPasswordPage() {
+import { LoginCustomerForm } from "@/components/authCustomer/LoginCustomerForm";
+
+export default function LoginPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const justVerified = searchParams.get("verified") === "1";
+
+  const intendedUrl =
+    searchParams.get("intended_url") ?? undefined;
 
   function handleBack() {
-    router.push("/login");
+    router.push("/");
   }
 
   return (
@@ -64,19 +72,31 @@ export default function ForgotPasswordPage() {
                   color: "var(--color-text-primary)",
                 }}
               >
-                Lupa Kata Sandi?
+                Masuk ke Popo Laundry
               </Title>
 
               <Text
                 size="sm"
                 c="var(--color-text-secondary)"
               >
-                Jangan khawatir! Masukkan email kamu di bawah untuk mengatur
-                ulang kata sandi.
+                Masukkan email dan password kamu.
               </Text>
             </div>
 
-            <ForgotPasswordForm />
+            {justVerified && (
+              <Alert
+                style={{
+                  backgroundColor: "var(--color-success-light)",
+                  color: "var(--color-success)",
+                }}
+              >
+                Email berhasil diverifikasi. Silakan masuk.
+              </Alert>
+            )}
+
+            <LoginCustomerForm
+              intendedUrl={intendedUrl}
+            />
           </Stack>
         </Paper>
       </Stack>

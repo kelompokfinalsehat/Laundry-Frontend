@@ -11,6 +11,7 @@ declare global {
             client_id: string;
             callback: (response: { credential: string }) => void;
           }) => void;
+
           renderButton: (
             parent: HTMLElement,
             options: {
@@ -18,7 +19,7 @@ declare global {
               size?: "large" | "medium" | "small";
               width?: number;
               text?: "signin_with" | "signup_with" | "continue_with";
-            }
+            },
           ) => void;
         };
       };
@@ -34,51 +35,108 @@ type GoogleSignInButtonProps = {
   text?: "signin_with" | "signup_with";
 };
 
-export function GoogleSignInButton({ onIdToken, text = "signin_with" }: GoogleSignInButtonProps) {
+export function GoogleSignInButton({
+  onIdToken,
+  text = "signin_with",
+}: GoogleSignInButtonProps) {
   const buttonRef = useRef<HTMLDivElement>(null);
+  const callbackRef = useRef(onIdToken);
 
   useEffect(() => {
-    if (!GOOGLE_CLIENT_ID) {
-      console.error("NEXT_PUBLIC_GOOGLE_CLIENT_ID belum diset di .env.local");
+    callbackRef.current = onIdToken;
+  }, [onIdToken]);
+
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID || !buttonRef.current) {
       return;
     }
 
-    function renderButton() {
-      if (!window.google || !buttonRef.current) return;
+    let cancelled = false;
+
+    const renderButton = () => {
+      if (
+        cancelled ||
+        !window.google?.accounts?.id ||
+        !buttonRef.current
+      ) {
+        return;
+      }
+
+      const container = buttonRef.current;
+
+      // Hapus button sebelumnya agar tidak duplicate
+      container.innerHTML = "";
+
+      // Lebar mengikuti container, maksimal 356px
+      const width = Math.min(container.clientWidth, 356);
 
       window.google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID!,
-        callback: (response) => onIdToken(response.credential),
+        client_id: GOOGLE_CLIENT_ID,
+        callback: (response) => {
+          callbackRef.current(response.credential);
+        },
       });
 
-      window.google.accounts.id.renderButton(buttonRef.current, {
+      window.google.accounts.id.renderButton(container, {
         theme: "outline",
         size: "large",
-        width: 356,
+        width,
         text,
       });
-    }
+    };
 
-    // Script GSI cuma perlu dimuat sekali — kalau udah ada (dari halaman lain
-    // yang sempat kepanggil sebelumnya), langsung render tanpa nunggu load lagi.
+    // Google GSI sudah tersedia
     if (window.google?.accounts?.id) {
-      renderButton();
-      return;
+      // Tunggu layout selesai supaya clientWidth sudah benar
+      requestAnimationFrame(renderButton);
+
+      return () => {
+        cancelled = true;
+      };
     }
 
-    const existingScript = document.querySelector(`script[src="${GSI_SCRIPT_SRC}"]`);
+    // Cek apakah script sedang dimuat oleh component lain
+    const existingScript =
+      document.querySelector<HTMLScriptElement>(
+        `script[src="${GSI_SCRIPT_SRC}"]`,
+      );
+
     if (existingScript) {
       existingScript.addEventListener("load", renderButton);
-      return () => existingScript.removeEventListener("load", renderButton);
+
+      return () => {
+        cancelled = true;
+        existingScript.removeEventListener(
+          "load",
+          renderButton,
+        );
+      };
     }
 
+    // Load Google Identity Services
     const script = document.createElement("script");
+
     script.src = GSI_SCRIPT_SRC;
     script.async = true;
     script.defer = true;
     script.onload = renderButton;
-    document.body.appendChild(script);
-  }, [onIdToken, text]);
 
-  return <div ref={buttonRef} />;
+    document.head.appendChild(script);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [text]);
+
+  return (
+    <div
+      ref={buttonRef}
+      style={{
+        width: "100%",
+        maxWidth: 356,
+        margin: "0 auto",
+        overflow: "hidden",
+      }}
+    />
+  );
 }
