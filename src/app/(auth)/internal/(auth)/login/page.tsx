@@ -1,6 +1,6 @@
 "use client";
 
-import { Paper, Stack } from "@mantine/core";
+import { Center, Paper, Stack } from "@mantine/core";
 import { EmployeeLoginForm } from "@/components/internalAuth/EmployeeLoginForm";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "next/navigation";
@@ -12,8 +12,11 @@ export default function EmployeeLoginPage() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
 
+  const isBackOfficeUser =
+    !!user && backOfficeRole.includes(user.role);
+
   useEffect(() => {
-    if (!user || !backOfficeRole.includes(user.role)) {
+    if (!isBackOfficeUser) {
       return;
     }
 
@@ -22,13 +25,29 @@ export default function EmployeeLoginPage() {
         ? "/internal/outlet-admin/dashboard"
         : "/internal/super-admin/dashboard"
     );
-  }, [user, router]);
+  }, [isBackOfficeUser, user, router]);
+
+  if (isBackOfficeUser) {
+    return (
+      <Center mih="100vh">
+        <div />
+      </Center>
+    );
+  }
 
   return (
-    <Paper maw={420} mx="auto" mt={64} p={32} radius="md" withBorder>
-      <Stack gap="md">
-        <EmployeeLoginForm />
-      </Stack>
-    </Paper>
+    <Center mih="100vh" px="md">
+      <Paper
+        w="100%"
+        maw={420}
+        p={32}
+        radius="md"
+        withBorder
+      >
+        <Stack gap="md">
+          <EmployeeLoginForm />
+        </Stack>
+      </Paper>
+    </Center>
   );
 }

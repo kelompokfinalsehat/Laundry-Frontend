@@ -12,21 +12,19 @@ export default function AcceptInvitationPage() {
         </Center>
       }
     >
+    <Center mih="100vh" px="md">
       <Paper
+        w="100%"
         maw={420}
-        mx="auto"
-        mt={64}
         p={32}
         radius="md"
         withBorder
-        style={{
-          backgroundColor: "var(--color-surface)",
-        }}
       >
         <Stack gap="md">
           <AcceptInvitationForm />
         </Stack>
       </Paper>
+      </Center>
     </Suspense>
   );
 }
