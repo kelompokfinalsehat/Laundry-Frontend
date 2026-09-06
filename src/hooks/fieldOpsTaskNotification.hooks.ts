@@ -6,7 +6,7 @@ import { WorkerApi } from "@/lib/api/worker.api";
 import { DRIVER_AVAILABLE_QUERY_KEY } from "@/hooks/driver.hooks";
 import { WORKER_AVAILABLE_QUERY_KEY } from "@/hooks/worker.hooks";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 
 type FieldOpsRole = "Driver" | "Worker";
@@ -22,9 +22,10 @@ const workerApi = new WorkerApi();
 const POLLING_INTERVAL = 30_000;
 
 export function useFieldOpsTaskNotification({ role, onNewTask }: UseFieldOpsTaskNotificationProps) {
+  const queryClient = useQueryClient();
+  const availableQuery = role === "Driver" ? DRIVER_AVAILABLE_QUERY_KEY : WORKER_AVAILABLE_QUERY_KEY;
   // Menyimpan createdAt terbaru yang sudah pernah difetch simpan sebelumnya.
   const knownTaskTimeRef = useRef<string | null>(null);
-
   // Menandai bahwa response pertama sudah pernah dijadikan baseline.
   const hasBaselineRef = useRef(false);
 
@@ -88,6 +89,9 @@ export function useFieldOpsTaskNotification({ role, onNewTask }: UseFieldOpsTask
       knownTaskTimeRef.current = incomingCreatedAt;
 
       onNewTask();
+      void queryClient.invalidateQueries({
+        queryKey: availableQuery,
+      });
 
       return;
     }
@@ -105,8 +109,11 @@ export function useFieldOpsTaskNotification({ role, onNewTask }: UseFieldOpsTask
       knownTaskTimeRef.current = incomingCreatedAt;
 
       onNewTask();
+      void queryClient.invalidateQueries({
+        queryKey: availableQuery,
+      });
     }
-  }, [notificationQuery.data, onNewTask]);
+  }, [availableQuery, notificationQuery.data, onNewTask, queryClient]);
 
   return notificationQuery;
 }
