@@ -80,6 +80,7 @@ export function useActive() {
   return useQuery({
     queryKey: DRIVER_ACTIVE_QUERY_KEY,
     queryFn: () => driverApi.getActive(),
+    refetchInterval: 60_000,
   });
 }
 
@@ -137,7 +138,7 @@ export function useCompleteDelivery() {
         message: "Tugas telah berhasil diselesaikan.",
         color: "green",
       });
-      await queryClient.invalidateQueries({ queryKey: DRIVER_QUERY_KEY }); // invalidatenya ke key utama karena setelah complete otomatis trigger cache historylist.
+      await queryClient.invalidateQueries({ queryKey: DRIVER_QUERY_KEY, }); // invalidatenya ke key utama karena setelah complete otomatis trigger cache historylist.
     },
     onError: (error: Error) => {
       notifications.show({
