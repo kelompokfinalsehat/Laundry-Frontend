@@ -137,7 +137,8 @@ export function DriverAvailableAssignments() {
                     <Button
                       fullWidth
                       radius="md"
-                      loading={claim.isPending}
+                      loading={claim.isPending && claim.variables === assignment.id}
+                      disabled={claim.isPending && claim.variables !== assignment.id}
                       style={{
                         backgroundColor: "var(--color-accent)",
                         color: "var(--color-text-on-accent)",
