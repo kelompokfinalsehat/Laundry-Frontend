@@ -64,10 +64,8 @@ export function GoogleSignInButton({
 
       const container = buttonRef.current;
 
-      // Hapus button sebelumnya agar tidak duplicate
       container.innerHTML = "";
 
-      // Lebar mengikuti container, maksimal 356px
       const width = Math.min(container.clientWidth, 356);
 
       window.google.accounts.id.initialize({
@@ -85,9 +83,8 @@ export function GoogleSignInButton({
       });
     };
 
-    // Google GSI sudah tersedia
     if (window.google?.accounts?.id) {
-      // Tunggu layout selesai supaya clientWidth sudah benar
+
       requestAnimationFrame(renderButton);
 
       return () => {
@@ -95,7 +92,6 @@ export function GoogleSignInButton({
       };
     }
 
-    // Cek apakah script sedang dimuat oleh component lain
     const existingScript =
       document.querySelector<HTMLScriptElement>(
         `script[src="${GSI_SCRIPT_SRC}"]`,
