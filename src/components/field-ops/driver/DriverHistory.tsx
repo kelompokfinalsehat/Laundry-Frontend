@@ -182,7 +182,7 @@ export function DriverHistory() {
                   const taskInfo = TASK_TYPE_INFO[item.taskType];
 
                   return (
-                    <Card key={item.id} component="link" href={`/internal/driver/riwayat/${item.id}`} withBorder radius="lg" p="lg">
+                    <Card key={item.id} component={Link} href={`/internal/driver/riwayat/${item.id}`} withBorder radius="lg" p="lg">
                       <Stack gap="md">
                         {/* Baris atas: label kiri, tanggal kanan */}
                         <Grid align="center">
@@ -217,7 +217,6 @@ export function DriverHistory() {
                             </Group>
                           </Grid.Col>
                         </Grid>
-                        <Button></Button>
                       </Stack>
                     </Card>
                   );

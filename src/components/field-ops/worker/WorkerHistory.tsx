@@ -12,6 +12,7 @@ import { MonthPickerInput } from "@mantine/dates";
 import { IconArrowNarrowDown, IconArrowNarrowUp, IconCalendarMonth, IconChecklist, IconClock } from "@tabler/icons-react";
 
 import dayjs from "dayjs";
+import Link from "next/link";
 
 const STATION_INFO: Record<
   StationType,
@@ -193,7 +194,7 @@ export function WorkerHistory() {
                   const stationInfo = STATION_INFO[item.stationType];
 
                   return (
-                    <Card key={item.id} component="link" href={`/internal/worker/riwayat/${item.id}`} withBorder radius="lg" p="lg">
+                    <Card key={item.id} component={Link} href={`/internal/worker/riwayat/${item.id}`} withBorder radius="lg" p="lg">
                       <Stack gap="md">
                         {/* Baris atas: station kiri, tanggal kanan */}
                         <Grid align="center">
