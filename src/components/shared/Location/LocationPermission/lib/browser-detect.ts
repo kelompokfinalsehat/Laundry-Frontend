@@ -6,7 +6,6 @@ export function detectBrowser(): BrowserName {
 
   const ua = navigator.userAgent;
 
-  // urutan pengecekan penting: Edge & Chrome sama-sama punya "Chrome" di UA
   if (/Edg\//.test(ua)) return "edge";
   if (/Chrome\//.test(ua) && !/Edg\//.test(ua)) return "chrome";
   if (/Firefox\//.test(ua)) return "firefox";
