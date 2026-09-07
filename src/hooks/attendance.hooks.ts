@@ -18,6 +18,7 @@ export function useAttendanceStatus() {
   return useQuery({
     queryKey: ATTENDANCE_STATUS_QUERY_KEY,
     queryFn: () => attendanceApi.getStatus(),
+    refetchOnMount:'always'
   });
 }
 

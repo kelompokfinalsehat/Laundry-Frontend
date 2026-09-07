@@ -1,13 +1,15 @@
-import { Paper, Stack } from "@mantine/core";
+import { Center, Paper, Stack } from "@mantine/core";
 
 import { EmployeeForgotPasswordForm } from "@/components/internalAuth/EmployeeForgotPasswordForm";
 
 export default function EmployeeForgotPasswordPage() {
   return (
-    <Paper maw={420} mx="auto" mt={64} p={32} radius="md" withBorder>
-      <Stack gap="md">
-        <EmployeeForgotPasswordForm />
-      </Stack>
-    </Paper>
+    <Center mih="100vh" px="md">
+      <Paper w="100%" maw={420} p={32} radius="md" withBorder>
+        <Stack gap="md">
+          <EmployeeForgotPasswordForm />
+        </Stack>
+      </Paper>
+    </Center>
   );
 }

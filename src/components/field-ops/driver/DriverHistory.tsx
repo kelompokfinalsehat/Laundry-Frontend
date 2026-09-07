@@ -4,10 +4,11 @@ import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { useHistoryList } from "@/hooks/driver.hooks";
 import type { TaskType } from "@/types/api/driver.types";
 import { formatFieldOpsDate, formatFieldOpsTime } from "@/utils/fieldops.date";
-import { ActionIcon, Badge, Card, Grid, Group, Pagination, Paper, Select, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
+import { ActionIcon, Badge, Button, Card, Grid, Group, Pagination, Paper, Select, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
 import { MonthPickerInput } from "@mantine/dates";
 import { IconArrowNarrowDown, IconArrowNarrowUp, IconCalendarMonth, IconChecklist, IconClock } from "@tabler/icons-react";
 import dayjs from "dayjs";
+import Link from "next/link";
 
 const TASK_TYPE_INFO: Record<
   TaskType,
@@ -181,7 +182,7 @@ export function DriverHistory() {
                   const taskInfo = TASK_TYPE_INFO[item.taskType];
 
                   return (
-                    <Card key={item.id} withBorder radius="lg" p="lg">
+                    <Card key={item.id} component="link" href={`/internal/driver/riwayat/${item.id}`} withBorder radius="lg" p="lg">
                       <Stack gap="md">
                         {/* Baris atas: label kiri, tanggal kanan */}
                         <Grid align="center">
@@ -216,6 +217,7 @@ export function DriverHistory() {
                             </Group>
                           </Grid.Col>
                         </Grid>
+                        <Button></Button>
                       </Stack>
                     </Card>
                   );
