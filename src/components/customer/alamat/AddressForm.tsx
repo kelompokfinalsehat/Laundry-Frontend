@@ -113,6 +113,22 @@ export function AddressForm({
           }}
         />
 
+        <TextInput
+          label="Nomor Telepon"
+          description="Nomor yang dapat dihubungi untuk alamat ini."
+          placeholder="Contoh: 081234567890"
+          type="tel"
+          inputMode="tel"
+          required
+          {...form.getInputProps("phone")}
+          onChange={(e) => {
+            form.setFieldValue(
+              "phone",
+              e.currentTarget.value.replace(/[^\d+]/g, ""),
+            );
+          }}
+        />
+
         <Textarea
           label="Detail Alamat"
           description="Nama jalan, nomor rumah."
