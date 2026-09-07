@@ -5,11 +5,11 @@ import { useHistoryList } from "@/hooks/worker.hooks";
 import type { StationType } from "@/types/api/worker.types";
 import { formatFieldOpsDate, formatFieldOpsTime } from "@/utils/fieldops.date";
 
-import { ActionIcon, Badge, Card, Grid, Group, Pagination, Paper, Select, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
+import { ActionIcon, Badge, Button, Card, Grid, Group, Pagination, Paper, Select, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
 
 import { MonthPickerInput } from "@mantine/dates";
 
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconCalendarMonth, IconChecklist, IconClock } from "@tabler/icons-react";
+import { IconArrowNarrowDown, IconArrowNarrowRight, IconArrowNarrowUp, IconCalendarMonth, IconChecklist, IconClock } from "@tabler/icons-react";
 
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -194,7 +194,7 @@ export function WorkerHistory() {
                   const stationInfo = STATION_INFO[item.stationType];
 
                   return (
-                    <Card key={item.id} component={Link} href={`/internal/worker/riwayat/${item.id}`} withBorder radius="lg" p="lg">
+                    <Card key={item.id} withBorder radius="lg" p="lg">
                       <Stack gap="md">
                         {/* Baris atas: station kiri, tanggal kanan */}
                         <Grid align="center">
@@ -233,6 +233,16 @@ export function WorkerHistory() {
                             </Group>
                           </Grid.Col>
                         </Grid>
+
+                        <Button
+                          component={Link}
+                          href={`/internal/worker/riwayat/${item.id}`}
+                          color="var(--color-accent)"
+                          rightSection={<IconArrowNarrowRight />}
+                          size={"compact-sm"}
+                        >
+                          Lihat detail
+                        </Button>
                       </Stack>
                     </Card>
                   );

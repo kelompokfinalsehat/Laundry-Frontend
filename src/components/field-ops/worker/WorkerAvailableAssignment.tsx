@@ -113,7 +113,8 @@ export function WorkerAvailableAssignments() {
                     <Button
                       size="xs"
                       color="blue"
-                      loading={claim.isPending}
+                      loading={claim.isPending && claim.variables === assignment.id}
+                      disabled={claim.isPending && claim.variables !== assignment.id}
                       loaderProps={{ type: "dots" }}
                       onClick={() =>
                         openActionConfirmModal({

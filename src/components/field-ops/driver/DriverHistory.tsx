@@ -6,7 +6,7 @@ import type { TaskType } from "@/types/api/driver.types";
 import { formatFieldOpsDate, formatFieldOpsTime } from "@/utils/fieldops.date";
 import { ActionIcon, Badge, Button, Card, Grid, Group, Pagination, Paper, Select, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
 import { MonthPickerInput } from "@mantine/dates";
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconCalendarMonth, IconChecklist, IconClock } from "@tabler/icons-react";
+import { IconArrowNarrowDown, IconArrowNarrowRight, IconArrowNarrowUp, IconCalendarMonth, IconChecklist, IconClock } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import Link from "next/link";
 
@@ -182,7 +182,7 @@ export function DriverHistory() {
                   const taskInfo = TASK_TYPE_INFO[item.taskType];
 
                   return (
-                    <Card key={item.id} component={Link} href={`/internal/driver/riwayat/${item.id}`} withBorder radius="lg" p="lg">
+                    <Card key={item.id} withBorder radius="lg" p="lg">
                       <Stack gap="md">
                         {/* Baris atas: label kiri, tanggal kanan */}
                         <Grid align="center">
@@ -217,6 +217,15 @@ export function DriverHistory() {
                             </Group>
                           </Grid.Col>
                         </Grid>
+                        <Button
+                          component={Link}
+                          href={`/internal/driver/riwayat/${item.id}`}
+                          color="var(--color-accent)"
+                          rightSection={<IconArrowNarrowRight />}
+                          size={"compact-sm"}
+                        >
+                          Lihat detail
+                        </Button>
                       </Stack>
                     </Card>
                   );
