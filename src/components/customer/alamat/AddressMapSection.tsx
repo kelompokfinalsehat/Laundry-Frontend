@@ -64,7 +64,7 @@ export function AddressMapSection({
             onChange={onPinChange}
           />
           <Text size="xs" c="var(--color-text-secondary)" mt={4}>
-            Geser pin merah kalau posisinya belum tepat.
+            Geser pin kalau posisinya belum tepat.
           </Text>
         </div>
       )}
