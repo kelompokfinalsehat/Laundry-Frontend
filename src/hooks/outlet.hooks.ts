@@ -67,7 +67,20 @@ export function useUpdateOutlet() {
       queryClient.invalidateQueries({
         queryKey: [...OUTLETS_QUERY_KEY, "detail", variables.outletId],
       });
+
+      notifications.show({
+        title: "Berhasil",
+        message: "Berhasil update data outlet.",
+        color: "green"
+      })
     },
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal update data outlet.",
+        color: "red"
+      })
+    }
   });
 }
 

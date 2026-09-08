@@ -7,6 +7,7 @@ import { useOutlets } from "./outlet.hooks";
 import { CreatePaymentResponse, ListOrderQuery } from "@/types/api/orders.types";
 import { ApiError } from "@/lib/api/axios";
 import type { CreateOrderPayload, OrderQuery } from "@/types/api/order.types";
+import { notifications } from "@mantine/notifications";
 
 const orderApi = new OrderApi();
 export const ORDERS_QUERY_KEY = ["orders"] as const;
@@ -42,7 +43,20 @@ export function useReceiveOrder() {
       await queryClient.invalidateQueries({
         queryKey: [...ORDERS_QUERY_KEY, "detail", orderId],
       });
+
+      notifications.show({
+        title: "Berhasil",
+        message: "Berhasil menerima laundry.",
+        color: "green"
+      })
     },
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal menerima laundry.",
+        color: "red"
+      })
+    }
   });
 }
 
@@ -65,7 +79,20 @@ export function useCreateOrderAdmin() {
       await queryClient.invalidateQueries({
         queryKey: [...ORDERS_QUERY_KEY, "detail", variables.orderId],
       });
+
+      notifications.show({
+        title: "Berhasil",
+        message: "Berhasil membuat invoice order.",
+        color: "green"
+      })
     },
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal membuat invoice order.",
+        color: "red"
+      })
+    }
   });
 }
 

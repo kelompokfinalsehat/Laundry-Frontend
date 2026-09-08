@@ -2,19 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ComplaintApi } from "@/lib/api/complaint.api";
 
-import type {
-  ComplaintListItem,
-  ComplaintQuery,
-  ComplaintSortBy,
-  DecideComplaintPayload,
-} from "@/types/api/complaint.types";
-import {
-  ComplaintCategory,
-  ComplaintStatus,
-  SortOrder,
-} from "@/types/api";
+import type { ComplaintListItem, ComplaintQuery, ComplaintSortBy, DecideComplaintPayload } from "@/types/api/complaint.types";
+import { ComplaintCategory, ComplaintStatus, SortOrder } from "@/types/api";
 import { useState } from "react";
 import { useDebouncedValue } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 
 const complaintApi = new ComplaintApi();
 
@@ -42,13 +34,7 @@ export function useDecideComplaint() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      complaintId,
-      payload,
-    }: {
-      complaintId: string;
-      payload: DecideComplaintPayload;
-    }) => complaintApi.decideComplaint(complaintId, payload),
+    mutationFn: ({ complaintId, payload }: { complaintId: string; payload: DecideComplaintPayload }) => complaintApi.decideComplaint(complaintId, payload),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -57,6 +43,19 @@ export function useDecideComplaint() {
 
       queryClient.invalidateQueries({
         queryKey: [...COMPLAINTS_QUERY_KEY, "detail", variables.complaintId],
+      });
+
+      notifications.show({
+        title: "Berhasil",
+        message: "Komplain telah dikonfirmasi.",
+        color: "green",
+      });
+    },
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal mengkonfirmasi komplain.",
+        color: "red",
       });
     },
   });
@@ -70,8 +69,7 @@ export function useComplaintHooks(role: string) {
     sortBy: "createdAt",
     sortOrder: "desc",
   });
-  const [selectedComplaint, setSelectedComplaint] =
-    useState<ComplaintListItem | null>(null);
+  const [selectedComplaint, setSelectedComplaint] = useState<ComplaintListItem | null>(null);
   const [decisionModalOpened, setDecisionModalOpened] = useState(false);
   const [debouncedSearch] = useDebouncedValue(query.search ?? "", 400);
   const { data, isLoading, isError, error, refetch } = useComplaints({
@@ -80,10 +78,7 @@ export function useComplaintHooks(role: string) {
   });
   const decideComplaint = useDecideComplaint();
 
-  const handleQueryChange = <Key extends keyof ComplaintQuery>(
-    key: Key,
-    value: ComplaintQuery[Key],
-  ) => {
+  const handleQueryChange = <Key extends keyof ComplaintQuery>(key: Key, value: ComplaintQuery[Key]) => {
     setQuery((previous) => ({
       ...previous,
       [key]: value,
