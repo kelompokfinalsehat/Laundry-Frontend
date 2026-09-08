@@ -80,7 +80,7 @@ export function useActive() {
   return useQuery({
     queryKey: DRIVER_ACTIVE_QUERY_KEY,
     queryFn: () => driverApi.getActive(),
-    refetchInterval: 60_000,
+    refetchInterval: 30_000,
   });
 }
 
