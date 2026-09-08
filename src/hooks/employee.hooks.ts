@@ -150,6 +150,7 @@ export function useCurrentOutletAttendance(query: OutletAttendanceQuery, options
 
 export function useEmployeeHooks() {
   const router = useRouter();
+  const inviteEmployee = useInviteEmployee();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<10 | 20 | 50>(10);
   const [filters, setFilters] = useState<Pick<EmployeeQuery, "search" | "role" | "accountStatus" | "workStatus" | "outletId">>({});
@@ -202,6 +203,7 @@ export function useEmployeeHooks() {
     handleReset,
     employees,
     setPageSize,
+    inviteEmployee
   };
 }
 
