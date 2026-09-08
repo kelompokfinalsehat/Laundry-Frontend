@@ -12,7 +12,7 @@ const laundryItemApi = new LaundryItemApi();
 
 export const LAUNDRY_ITEMS_QUERY_KEY = ["laundry-items"];
 
-export function useLaundryItems(params?: LaundryItemQuery, options?: {enabled?: boolean}) {
+export function useLaundryItems(params?: LaundryItemQuery, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: [...LAUNDRY_ITEMS_QUERY_KEY, params],
     queryFn: () => laundryItemApi.getLaundryItems(params),
@@ -74,12 +74,15 @@ export function useDeactivateLaundryItem() {
   });
 }
 
-
 export function useLaundryItemHooks() {
   const router = useRouter();
+  const createLaundryItem = useCreateLaundryItem();
+  const updateLaundryItem = useUpdateLaundryItem();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<10 | 20 | 50>(10);
   const [selectedItem, setSelectedItem] = useState<LaundryItem | null>(null);
+  const [itemModalOpened, setItemModalOpened] = useState(false);
+  const [editingItem, setEditingItem] = useState<LaundryItem | null>(null);
   const form = useForm<FilterLaundryItemValues>({
     mode: "controlled",
     initialValues: {
@@ -109,6 +112,77 @@ export function useLaundryItemHooks() {
     setPage(1);
   };
 
+  const handleCreate = () => {
+    setEditingItem(null);
+    setItemModalOpened(true);
+  };
+
+  const handleEdit = (item: LaundryItem) => {
+    setEditingItem(item);
+    setItemModalOpened(true);
+  };
+
+  const handleCloseItemModal = () => {
+    if (createLaundryItem.isPending || updateLaundryItem.isPending) {
+      return;
+    }
+
+    setItemModalOpened(false);
+    setEditingItem(null);
+  };
+
+  const handleSubmitItem = async (values: CreateLaundryItemPayload) => {
+    if (editingItem) {
+      await updateLaundryItem.mutateAsync(
+        {
+          laundryItemId: editingItem.id,
+          payload: values,
+        },
+        {
+          onSuccess: () => {
+            notifications.show({
+              title: "Berhasil",
+              message: "Item laundry berhasil diperbarui.",
+              color: "green",
+            });
+
+            handleCloseItemModal();
+          },
+
+          onError: (error) => {
+            notifications.show({
+              title: "Gagal",
+              message: error instanceof Error ? error.message : "Gagal memperbarui item laundry.",
+              color: "red",
+            });
+          },
+        },
+      );
+
+      return;
+    }
+
+    await createLaundryItem.mutateAsync(values, {
+      onSuccess: () => {
+        notifications.show({
+          title: "Berhasil",
+          message: "Item laundry berhasil ditambahkan.",
+          color: "green",
+        });
+
+        handleCloseItemModal();
+      },
+
+      onError: (error) => {
+        notifications.show({
+          title: "Gagal",
+          message: error instanceof Error ? error.message : "Gagal menambahkan item laundry.",
+          color: "red",
+        });
+      },
+    });
+  };
+
   const handleDeactivate = async () => {
     if (!selectedItem) return;
 
@@ -132,16 +206,28 @@ export function useLaundryItemHooks() {
     });
   };
 
-  return {
-    router,
-    form,
-    setPage,
-    handleReset,
-    laundryItems,
-    setPageSize,
-    setSelectedItem,
-    selectedItem,
-    deactivateLaundryItem,
-    handleDeactivate,
-  };
+ return {
+  router,
+  form,
+  setPage,
+  handleReset,
+  laundryItems,
+  setPageSize,
+
+  setSelectedItem,
+  selectedItem,
+  deactivateLaundryItem,
+  handleDeactivate,
+
+  itemModalOpened,
+  editingItem,
+  handleCreate,
+  handleEdit,
+  handleCloseItemModal,
+  handleSubmitItem,
+
+  isItemSubmitting:
+    createLaundryItem.isPending ||
+    updateLaundryItem.isPending,
+};
 }

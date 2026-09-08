@@ -1,18 +1,25 @@
 "use client";
 
-import { Button, Group, Paper, Select, Stack, TextInput } from "@mantine/core";
+import { Button, Group, Modal, Select, Stack, TextInput } from "@mantine/core";
 import { schemaResolver, useForm } from "@mantine/form";
-import { useRouter } from "next/navigation";
-import { inviteEmployeeSchema, type InviteEmployeeFormValues } from "@/lib/validation/employee.validation";
+import {
+  inviteEmployeeSchema,
+  type InviteEmployeeFormValues,
+} from "@/lib/validation/employee.validation";
 
 type Props = {
+  opened: boolean;
+  onClose: () => void;
   onSubmit: (values: InviteEmployeeFormValues) => void;
   isSubmitting?: boolean;
 };
 
-export function InviteEmployeeForm({ onSubmit, isSubmitting = false }: Props) {
-  const router = useRouter();
-
+export function InviteEmployeeModal({
+  opened,
+  onClose,
+  onSubmit,
+  isSubmitting = false,
+}: Props) {
   const form = useForm<InviteEmployeeFormValues>({
     initialValues: {
       name: "",
@@ -23,21 +30,38 @@ export function InviteEmployeeForm({ onSubmit, isSubmitting = false }: Props) {
     validate: schemaResolver(inviteEmployeeSchema),
   });
 
+  const handleClose = () => {
+    if (isSubmitting) return;
+
+    form.reset();
+    onClose();
+  };
+
   return (
-    <Paper
-      withBorder
-      radius="md"
-      p="lg"
-      maw={600}
-      style={{
-        backgroundColor: "var(--color-surface)",
-      }}
+    <Modal
+      opened={opened}
+      onClose={handleClose}
+      title="Undang Karyawan"
+      centered
+      closeOnClickOutside={!isSubmitting}
+      closeOnEscape={!isSubmitting}
     >
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Stack gap="md">
-          <TextInput label="Nama Karyawan" placeholder="Masukkan nama karyawan" withAsterisk {...form.getInputProps("name")} />
+          <TextInput
+            label="Nama Karyawan"
+            placeholder="Masukkan nama karyawan"
+            withAsterisk
+            {...form.getInputProps("name")}
+          />
 
-          <TextInput label="Email" placeholder="nama@email.com" type="email" withAsterisk {...form.getInputProps("email")} />
+          <TextInput
+            label="Email"
+            placeholder="nama@email.com"
+            type="email"
+            withAsterisk
+            {...form.getInputProps("email")}
+          />
 
           <Select
             label="Role"
@@ -60,7 +84,11 @@ export function InviteEmployeeForm({ onSubmit, isSubmitting = false }: Props) {
           />
 
           <Group justify="flex-end" mt="sm">
-            <Button variant="default" onClick={() => router.back()} disabled={isSubmitting}>
+            <Button
+              variant="default"
+              onClick={handleClose}
+              disabled={isSubmitting}
+            >
               Batal
             </Button>
 
@@ -70,6 +98,6 @@ export function InviteEmployeeForm({ onSubmit, isSubmitting = false }: Props) {
           </Group>
         </Stack>
       </form>
-    </Paper>
+    </Modal>
   );
 }

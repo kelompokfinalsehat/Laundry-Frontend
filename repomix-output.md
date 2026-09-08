@@ -146,15 +146,9 @@ src/
             shipping/
               page.tsx
           item-laundry/
-            [laundryItemId]/
-              page.tsx
-            baru/
-              page.tsx
             page.tsx
           karyawan/
             [userId]/
-              page.tsx
-            undang/
               page.tsx
             page.tsx
           komplain/
@@ -260,8 +254,7 @@ src/
         EmployeeOutlet.tsx
         EmployeeStatus.tsx
         EmployeeTable.tsx
-        InviteEmployeeContent.tsx
-        InviteEmployeeForm.tsx
+        InviteEmployeeModal.tsx
       komplain/
         ComplaintContent.tsx
         ComplaintDecisionModal.tsx
@@ -282,11 +275,9 @@ src/
           SalesReportSummary.tsx
           SalesTrend.tsx
       laundry-item/
-        CreateLaundryItemContent.tsx
-        EditLaundryItemContent.tsx
         LaundryItemContent.tsx
         LaundryItemFilters.tsx
-        LaundryItemForm.tsx
+        LaundryItemModal.tsx
         LaundryItemTable.tsx
       order/
         DriverAssignmentsSection.tsx
@@ -393,6 +384,7 @@ src/
         WorkerActiveTaskView.tsx
         WorkerAvailableAssignment.tsx
         WorkerHistory.tsx
+        WorkerHistoryDetail.tsx
     internalAuth/
       AcceptInvitationForm.tsx
       EmployeeForgotPasswordForm.tsx
@@ -594,6 +586,24 @@ import { FeaturePlaceholder } from '@/components/shared/FeaturePlaceholder';
 export default function Page(){return <FeaturePlaceholder title='Keputusan Komplain' description='Outlet Admin memilih Disetujui/Ditolak dan wajib memberi tanggapan.'/>}
 ````
 
+## File: src/app/internal/(back-office)/outlet-admin/layout.tsx
+````typescript
+import { BackOfficeAppShell } from "@/components/back-office/shared/BackOfficeAppShell";
+import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
+// import { requireRole } from "@/lib/auth/AuthGateCustomer";
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <AuthGateEmployee allowedRoles={["OUTLET_ADMIN"]}>
+      <BackOfficeAppShell role="OUTLET_ADMIN">{children}</BackOfficeAppShell>
+    </AuthGateEmployee>
+  );
+}
+````
+
 ## File: src/app/internal/(back-office)/profile/layout.tsx
 ````typescript
 "use client";
@@ -636,6 +646,25 @@ import { BackOfficeProfileContent } from "@/components/back-office/profile/BackO
 
 export default function BackOfficeProfilePage() {
   return <BackOfficeProfileContent />;
+}
+````
+
+## File: src/app/internal/(back-office)/super-admin/layout.tsx
+````typescript
+import { BackOfficeAppShell } from "@/components/back-office/shared/BackOfficeAppShell";
+import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
+// import { requireRole } from "@/lib/auth/AuthGateCustomer";
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  // await requireRole(["SUPER_ADMIN"]);
+  return (
+    <AuthGateEmployee allowedRoles={["SUPER_ADMIN"]}>
+      <BackOfficeAppShell role="SUPER_ADMIN">{children}</BackOfficeAppShell>
+    </AuthGateEmployee>
+  );
 }
 ````
 
@@ -685,6 +714,196 @@ export default function ForbiddenPage() {
         </Button>
       </Stack>
     </Center>
+  );
+}
+````
+
+## File: src/components/back-office/employee/InviteEmployeeModal.tsx
+````typescript
+"use client";
+
+import { Button, Group, Modal, Select, Stack, TextInput } from "@mantine/core";
+import { schemaResolver, useForm } from "@mantine/form";
+import {
+  inviteEmployeeSchema,
+  type InviteEmployeeFormValues,
+} from "@/lib/validation/employee.validation";
+
+type Props = {
+  opened: boolean;
+  onClose: () => void;
+  onSubmit: (values: InviteEmployeeFormValues) => void;
+  isSubmitting?: boolean;
+};
+
+export function InviteEmployeeModal({
+  opened,
+  onClose,
+  onSubmit,
+  isSubmitting = false,
+}: Props) {
+  const form = useForm<InviteEmployeeFormValues>({
+    initialValues: {
+      name: "",
+      email: "",
+      role: "WORKER",
+    },
+
+    validate: schemaResolver(inviteEmployeeSchema),
+  });
+
+  const handleClose = () => {
+    if (isSubmitting) return;
+
+    form.reset();
+    onClose();
+  };
+
+  return (
+    <Modal
+      opened={opened}
+      onClose={handleClose}
+      title="Undang Karyawan"
+      centered
+      closeOnClickOutside={!isSubmitting}
+      closeOnEscape={!isSubmitting}
+    >
+      <form onSubmit={form.onSubmit(onSubmit)}>
+        <Stack gap="md">
+          <TextInput
+            label="Nama Karyawan"
+            placeholder="Masukkan nama karyawan"
+            withAsterisk
+            {...form.getInputProps("name")}
+          />
+
+          <TextInput
+            label="Email"
+            placeholder="nama@email.com"
+            type="email"
+            withAsterisk
+            {...form.getInputProps("email")}
+          />
+
+          <Select
+            label="Role"
+            withAsterisk
+            data={[
+              {
+                value: "OUTLET_ADMIN",
+                label: "Outlet Admin",
+              },
+              {
+                value: "WORKER",
+                label: "Worker",
+              },
+              {
+                value: "DRIVER",
+                label: "Driver",
+              },
+            ]}
+            {...form.getInputProps("role")}
+          />
+
+          <Group justify="flex-end" mt="sm">
+            <Button
+              variant="default"
+              onClick={handleClose}
+              disabled={isSubmitting}
+            >
+              Batal
+            </Button>
+
+            <Button type="submit" loading={isSubmitting}>
+              Kirim Undangan
+            </Button>
+          </Group>
+        </Stack>
+      </form>
+    </Modal>
+  );
+}
+````
+
+## File: src/components/back-office/laundry-item/LaundryItemModal.tsx
+````typescript
+"use client";
+
+import { Button, Group, Modal, Stack, TextInput } from "@mantine/core";
+import { schemaResolver, useForm } from "@mantine/form";
+import {
+  laundryItemSchema,
+  type LaundryItemFormValues,
+} from "@/lib/validation/laundry-item.validation";
+
+type Props = {
+  opened: boolean;
+  onClose: () => void;
+  initialValues?: LaundryItemFormValues;
+  onSubmit: (values: LaundryItemFormValues) => void;
+  isSubmitting?: boolean;
+  submitLabel?: string;
+  title?: string;
+};
+
+export function LaundryItemModal({
+  opened,
+  onClose,
+  initialValues = {
+    name: "",
+  },
+  onSubmit,
+  isSubmitting = false,
+  submitLabel = "Tambah Item",
+  title = "Tambah Item Laundry",
+}: Props) {
+  const form = useForm<LaundryItemFormValues>({
+    initialValues,
+
+    validate: schemaResolver(laundryItemSchema),
+  });
+
+  const handleClose = () => {
+    if (isSubmitting) return;
+
+    form.reset();
+    onClose();
+  };
+
+  return (
+    <Modal
+      opened={opened}
+      onClose={handleClose}
+      title={title}
+      centered
+      closeOnClickOutside={!isSubmitting}
+      closeOnEscape={!isSubmitting}
+    >
+      <form onSubmit={form.onSubmit(onSubmit)}>
+        <Stack gap="md">
+          <TextInput
+            label="Nama Item Laundry"
+            placeholder="Contoh: Pakaian, Sepatu, Karpet"
+            withAsterisk
+            {...form.getInputProps("name")}
+          />
+
+          <Group justify="flex-end" mt="sm">
+            <Button
+              variant="default"
+              onClick={handleClose}
+              disabled={isSubmitting}
+            >
+              Batal
+            </Button>
+
+            <Button type="submit" loading={isSubmitting}>
+              {submitLabel}
+            </Button>
+          </Group>
+        </Stack>
+      </form>
+    </Modal>
   );
 }
 ````
@@ -1763,6 +1982,93 @@ export function useUpdateBackOfficeProfilePhoto() {
 }
 ````
 
+## File: src/lib/api/auth.api.ts
+````typescript
+import {
+  GoogleLoginPayload,
+  LoginCustomerResponse,
+  MeResponse,
+  MessageResponse,
+  RegisterCustomerResponse,
+  ResetPasswordCustomerPayload,
+  VerificationPayload,
+  VerifyEmailPayload,
+} from "@/types/api";
+import { api } from "./axios";
+import {
+  LoginCustomerSchema,
+  RegisterCustomerSchema,
+} from "../validation/auth.validation";
+
+export class AuthApi {
+  async registerCustomer(payload: RegisterCustomerSchema) {
+    const { data } = await api.post<{ data: RegisterCustomerResponse }>(
+      "/auth/register",
+      payload,
+    );
+    return data.data;
+  }
+
+  async loginCustomer(payload: LoginCustomerSchema) {
+    const { data } = await api.post<{
+      data: LoginCustomerResponse;
+    }>("/auth/login", payload);
+
+    return data.data;
+  }
+
+  async loginWithGoogle(payload: GoogleLoginPayload) {
+    const { data } = await api.post<{ data: LoginCustomerResponse }>(
+      "/auth/login/google",
+      payload,
+    );
+    return data.data;
+  }
+
+  async verifyCustomerEmail(payload: VerifyEmailPayload) {
+    const { data } = await api.post<{ data: MessageResponse }>(
+      "/auth/verify-email",
+      payload,
+    );
+    return data.data;
+  }
+
+  async resendCustomerVerification(payload: VerificationPayload) {
+    const { data } = await api.post<{ data: MessageResponse }>(
+      "/auth/resend-verification",
+      payload,
+    );
+    return data.data;
+  }
+
+  async forgotPasswordCustomer(payload: VerificationPayload) {
+    const { data } = await api.post<{ data: MessageResponse }>(
+      "/auth/forgot-password",
+      payload,
+    );
+    return data.data;
+  }
+
+  async resetPasswordCustomer(payload: ResetPasswordCustomerPayload) {
+    const { data } = await api.post<{ data: MessageResponse }>(
+      "/auth/reset-password",
+      payload,
+    );
+    return data.data;
+  }
+
+  async me() {
+    const {data}= await api.get<MeResponse>("/auth/me");
+    return data.data;
+  }
+
+  async logout() {
+    const {data} = await api.post<{ data: MessageResponse }>("/auth/logout");
+    return data.data;
+  }
+}
+````
+
 ## File: src/lib/api/backOfficeAuth.api.ts
 ````typescript
 import { MeResponse, MessageResponse } from "@/types/api";
@@ -2000,6 +2306,20 @@ headings: { fontFamily: "var(--font-display), sans-serif" },
 });
 ````
 
+## File: src/types/api/profile.type.ts
+````typescript
+export type UpdateProfileResponse = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  profilePhotoUrl: string | null;
+};
+
+export type UpdatePhotoResponse = { profilePhotoUrl: string };
+export type MessageResponse = { message: string };
+````
+
 ## File: AGENTS.md
 ````markdown
 <!-- BEGIN:nextjs-agent-rules -->
@@ -2098,59 +2418,6 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 ````
 
-## File: src/app/(auth)/internal/(auth)/accept-invitation/page.tsx
-````typescript
-import { Center, Loader, Paper, Stack } from "@mantine/core";
-import { Suspense } from "react";
-
-import { AcceptInvitationForm } from "@/components/internalAuth/AcceptInvitationForm";
-
-export default function AcceptInvitationPage() {
-  return (
-    <Suspense
-      fallback={
-        <Center mih="60vh">
-          <Loader size="md" />
-        </Center>
-      }
-    >
-      <Paper
-        maw={420}
-        mx="auto"
-        mt={64}
-        p={32}
-        radius="md"
-        withBorder
-        style={{
-          backgroundColor: "var(--color-surface)",
-        }}
-      >
-        <Stack gap="md">
-          <AcceptInvitationForm />
-        </Stack>
-      </Paper>
-    </Suspense>
-  );
-}
-````
-
-## File: src/app/(auth)/internal/(auth)/forgot-password/page.tsx
-````typescript
-import { Paper, Stack } from "@mantine/core";
-
-import { EmployeeForgotPasswordForm } from "@/components/internalAuth/EmployeeForgotPasswordForm";
-
-export default function EmployeeForgotPasswordPage() {
-  return (
-    <Paper maw={420} mx="auto" mt={64} p={32} radius="md" withBorder>
-      <Stack gap="md">
-        <EmployeeForgotPasswordForm />
-      </Stack>
-    </Paper>
-  );
-}
-````
-
 ## File: src/app/(auth)/internal/(auth)/reset-password/page.tsx
 ````typescript
 import { Center, Loader, Paper, Stack } from "@mantine/core";
@@ -2172,6 +2439,20 @@ export default function EmployeeResetPasswordPage() {
           <EmployeeResetPasswordForm />
         </Stack>
       </Paper>
+    </Suspense>
+  );
+}
+````
+
+## File: src/app/(auth)/verify-email/page.tsx
+````typescript
+import { Suspense } from "react";
+import VerifyEmailContent from "@/components/authCustomer/VerifyEmailForm";
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={null}>
+      <VerifyEmailContent />
     </Suspense>
   );
 }
@@ -2342,6 +2623,79 @@ export default function PaymentUnfinishPage() {
 }
 ````
 
+## File: src/app/(customer)/profil/confirm-email/page.tsx
+````typescript
+"use client";
+
+import { useEffect } from "react";
+import { useSearchParams} from "next/navigation";
+import Link from "next/link";
+import { Paper, Title, Text, Stack, Anchor, Loader } from "@mantine/core";
+import { useConfirmEmailChange } from "@/hooks/profile.hooks";
+
+export default function ConfirmEmailChangePage() {
+  const searchParams = useSearchParams();
+
+  const token = searchParams.get("token");
+
+  const { mutate, isPending, isSuccess, isError, error } =
+    useConfirmEmailChange();
+
+  useEffect(() => {
+    if (token) mutate(token);
+  }, [token]);
+
+  return (
+    <Paper maw={420} mx="auto" mt={64} p={32} radius="md" withBorder>
+      <Stack gap="md" ta="center" align="center">
+        {!token && (
+          <>
+            <Title order={3} style={{ color: "var(--color-error)" }}>
+              Link tidak valid
+            </Title>
+            <Text size="sm" c="var(--color-text-secondary)">
+              Link konfirmasi ini tidak lengkap.
+            </Text>
+          </>
+        )}
+
+        {token && isPending && <Loader color="var(--color-primary)" />}
+
+        {isSuccess && (
+          <>
+            <Title order={3} style={{ color: "var(--color-primary)" }}>
+              Email berhasil diperbarui
+            </Title>
+            <Text size="sm" c="var(--color-text-secondary)">
+              Email baru kamu sudah aktif. Silakan login kembali kalau diminta.
+            </Text>
+            <Anchor component={Link} href="/profil" c="var(--color-primary)">
+              Kembali ke profil
+            </Anchor>
+          </>
+        )}
+
+        {isError && (
+          <>
+            <Title order={3} style={{ color: "var(--color-error)" }}>
+              Konfirmasi gagal
+            </Title>
+            <Text size="sm" c="var(--color-text-secondary)">
+              {error instanceof Error
+                ? error.message
+                : "Link mungkin sudah kedaluwarsa atau pernah dipakai."}
+            </Text>
+            <Anchor component={Link} href="/profil" c="var(--color-primary)">
+              Kembali ke profil
+            </Anchor>
+          </>
+        )}
+      </Stack>
+    </Paper>
+  );
+}
+````
+
 ## File: src/app/internal/(back-office)/outlet-admin/absensi/page.tsx
 ````typescript
 import { AttendanceContent } from "@/components/back-office/absensi/AttendanceContent";
@@ -2428,27 +2782,6 @@ import { ShippingRateContent } from "@/components/back-office/pricing/shipping/S
 export default function Page(){return <ShippingRateContent />}
 ````
 
-## File: src/app/internal/(back-office)/super-admin/item-laundry/[laundryItemId]/page.tsx
-````typescript
-import {
-  EditLaundryItemContent,
-} from "@/components/back-office/laundry-item/EditLaundryItemContent";
-
-export default function Page() {
-  return <EditLaundryItemContent />;
-}
-````
-
-## File: src/app/internal/(back-office)/super-admin/item-laundry/baru/page.tsx
-````typescript
-import { CreateLaundryItemContent } from
-  "@/components/back-office/laundry-item/CreateLaundryItemContent";
-
-export default function Page() {
-  return <CreateLaundryItemContent />;
-}
-````
-
 ## File: src/app/internal/(back-office)/super-admin/karyawan/[userId]/page.tsx
 ````typescript
 import { EmployeeDetailContent } from "@/components/back-office/employee/EmployeeDetailContent";
@@ -2465,15 +2798,6 @@ export default async function Page({
       userId={userId}
     />
   );
-}
-````
-
-## File: src/app/internal/(back-office)/super-admin/karyawan/undang/page.tsx
-````typescript
-import { InviteEmployeeContent } from "@/components/back-office/employee/InviteEmployeeContent";
-
-export default function Page() {
-  return <InviteEmployeeContent />;
 }
 ````
 
@@ -2545,6 +2869,22 @@ export default function Page() {
 }
 ````
 
+## File: src/app/internal/(back-office)/layout.tsx
+````typescript
+import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
+import { BackOfficeNotificationWatcher } from "@/components/back-office/shared/BackOfficeNotificationWatcher";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthGateEmployee allowedRoles={["OUTLET_ADMIN", "SUPER_ADMIN"]}>
+      <BackOfficeNotificationWatcher />
+
+      {children}
+    </AuthGateEmployee>
+  );
+}
+````
+
 ## File: src/app/internal/(field-ops)/driver/profil/page.tsx
 ````typescript
 import { FieldOpsProfile } from "@/components/field-ops/shared/FieldOpsProfile";
@@ -2554,23 +2894,22 @@ export default function DriverProfilePage() {
 }
 ````
 
-## File: src/app/internal/(field-ops)/driver/riwayat/[assignmentId]/page.tsx
+## File: src/app/internal/(field-ops)/driver/layout.tsx
 ````typescript
-import { DriverHistoryDetail } from "@/components/field-ops/driver/DriverHistoryDetail";
+import { FieldOpsAppShell } from "@/components/field-ops/shared/FieldOpsAppShell";
+import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
 
-export default function Page() {
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <DriverHistoryDetail
-      taskTypeLabel="Delivery"
-      orderCode="#ORD-00201"
-      destination={{
-        name: "Ani Wijaya",
-        address: "Jl. Melati No. 12, Tangerang Selatan",
-        phone: "0812-3456-7890",
-      }}
-      assignedAt="09:00"
-      completedAt="10:40"
-    />
+    <AuthGateEmployee allowedRoles={["DRIVER"]}>
+      <FieldOpsAppShell role="Driver" basePath="/internal/driver">
+        {children}
+      </FieldOpsAppShell>
+    </AuthGateEmployee>
   );
 }
 ````
@@ -2584,25 +2923,115 @@ export default function WorkerProfilePage() {
 }
 ````
 
-## File: src/app/internal/(field-ops)/worker/riwayat/[assignmentId]/page.tsx
+## File: src/app/internal/(field-ops)/worker/layout.tsx
 ````typescript
-import { DriverHistoryDetail } from "@/components/field-ops/driver/DriverHistoryDetail";
+import { FieldOpsAppShell } from "@/components/field-ops/shared/FieldOpsAppShell";
+import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
 
-export default function Page() {
+export default async function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <DriverHistoryDetail
-      taskTypeLabel="Delivery"
-      orderCode="#ORD-00201"
-      destination={{
-        name: "Ani Wijaya",
-        address: "Jl. Melati No. 12, Tangerang Selatan",
-        phone: "0812-3456-7890",
-      }}
-      assignedAt="09:00"
-      completedAt="10:40"
-    />
+    <AuthGateEmployee allowedRoles={["WORKER"]}>
+      <FieldOpsAppShell role="Worker" basePath="/internal/worker">
+        {children}
+      </FieldOpsAppShell>
+    </AuthGateEmployee>
   );
 }
+````
+
+## File: src/app/internal/(field-ops)/layout.tsx
+````typescript
+import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthGateEmployee allowedRoles={["DRIVER", "WORKER"]}>
+      {children}
+    </AuthGateEmployee>
+  );
+}
+````
+
+## File: src/app/internal/layout.tsx
+````typescript
+import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return <AuthGateEmployee allowedRoles={["DRIVER", "OUTLET_ADMIN", "SUPER_ADMIN", "WORKER"]}>{children}</AuthGateEmployee>;
+}
+````
+
+## File: src/app/globals.css
+````css
+@import "tailwindcss";
+
+:root { color-scheme: light; }
+html, body { margin: 0; min-height: 100%; background: #f8fafc; }
+body { font-family: var(--font-body), sans-serif; }
+a { color: inherit; text-decoration: none; }
+* { box-sizing: border-box; }
+
+/* ============================================================
+   Popo Laundry — Brand Colors (Fresh Line-Dry)
+   Taruh di src/app/globals.css, atau import terpisah lalu
+   panggil di layout.tsx paling atas.
+   ============================================================ */
+ 
+:root {
+  /* Primary */
+  --color-primary: #30afff;;         /* Rinse Blue — nav, header, elemen struktural */
+  --color-primary-dark: #3e83e2;    /* hover/active state tombol/link primary */
+  --color-primary-light: #eaf4fb;   /* background lembut, badge, highlight ringan */
+ 
+  /* Accent / CTA */
+  --color-accent: #f2a93b;          /* Sundry Yellow — tombol aksi utama */
+  --color-accent-dark: #d6900f;     /* hover/active state tombol accent */
+  --color-accent-light: #fdf1de;    /* background lembut untuk badge/alert info */
+ 
+  /* Base */
+  --color-background: #eaf4fb;      /* Chalk Linen — background utama */
+  --color-background-dark: #4d6270;
+  --color-surface: #ffffff;         /* kartu/panel di atas background */
+  --color-border: #e2e3de;          /* garis pembatas halus */
+ 
+  /* Text */
+  --color-text-primary: #26313a;    /* Wet Slate — teks utama */
+  --color-text-secondary: #5f6b72;  /* teks sekunder/caption */
+  --color-text-on-primary: #ffffff; /* teks di atas background Rinse Blue */
+  --color-text-on-accent: #412402;  /* teks di atas background Sundry Yellow */
+ 
+  /* Status */
+  --color-success: #6b9e78;         /* Fresh Sage — status selesai/berhasil */
+  --color-success-light: #eaf3ec;
+  --color-error: #c4483b;           /* Stain Red — alert, komplain, error */
+  --color-error-light: #fbeae8;
+  --color-warning: var(--color-accent);
+  --color-warning-light: var(--color-accent-light);
+ 
+  /* Radius & elevation (opsional, mengikuti gaya flat design brand) */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 1px 2px rgba(38, 49, 58, 0.06);
+  --shadow-md: 0 4px 12px rgba(38, 49, 58, 0.08);
+}
+ 
+.button-primary {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  border-radius: var(--radius-sm);
+}
+
+.page {
+  --bg: #eaf4fb;
+  --surface: #ffffff;
+  --ink: #10304f;
+  --primary: #2f7fc1;
+  --accent: #f5b942;
+  --teal: #4fa895;
+  --ink-soft: #4c6884;
+}
+/* Dark mode belum dirancang untuk brand ini — override di sini nanti kalau dibutuhkan. */
 ````
 
 ## File: src/components/authCustomer/ForgotPasswordForm.tsx
@@ -7241,305 +7670,6 @@ export function DriverDestinationCard({
 }
 ````
 
-## File: src/components/field-ops/driver/DriverHistory.tsx
-````typescript
-"use client";
-
-import { AsyncStateView } from "@/components/ui/AsyncStateView";
-import { useHistoryList } from "@/hooks/driver.hooks";
-import type { TaskType } from "@/types/api/driver.types";
-import { formatFieldOpsDate, formatFieldOpsTime } from "@/utils/fieldops.date";
-import { ActionIcon, Badge, Card, Grid, Group, Pagination, Paper, Select, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
-import { MonthPickerInput } from "@mantine/dates";
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconCalendarMonth, IconChecklist, IconClock } from "@tabler/icons-react";
-import dayjs from "dayjs";
-
-const TASK_TYPE_INFO: Record<
-  TaskType,
-  {
-    label: string;
-    color: string;
-  }
-> = {
-  PICKUP: {
-    label: "Penjemputan",
-    color: "blue",
-  },
-  DELIVERY: {
-    label: "Pengantaran",
-    color: "yellow",
-  },
-};
-
-export function DriverHistory() {
-  const {
-    historyQuery,
-
-    page,
-    period,
-    taskType,
-    sortOrder,
-
-    setPage,
-    handlePeriodChange,
-    handleTaskTypeFilter,
-    handleSortChange,
-  } = useHistoryList();
-
-  return (
-    <Stack gap="md">
-      <Stack gap={4}>
-        <Text fw={700} size="lg">
-          Riwayat Tugas
-        </Text>
-
-        <Text size="sm" c="dimmed">
-          Daftar tugas yang telah Anda selesaikan.
-        </Text>
-      </Stack>
-
-      <AsyncStateView
-        isLoading={historyQuery.isPending}
-        isError={historyQuery.isError}
-        error={historyQuery.error}
-        data={historyQuery.data}
-        onRetry={() => historyQuery.refetch()}
-        emptyTitle="Belum ada riwayat tugas"
-        emptyDescription="Belum ada tugas selesai pada bulan dan filter yang dipilih."
-        skeleton={
-          <Stack gap="md">
-            <Skeleton height={88} radius="lg" />
-
-            <Card withBorder radius="lg" p="lg">
-              <Stack gap="md">
-                <Skeleton height={20} width="30%" />
-                <Skeleton height={20} width="50%" />
-                <Skeleton height={16} width="40%" />
-              </Stack>
-            </Card>
-
-            <Card withBorder radius="lg" p="lg">
-              <Stack gap="md">
-                <Skeleton height={20} width="30%" />
-                <Skeleton height={20} width="50%" />
-                <Skeleton height={16} width="40%" />
-              </Stack>
-            </Card>
-          </Stack>
-        }
-      >
-        {(response) => {
-          const { historyList, summary } = response.data;
-          const { meta } = response;
-
-          return (
-            <Stack gap="md">
-              <Paper withBorder radius="lg" p="md" bg="var(--color-primary-light)">
-                <Group gap="sm">
-                  <ThemeIcon variant="light" radius="xl" size="lg" color="blue">
-                    <IconChecklist size={18} />
-                  </ThemeIcon>
-
-                  <Stack gap={1}>
-                    <Text size="xs" c="dimmed">
-                      Tugas Selesai per {period}
-                    </Text>
-
-                    <Text fw={700} size="lg">
-                      {summary.totalCompleted}
-                    </Text>
-                  </Stack>
-                </Group>
-              </Paper>
-
-              <Grid gap="xs" align="flex-end">
-                <Grid.Col span={5}>
-                  <MonthPickerInput
-                    label="Bulan"
-                    placeholder="Pilih bulan"
-                    value={`${period}-01`}
-                    valueFormat="MMM YYYY"
-                    leftSection={<IconCalendarMonth size={17} />}
-                    clearable={false}
-                    onChange={(value) => {
-                      if (!value) return;
-
-                      handlePeriodChange(dayjs(value).format("YYYY-MM"));
-                    }}
-                  />
-                </Grid.Col>
-
-                <Grid.Col span={4}>
-                  <Select
-                    label="Tipe Tugas"
-                    value={taskType}
-                    onChange={handleTaskTypeFilter}
-                    allowDeselect={false}
-                    data={[
-                      {
-                        value: "ALL",
-                        label: "Semua",
-                      },
-                      {
-                        value: "PICKUP",
-                        label: "Pickup",
-                      },
-                      {
-                        value: "DELIVERY",
-                        label: "Delivery",
-                      },
-                    ]}
-                  />
-                </Grid.Col>
-
-                <Grid.Col span={3}>
-                  <Stack gap={4}>
-                    <Text size="sm" fw={500}>
-                      Urutkan
-                    </Text>
-
-                    <Group gap={4} wrap="nowrap">
-                      <ActionIcon
-                        variant={sortOrder === "asc" ? "filled" : "light"}
-                        size="lg"
-                        aria-label="Urutkan terlama"
-                        onClick={() => handleSortChange("asc")}
-                      >
-                        <IconArrowNarrowUp size={18} />
-                      </ActionIcon>
-
-                      <ActionIcon
-                        variant={sortOrder === "desc" ? "filled" : "light"}
-                        size="lg"
-                        aria-label="Urutkan terbaru"
-                        onClick={() => handleSortChange("desc")}
-                      >
-                        <IconArrowNarrowDown size={18} />
-                      </ActionIcon>
-                    </Group>
-                  </Stack>
-                </Grid.Col>
-              </Grid>
-
-              <Stack gap="sm">
-                {historyList.map((item) => {
-                  const taskInfo = TASK_TYPE_INFO[item.taskType];
-
-                  return (
-                    <Card key={item.id} withBorder radius="lg" p="lg">
-                      <Stack gap="md">
-                        {/* Baris atas: label kiri, tanggal kanan */}
-                        <Grid align="center">
-                          <Grid.Col span="auto">
-                            <Badge variant="light" color={taskInfo.color}>
-                              {taskInfo.label}
-                            </Badge>
-                          </Grid.Col>
-                          <Grid.Col span="content">
-                            <Text size="xs" c="dimmed">
-                              {formatFieldOpsDate(item.completedAt)}
-                            </Text>
-                          </Grid.Col>
-                        </Grid>
-
-                        {/* Baris bawah: kode order kiri, jam kanan */}
-                        <Grid align="center">
-                          <Grid.Col span="auto">
-                            <Stack gap={2}>
-                              <Text size="xs" c="dimmed">
-                                Kode Order
-                              </Text>
-                              <Text fw={700}>{item.order.orderCode}</Text>
-                            </Stack>
-                          </Grid.Col>
-                          <Grid.Col span="content">
-                            <Group gap="xs">
-                              <IconClock size={16} color="var(--color-text-secondary)" />
-                              <Text size="sm" c="dimmed">
-                                Selesai pukul {formatFieldOpsTime(item.completedAt)}
-                              </Text>
-                            </Group>
-                          </Grid.Col>
-                        </Grid>
-                      </Stack>
-                    </Card>
-                  );
-                })}
-              </Stack>
-
-              {meta.totalPages > 1 && (
-                <Group justify="center">
-                  <Pagination value={page} total={meta.totalPages} onChange={setPage} size="sm" />
-                </Group>
-              )}
-            </Stack>
-          );
-        }}
-      </AsyncStateView>
-    </Stack>
-  );
-}
-````
-
-## File: src/components/field-ops/driver/DriverHistoryDetail.tsx
-````typescript
-"use client";
-
-import { Stack, Badge, Text, Card } from "@mantine/core";
-
-// ── UI KOSONGAN — data dummy, belum disambungkan hooks/API ──────────
-// Murni tampilan baca (tidak ada tombol aksi sama sekali).
-
-export function DriverHistoryDetail({
-  taskTypeLabel,
-  orderCode,
-  destination,
-  assignedAt,
-  completedAt,
-}: {
-  taskTypeLabel: string;
-  orderCode: string;
-  destination: { name: string; address: string; phone: string };
-  assignedAt: string;
-  completedAt: string;
-}) {
-  return (
-    <Stack gap="lg">
-      <Badge color="teal" variant="light">
-        {taskTypeLabel} — Selesai
-      </Badge>
-      <Text size="sm" c="dimmed">
-        {orderCode}
-      </Text>
-
-      <Card withBorder radius="md" p="md">
-        <Text size="xs" c="dimmed" tt="uppercase" fw={700} mb={6}>
-          Tujuan
-        </Text>
-        <Text size="sm" fw={600}>
-          {destination.name}
-        </Text>
-        <Text size="sm" c="dimmed">
-          {destination.address}
-        </Text>
-        <Text size="sm" c="dimmed">
-          {destination.phone}
-        </Text>
-      </Card>
-
-      <Card withBorder radius="md" p="md">
-        <Text size="xs" c="dimmed" tt="uppercase" fw={700} mb={6}>
-          Waktu
-        </Text>
-        <Text size="sm" c="dimmed">
-          Ditugaskan: {assignedAt} · Selesai: {completedAt}
-        </Text>
-      </Card>
-    </Stack>
-  );
-}
-````
-
 ## File: src/components/field-ops/worker/active/WorkerInProgressTask.tsx
 ````typescript
 import type { StationType } from "@/types/api/worker.types";
@@ -7730,253 +7860,189 @@ export function WorkerActiveSummary({ assignment }: { assignment: WorkerActiveAs
 }
 ````
 
-## File: src/components/field-ops/worker/WorkerHistory.tsx
+## File: src/components/field-ops/worker/WorkerHistoryDetail.tsx
 ````typescript
 "use client";
 
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
-import { useHistoryList } from "@/hooks/worker.hooks";
-import type { StationType } from "@/types/api/worker.types";
+import { useHistoryDetail } from "@/hooks/worker.hooks";
 import { formatFieldOpsDate, formatFieldOpsTime } from "@/utils/fieldops.date";
 
-import { ActionIcon, Badge, Card, Grid, Group, Pagination, Paper, Select, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Badge, Button, Card, Divider, Group, Paper, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
 
-import { MonthPickerInput } from "@mantine/dates";
+import { IconArrowLeft, IconChecklist, IconClock, IconPackage } from "@tabler/icons-react";
 
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconCalendarMonth, IconChecklist, IconClock } from "@tabler/icons-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
-import dayjs from "dayjs";
+export function WorkerHistoryDetail() {
+  const { assignmentId } = useParams<{ assignmentId: string }>();
 
-const STATION_INFO: Record<
-  StationType,
-  {
-    label: string;
-    color: string;
-  }
-> = {
-  WASHING: {
-    label: "Washing",
-    color: "blue",
-  },
-  IRONING: {
-    label: "Ironing",
-    color: "yellow",
-  },
-  PACKING: {
-    label: "Packing",
-    color: "grape",
-  },
-};
-
-export function WorkerHistory() {
-  const {
-    historyQuery,
-
-    page,
-    period,
-    stationType,
-    sortOrder,
-
-    setPage,
-    handlePeriodChange,
-    handleStationFilter,
-    handleSortChange,
-  } = useHistoryList();
+  const detailQuery = useHistoryDetail(assignmentId);
 
   return (
     <Stack gap="md">
-      <Stack gap={4}>
-        <Text fw={700} size="lg">
-          Riwayat Tugas
-        </Text>
-
-        <Text size="sm" c="dimmed">
-          Daftar tugas yang telah Anda selesaikan.
-        </Text>
-      </Stack>
+      <Button component={Link} href="/internal/worker/riwayat" variant="subtle" leftSection={<IconArrowLeft size={16} />} w="fit-content">
+        Kembali ke Riwayat
+      </Button>
 
       <AsyncStateView
-        isLoading={historyQuery.isPending}
-        isError={historyQuery.isError}
-        error={historyQuery.error}
-        data={historyQuery.data}
-        onRetry={() => historyQuery.refetch()}
-        emptyTitle="Belum ada riwayat tugas"
-        emptyDescription="Belum ada tugas selesai pada bulan dan filter yang dipilih."
+        isLoading={detailQuery.isPending}
+        isError={detailQuery.isError}
+        error={detailQuery.error}
+        data={detailQuery.data}
+        onRetry={() => detailQuery.refetch()}
         skeleton={
           <Stack gap="md">
-            <Skeleton height={88} radius="lg" />
-
-            <Card withBorder radius="lg" p="lg">
-              <Stack gap="md">
-                <Skeleton height={20} width="30%" />
-                <Skeleton height={20} width="50%" />
-                <Skeleton height={16} width="40%" />
-              </Stack>
-            </Card>
-
-            <Card withBorder radius="lg" p="lg">
-              <Stack gap="md">
-                <Skeleton height={20} width="30%" />
-                <Skeleton height={20} width="50%" />
-                <Skeleton height={16} width="40%" />
-              </Stack>
-            </Card>
+            <Skeleton height={120} radius="lg" />
+            <Skeleton height={180} radius="lg" />
+            <Skeleton height={170} radius="lg" />
           </Stack>
         }
       >
-        {(response) => {
-          const { historyList, summary } = response.data;
-          const { meta } = response;
+        {(assignment) => {
+          const stationLabel = assignment.stationType === "WASHING" ? "Cuci" : assignment.stationType === "IRONING" ? "Setrika" : "Packing";
 
           return (
             <Stack gap="md">
-              <Paper withBorder radius="lg" p="md" bg="var(--color-primary-light)">
-                <Group gap="sm">
-                  <ThemeIcon variant="light" radius="xl" size="lg" color="blue">
-                    <IconChecklist size={18} />
-                  </ThemeIcon>
+              {/* Summary */}
+              <Card withBorder shadow="sm" radius="lg" p="lg">
+                <Stack gap="md">
+                  <Group justify="space-between" align="flex-start" wrap="nowrap">
+                    <Group gap="sm" wrap="nowrap">
+                      <ThemeIcon size={44} radius="xl" variant="light" color="blue">
+                        <IconChecklist size={22} />
+                      </ThemeIcon>
 
-                  <Stack gap={1}>
-                    <Text size="xs" c="dimmed">
-                      Tugas Selesai per {period}
-                    </Text>
+                      <Stack gap={2}>
+                        <Text size="xs" c="dimmed">
+                          Riwayat Tugas
+                        </Text>
 
-                    <Text fw={700} size="lg">
-                      {summary.totalCompleted}
-                    </Text>
-                  </Stack>
-                </Group>
-              </Paper>
-
-              <Grid gap="xs" align="flex-end">
-                <Grid.Col span={5}>
-                  <MonthPickerInput
-                    label="Bulan"
-                    placeholder="Pilih bulan"
-                    value={`${period}-01`}
-                    valueFormat="MMM YYYY"
-                    leftSection={<IconCalendarMonth size={17} />}
-                    clearable={false}
-                    onChange={(value) => {
-                      if (!value) return;
-
-                      handlePeriodChange(dayjs(value).format("YYYY-MM"));
-                    }}
-                  />
-                </Grid.Col>
-
-                <Grid.Col span={4}>
-                  <Select
-                    label="Station"
-                    value={stationType}
-                    onChange={handleStationFilter}
-                    allowDeselect={false}
-                    data={[
-                      {
-                        value: "ALL",
-                        label: "Semua",
-                      },
-                      {
-                        value: "WASHING",
-                        label: "Washing",
-                      },
-                      {
-                        value: "IRONING",
-                        label: "Ironing",
-                      },
-                      {
-                        value: "PACKING",
-                        label: "Packing",
-                      },
-                    ]}
-                  />
-                </Grid.Col>
-
-                <Grid.Col span={3}>
-                  <Stack gap={4}>
-                    <Text size="sm" fw={500}>
-                      Urutkan
-                    </Text>
-
-                    <Group gap={4} wrap="nowrap">
-                      <ActionIcon
-                        variant={sortOrder === "asc" ? "filled" : "light"}
-                        size="lg"
-                        aria-label="Urutkan terlama"
-                        onClick={() => handleSortChange("asc")}
-                      >
-                        <IconArrowNarrowUp size={18} />
-                      </ActionIcon>
-
-                      <ActionIcon
-                        variant={sortOrder === "desc" ? "filled" : "light"}
-                        size="lg"
-                        aria-label="Urutkan terbaru"
-                        onClick={() => handleSortChange("desc")}
-                      >
-                        <IconArrowNarrowDown size={18} />
-                      </ActionIcon>
-                    </Group>
-                  </Stack>
-                </Grid.Col>
-              </Grid>
-
-              <Stack gap="sm">
-                {historyList.map((item) => {
-                  const stationInfo = STATION_INFO[item.stationType];
-
-                  return (
-                    <Card key={item.id} withBorder radius="lg" p="lg">
-                      <Stack gap="md">
-                        {/* Baris atas: station kiri, tanggal kanan */}
-                        <Grid align="center">
-                          <Grid.Col span="auto">
-                            <Badge variant="light" color={stationInfo.color}>
-                              {stationInfo.label}
-                            </Badge>
-                          </Grid.Col>
-
-                          <Grid.Col span="content">
-                            <Text size="xs" c="dimmed">
-                              {formatFieldOpsDate(item.completedAt)}
-                            </Text>
-                          </Grid.Col>
-                        </Grid>
-
-                        {/* Baris bawah: kode order kiri, jam kanan */}
-                        <Grid align="center">
-                          <Grid.Col span="auto">
-                            <Stack gap={2}>
-                              <Text size="xs" c="dimmed">
-                                Kode Order
-                              </Text>
-
-                              <Text fw={700}>{item.order.orderCode}</Text>
-                            </Stack>
-                          </Grid.Col>
-
-                          <Grid.Col span="content">
-                            <Group gap="xs">
-                              <IconClock size={16} color="var(--color-text-secondary)" />
-
-                              <Text size="sm" c="dimmed">
-                                Selesai pukul {formatFieldOpsTime(item.completedAt)}
-                              </Text>
-                            </Group>
-                          </Grid.Col>
-                        </Grid>
+                        <Text fw={700} size="lg">
+                          {assignment.orderCode}
+                        </Text>
                       </Stack>
-                    </Card>
-                  );
-                })}
-              </Stack>
+                    </Group>
 
-              {meta.totalPages > 1 && (
-                <Group justify="center">
-                  <Pagination value={page} total={meta.totalPages} onChange={setPage} size="sm" />
-                </Group>
-              )}
+                    <Badge variant="light" color="blue" size="lg">
+                      {stationLabel}
+                    </Badge>
+                  </Group>
+
+                  <Divider />
+
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">
+                      Status
+                    </Text>
+
+                    <Badge variant="light" color="green">
+                      Selesai
+                    </Badge>
+                  </Group>
+                </Stack>
+              </Card>
+
+              {/* Items */}
+              <Card withBorder radius="lg" p="lg">
+                <Stack gap="md">
+                  <Group gap="sm">
+                    <ThemeIcon variant="light" radius="xl" color="blue">
+                      <IconPackage size={18} />
+                    </ThemeIcon>
+
+                    <Text fw={600}>Item Laundry</Text>
+                  </Group>
+
+                  <Divider />
+
+                  <Stack gap="sm">
+                    {assignment.items.map((item) => (
+                      <Paper key={item.id} withBorder radius="md" p="md">
+                        <Group justify="space-between" align="center" wrap="nowrap">
+                          <Stack gap={2}>
+                            <Text size="sm" fw={600}>
+                              {item.name}
+                            </Text>
+
+                            <Text size="xs" c="dimmed">
+                              Jumlah Laundry
+                            </Text>
+                          </Stack>
+
+                          <Badge variant="light" color="blue" size="lg">
+                            {item.quantity} pcs
+                          </Badge>
+                        </Group>
+                      </Paper>
+                    ))}
+                  </Stack>
+                </Stack>
+              </Card>
+
+              {/* Timeline */}
+              <Card withBorder radius="lg" p="lg">
+                <Stack gap="md">
+                  <Group gap="sm">
+                    <ThemeIcon variant="light" radius="xl" color="blue">
+                      <IconClock size={18} />
+                    </ThemeIcon>
+
+                    <Text fw={600}>Riwayat Waktu</Text>
+                  </Group>
+
+                  <Divider />
+
+                  <Group justify="space-between" align="flex-start">
+                    <Text size="sm" c="dimmed">
+                      Tugas Diambil
+                    </Text>
+
+                    <Stack gap={0} align="flex-end">
+                      <Text size="sm" fw={500}>
+                        {formatFieldOpsDate(assignment.assignedAt)}
+                      </Text>
+
+                      <Text size="xs" c="dimmed">
+                        {formatFieldOpsTime(assignment.assignedAt)}
+                      </Text>
+                    </Stack>
+                  </Group>
+
+                  <Group justify="space-between" align="flex-start">
+                    <Text size="sm" c="dimmed">
+                      Mulai Diproses
+                    </Text>
+
+                    <Stack gap={0} align="flex-end">
+                      <Text size="sm" fw={500}>
+                        {formatFieldOpsDate(assignment.startedAt)}
+                      </Text>
+
+                      <Text size="xs" c="dimmed">
+                        {formatFieldOpsTime(assignment.startedAt)}
+                      </Text>
+                    </Stack>
+                  </Group>
+
+                  <Group justify="space-between" align="flex-start">
+                    <Text size="sm" c="dimmed">
+                      Tugas Selesai
+                    </Text>
+
+                    <Stack gap={0} align="flex-end">
+                      <Text size="sm" fw={500}>
+                        {formatFieldOpsDate(assignment.completedAt)}
+                      </Text>
+
+                      <Text size="xs" c="dimmed">
+                        {formatFieldOpsTime(assignment.completedAt)}
+                      </Text>
+                    </Stack>
+                  </Group>
+                </Stack>
+              </Card>
             </Stack>
           );
         }}
@@ -8499,40 +8565,32 @@ export default function FeatureCard({
 }
 ````
 
-## File: src/components/shared/Location/LocationPermission/lib/browser-detect.ts
+## File: src/components/shared/Headers/nav-links.ts
 ````typescript
-export type BrowserName = "chrome" | "firefox" | "safari" | "edge" | "other";
+import {IconMapPin, IconPackage, IconTruck, IconUser } from "@tabler/icons-react";
 
-export function detectBrowser(): BrowserName {
-  if (typeof navigator === "undefined") return "other";
-
-  const ua = navigator.userAgent;
-
-  // urutan pengecekan penting: Edge & Chrome sama-sama punya "Chrome" di UA
-  if (/Edg\//.test(ua)) return "edge";
-  if (/Chrome\//.test(ua) && !/Edg\//.test(ua)) return "chrome";
-  if (/Firefox\//.test(ua)) return "firefox";
-  if (/Safari\//.test(ua) && !/Chrome\//.test(ua)) return "safari";
-
-  return "other";
-}
-
-const INSTRUCTIONS: Record<BrowserName, string> = {
-  chrome:
-    'Klik ikon gembok di sebelah kiri address bar, lalu ubah izin Lokasi jadi "Izinkan".',
-  edge:
-    'Klik ikon gembok di sebelah kiri address bar, lalu ubah izin Lokasi jadi "Izinkan".',
-  firefox:
-    'Klik ikon gembok di sebelah kiri address bar, lalu hapus blokir izin Lokasi.',
-  safari:
-    "Buka menu Safari → Settings for This Website (atau Preferences → Websites → Location), lalu ubah izin jadi Allow.",
-  other:
-    'Buka pengaturan situs di browser Anda, cari izin "Lokasi", lalu ubah jadi diizinkan.',
-};
-
-export function getLocationPermissionInstruction(): string {
-  return INSTRUCTIONS[detectBrowser()];
-}
+export const NAV_LINKS = [
+  {
+    label: "Profil Saya",
+    href: "/profil",
+    icon: IconUser,
+  },
+  {
+    label: "Request Pickup",
+    href: "/request-pickup",
+    icon: IconTruck,
+  },
+  {
+    label: "Pesanan Saya",
+    href: "/pesanan",
+    icon: IconPackage,
+  },
+  {
+    label: "Alamat",
+    href: "/alamat",
+    icon: IconMapPin,
+  },
+] as const;
 ````
 
 ## File: src/components/shared/Location/LocationPermission/LocationPermissionGate.tsx
@@ -10195,93 +10253,6 @@ export function useReceiveOrderHooks() {
 }
 ````
 
-## File: src/lib/api/auth.api.ts
-````typescript
-import {
-  GoogleLoginPayload,
-  LoginCustomerResponse,
-  MeResponse,
-  MessageResponse,
-  RegisterCustomerResponse,
-  ResetPasswordCustomerPayload,
-  VerificationPayload,
-  VerifyEmailPayload,
-} from "@/types/api";
-import { api } from "./axios";
-import {
-  LoginCustomerSchema,
-  RegisterCustomerSchema,
-} from "../validation/auth.validation";
-
-export class AuthApi {
-  async registerCustomer(payload: RegisterCustomerSchema) {
-    const { data } = await api.post<{ data: RegisterCustomerResponse }>(
-      "/auth/register",
-      payload,
-    );
-    return data.data;
-  }
-
-  async loginCustomer(payload: LoginCustomerSchema) {
-    const { data } = await api.post<{
-      data: LoginCustomerResponse;
-    }>("/auth/login", payload);
-
-    return data.data;
-  }
-
-  async loginWithGoogle(payload: GoogleLoginPayload) {
-    const { data } = await api.post<{ data: LoginCustomerResponse }>(
-      "/auth/login/google",
-      payload,
-    );
-    return data.data;
-  }
-
-  async verifyCustomerEmail(payload: VerifyEmailPayload) {
-    const { data } = await api.post<{ data: MessageResponse }>(
-      "/auth/verify-email",
-      payload,
-    );
-    return data.data;
-  }
-
-  async resendCustomerVerification(payload: VerificationPayload) {
-    const { data } = await api.post<{ data: MessageResponse }>(
-      "/auth/resend-verification",
-      payload,
-    );
-    return data.data;
-  }
-
-  async forgotPasswordCustomer(payload: VerificationPayload) {
-    const { data } = await api.post<{ data: MessageResponse }>(
-      "/auth/forgot-password",
-      payload,
-    );
-    return data.data;
-  }
-
-  async resetPasswordCustomer(payload: ResetPasswordCustomerPayload) {
-    const { data } = await api.post<{ data: MessageResponse }>(
-      "/auth/reset-password",
-      payload,
-    );
-    return data.data;
-  }
-
-  async me() {
-    const {data}= await api.get<MeResponse>("/auth/me");
-    return data.data;
-  }
-
-  async logout() {
-    const {data} = await api.post<{ data: MessageResponse }>("/auth/logout");
-    return data.data;
-  }
-}
-````
-
 ## File: src/lib/api/bypass.api.ts
 ````typescript
 import { ApiResponse, PaginatedResponse } from "@/types/api";
@@ -10754,6 +10725,30 @@ export const fieldOpsProfileSchema = z.object({
 export type FieldOpsProfileFormValues = z.infer<typeof fieldOpsProfileSchema>;
 ````
 
+## File: src/lib/safe-redirect.ts
+````typescript
+import * as z from "zod"
+
+const FALLBACK_PATH = "/beranda";
+
+export const safeRedirectPathSchema = z
+  .string()
+  .max(500)
+  .refine((val) => val.startsWith("/"), { message: "URL harus path relatif" })
+  .refine((val) => !val.startsWith("//") && !val.startsWith("/\\"), {
+    message: "URL tidak boleh protocol-relative",
+  })
+  .refine((val) => !/^\/[a-z][a-z0-9+.-]*:/i.test(val) && !val.includes("://"), {
+    message: "URL tidak boleh mengandung skema lain",
+  });
+
+export function getSafeRedirectPath(intendedUrl: string | null): string {
+  if (!intendedUrl) return FALLBACK_PATH;
+  const result = safeRedirectPathSchema.safeParse(intendedUrl);
+  return result.success ? result.data : FALLBACK_PATH;
+}
+````
+
 ## File: src/types/api/bypass.types.ts
 ````typescript
 import { BypassStatus, SortOrder, StationType, WorkerAssignmentStatus } from ".";
@@ -10912,20 +10907,6 @@ export type UpdateFieldOpsProfilePhotoResponse = {
 };
 ````
 
-## File: src/types/api/profile.type.ts
-````typescript
-export type UpdateProfileResponse = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  profilePhotoUrl: string | null;
-};
-
-export type UpdatePhotoResponse = { profilePhotoUrl: string };
-export type MessageResponse = { message: string };
-````
-
 ## File: src/types/api/profile.types.ts
 ````typescript
 export type UpdateProfileResponse = {
@@ -11051,40 +11032,144 @@ export function getEmployeeHome(role: string): string {
 }
 ````
 
-## File: src/app/(auth)/internal/(auth)/login/page.tsx
+## File: src/app/(auth)/internal/(auth)/accept-invitation/page.tsx
+````typescript
+import { Center, Loader, Paper, Stack } from "@mantine/core";
+import { Suspense } from "react";
+
+import { AcceptInvitationForm } from "@/components/internalAuth/AcceptInvitationForm";
+
+export default function AcceptInvitationPage() {
+  return (
+    <Suspense
+      fallback={
+        <Center mih="60vh">
+          <Loader size="md" />
+        </Center>
+      }
+    >
+    <Center mih="100vh" px="md">
+      <Paper
+        w="100%"
+        maw={420}
+        p={32}
+        radius="md"
+        withBorder
+      >
+        <Stack gap="md">
+          <AcceptInvitationForm />
+        </Stack>
+      </Paper>
+      </Center>
+    </Suspense>
+  );
+}
+````
+
+## File: src/app/(auth)/internal/(auth)/forgot-password/page.tsx
+````typescript
+import { Center, Paper, Stack } from "@mantine/core";
+
+import { EmployeeForgotPasswordForm } from "@/components/internalAuth/EmployeeForgotPasswordForm";
+
+export default function EmployeeForgotPasswordPage() {
+  return (
+    <Center mih="100vh" px="md">
+      <Paper w="100%" maw={420} p={32} radius="md" withBorder>
+        <Stack gap="md">
+          <EmployeeForgotPasswordForm />
+        </Stack>
+      </Paper>
+    </Center>
+  );
+}
+````
+
+## File: src/app/(auth)/lupa-password/page.tsx
 ````typescript
 "use client";
 
-import { Paper, Stack } from "@mantine/core";
-import { EmployeeLoginForm } from "@/components/internalAuth/EmployeeLoginForm";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { ForgotPasswordForm } from "@/components/authCustomer/ForgotPasswordForm";
+import {
+  Anchor,
+  Center,
+  Group,
+  Paper,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
+import { IconChevronLeft } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
-const backOfficeRole = ["OUTLET_ADMIN", "SUPER_ADMIN"];
-
-export default function EmployeeLoginPage() {
+export default function ForgotPasswordPage() {
   const router = useRouter();
-  const user = useAuthStore((state) => state.user);
 
-  useEffect(() => {
-    if (!user || !backOfficeRole.includes(user.role)) {
-      return;
-    }
-
-    router.replace(
-      user.role === "OUTLET_ADMIN"
-        ? "/internal/outlet-admin/dashboard"
-        : "/internal/super-admin/dashboard"
-    );
-  }, [user, router]);
+  function handleBack() {
+    router.push("/login");
+  }
 
   return (
-    <Paper maw={420} mx="auto" mt={64} p={32} radius="md" withBorder>
-      <Stack gap="md">
-        <EmployeeLoginForm />
+    <Center
+      mih="100vh"
+      px={{ base: 16, sm: 24 }}
+      py={{ base: 24, sm: 40 }}
+    >
+      <Stack
+        w="100%"
+        maw={420}
+        gap="sm"
+      >
+        <Anchor
+          component="button"
+          type="button"
+          onClick={handleBack}
+          fw={600}
+          c="var(--color-text-primary)"
+          style={{
+            alignSelf: "flex-start",
+          }}
+        >
+          <Group gap={4}>
+            <IconChevronLeft size={16} stroke={2} />
+            Kembali
+          </Group>
+        </Anchor>
+
+        <Paper
+          w="100%"
+          p={{ base: 24, sm: 32 }}
+          radius="md"
+          withBorder
+          style={{
+            backgroundColor: "var(--color-surface)",
+          }}
+        >
+          <Stack gap="md">
+            <div>
+              <Title
+                order={3}
+                style={{
+                  color: "var(--color-text-primary)",
+                }}
+              >
+                Lupa Kata Sandi?
+              </Title>
+
+              <Text
+                size="sm"
+                c="var(--color-text-secondary)"
+              >
+                Jangan khawatir! Masukkan email kamu di bawah untuk mengatur
+                ulang kata sandi.
+              </Text>
+            </div>
+
+            <ForgotPasswordForm />
+          </Stack>
+        </Paper>
       </Stack>
-    </Paper>
+    </Center>
   );
 }
 ````
@@ -11159,16 +11244,89 @@ export default function RegisterPage() {
 }
 ````
 
-## File: src/app/(auth)/verify-email/page.tsx
+## File: src/app/(auth)/reset-password/page.tsx
 ````typescript
-import { Suspense } from "react";
-import VerifyEmailContent from "@/components/authCustomer/VerifyEmailForm";
+"use client";
 
-export default function VerifyEmailPage() {
+import { ResetPasswordForm } from "@/components/authCustomer/ResetPasswordForm";
+import {
+  Anchor,
+  Center,
+  Group,
+  Loader,
+  Paper,
+  Stack,
+} from "@mantine/core";
+import { IconChevronLeft } from "@tabler/icons-react";
+import { Suspense } from "react";
+import { useRouter } from "next/navigation";
+
+export default function ResetPasswordPage() {
+  const router = useRouter();
+
+  function handleBack() {
+    router.push("/login");
+  }
+
   return (
-    <Suspense fallback={null}>
-      <VerifyEmailContent />
-    </Suspense>
+    <Center
+      mih="100vh"
+      px={{ base: 16, sm: 24 }}
+      py={{ base: 24, sm: 40 }}
+    >
+      <Stack
+        w="100%"
+        maw={420}
+        gap="sm"
+      >
+        <Anchor
+          component="button"
+          type="button"
+          onClick={handleBack}
+          fw={600}
+          c="var(--color-text-primary)"
+          style={{
+            alignSelf: "flex-start",
+          }}
+        >
+          <Group gap={4}>
+            <IconChevronLeft size={16} stroke={2} />
+            Kembali
+          </Group>
+        </Anchor>
+
+        <Suspense
+          fallback={
+            <Paper
+              p={{ base: 24, sm: 32 }}
+              radius="md"
+              withBorder
+              style={{
+                backgroundColor: "var(--color-surface)",
+              }}
+            >
+              <Center mih={200}>
+                <Loader size="md" />
+              </Center>
+            </Paper>
+          }
+        >
+          <Paper
+            w="100%"
+            p={{ base: 24, sm: 32 }}
+            radius="md"
+            withBorder
+            style={{
+              backgroundColor: "var(--color-surface)",
+            }}
+          >
+            <Stack gap="md">
+              <ResetPasswordForm />
+            </Stack>
+          </Paper>
+        </Suspense>
+      </Stack>
+    </Center>
   );
 }
 ````
@@ -11229,75 +11387,243 @@ export default function OrdersPage({
 }
 ````
 
-## File: src/app/(customer)/profil/confirm-email/page.tsx
+## File: src/app/(customer)/profil/page.tsx
 ````typescript
 "use client";
 
-import { useEffect } from "react";
-import { useSearchParams} from "next/navigation";
+import {
+  Anchor,
+  Avatar,
+  Badge,
+  Button,
+  Divider,
+  Flex,
+  Group,
+  Paper,
+  SimpleGrid,
+  Stack,
+  Text,
+  ThemeIcon,
+  Title,
+} from "@mantine/core";
+import {
+  IconCheck,
+  IconPencil,
+  IconX,
+  IconUser,
+  IconMail,
+  IconPhone,
+  IconChevronLeft,
+} from "@tabler/icons-react";
 import Link from "next/link";
-import { Paper, Title, Text, Stack, Anchor, Loader } from "@mantine/core";
-import { useConfirmEmailChange } from "@/hooks/profile.hooks";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function ConfirmEmailChangePage() {
+
+
+export default function ProfilPage({
+  fallbackHref = "/",
+}: {
+  fallbackHref?: string;
+}) {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
-  const token = searchParams.get("token");
+  const from = searchParams.get("from");
 
-  const { mutate, isPending, isSuccess, isError, error } =
-    useConfirmEmailChange();
+  const { user } = useAuthStore();
 
-  useEffect(() => {
-    if (token) mutate(token);
-  }, [token]);
+  if (!user) return null;
+
+  const initials = user.name
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase()
+    : "?";
+
+
+  function handleBack() {
+    if (from) {
+      router.replace(from);
+      return;
+    }
+
+    router.back();
+  }
 
   return (
-    <Paper maw={420} mx="auto" mt={64} p={32} radius="md" withBorder>
-      <Stack gap="md" ta="center" align="center">
-        {!token && (
-          <>
-            <Title order={3} style={{ color: "var(--color-error)" }}>
-              Link tidak valid
-            </Title>
-            <Text size="sm" c="var(--color-text-secondary)">
-              Link konfirmasi ini tidak lengkap.
-            </Text>
-          </>
-        )}
+    <Stack gap="xl" mx="auto" py={{ base: 16, sm: 32 }}>
+      <Anchor
+        component="button"
+        type="button"
+        onClick={handleBack}
+        fw={600}
+        c="var(--color-text-primary)"
+      >
+        <Group gap={2}>
+          <IconChevronLeft size={16} stroke={2} />
+          Kembali
+        </Group>
+      </Anchor>
+      <Flex direction="column" align="center" ta="center">
+        <Title order={2} style={{ color: "var(--color-text-primary)" }}>
+          Profil Saya
+        </Title>
+        <Text size="sm" c="var(--color-text-secondary)">
+          Data personal dan informasi akun kamu.
+        </Text>
+      </Flex>
+      {/* Card ringkasan — banner + avatar + aksi */}
+      <Paper withBorder radius="md" style={{ overflow: "hidden" }}>
+        <div
+          style={{
+            height: 88,
+            backgroundImage:
+              "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)",
+          }}
+        />
 
-        {token && isPending && <Loader color="var(--color-primary)" />}
+        <Stack align="center" gap={6} px="xl" pb="xl" mt={-44}>
+          <Avatar size={88} radius="xl" src={user.profilePhotoUrl || undefined}>
+            {initials}
+          </Avatar>
 
-        {isSuccess && (
-          <>
-            <Title order={3} style={{ color: "var(--color-primary)" }}>
-              Email berhasil diperbarui
-            </Title>
-            <Text size="sm" c="var(--color-text-secondary)">
-              Email baru kamu sudah aktif. Silakan login kembali kalau diminta.
-            </Text>
-            <Anchor component={Link} href="/profil" c="var(--color-primary)">
-              Kembali ke profil
-            </Anchor>
-          </>
-        )}
+          <Text fw={600} size="lg" mt={4}>
+            {user.name}
+          </Text>
+          <Text size="sm" c="var(--color-text-secondary)">
+            {user.email}
+          </Text>
 
-        {isError && (
-          <>
-            <Title order={3} style={{ color: "var(--color-error)" }}>
-              Konfirmasi gagal
-            </Title>
-            <Text size="sm" c="var(--color-text-secondary)">
-              {error instanceof Error
-                ? error.message
-                : "Link mungkin sudah kedaluwarsa atau pernah dipakai."}
-            </Text>
-            <Anchor component={Link} href="/profil" c="var(--color-primary)">
-              Kembali ke profil
-            </Anchor>
-          </>
-        )}
-      </Stack>
-    </Paper>
+          {user.isEmailVerified ? (
+            <Badge
+              size="sm"
+              variant="light"
+              leftSection={<IconCheck size={12} />}
+              style={{
+                backgroundColor: "var(--color-success-light)",
+                color: "var(--color-success)",
+              }}
+              mt={4}
+            >
+              Email terverifikasi
+            </Badge>
+          ) : (
+            <Badge
+              size="sm"
+              variant="light"
+              leftSection={<IconX size={12} />}
+              style={{
+                backgroundColor: "var(--color-error-light)",
+                color: "var(--color-error)",
+              }}
+              mt={4}
+            >
+              Belum terverifikasi
+            </Badge>
+          )}
+
+          <Group grow w="100%" gap="sm" mt="lg">
+            <Button
+              component={Link}
+              href="/profil/edit"
+              leftSection={<IconPencil size={16} />}
+              style={{
+                backgroundColor: "var(--color-accent)",
+                color: "var(--color-text-on-accent)",
+              }}
+            >
+              Edit Profil
+            </Button>
+          </Group>
+        </Stack>
+      </Paper>
+
+      {/* Card info akun */}
+      <Paper withBorder radius="md" p="lg">
+        <Title order={4} mb="lg">
+          Informasi Akun
+        </Title>
+
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
+          <ProfileField
+            icon={IconUser}
+            label="Nama Lengkap"
+            value={user.name}
+          />
+          <ProfileField icon={IconMail} label="Email" value={user.email} />
+          <ProfileField
+            icon={IconPhone}
+            label="Nomor Telepon"
+            value={user.phone || "Belum diisi"}
+          />
+        </SimpleGrid>
+
+        <Divider my="lg" />
+
+        <Text fw={500} size="sm">
+          Keamanan Akun
+        </Text>
+        <Text size="xs" c="var(--color-text-secondary)" mt={2}>
+          Terakhir diperbarui melalui halaman edit profil.
+        </Text>
+      </Paper>
+    </Stack>
+  );
+}
+
+function ProfileField({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ComponentType<{ size?: number }>;
+  label: string;
+  value: string;
+}) {
+  return (
+    <Group gap="sm" align="flex-start" wrap="nowrap">
+      <ThemeIcon
+        size={36}
+        radius="md"
+        variant="light"
+        style={{
+          backgroundColor: "var(--color-primary-light)",
+          color: "var(--color-primary)",
+          flexShrink: 0,
+        }}
+      >
+        <Icon size={18} />
+      </ThemeIcon>
+      <div style={{ minWidth: 0 }}>
+        <Text size="xs" c="var(--color-text-secondary)">
+          {label}
+        </Text>
+        <Text size="sm" fw={500} truncate>
+          {value}
+        </Text>
+      </div>
+    </Group>
+  );
+}
+````
+
+## File: src/app/(customer)/layout.tsx
+````typescript
+import { CustomerAppShell } from "@/components/customer/CustomerAppShell";
+import { AuthGateCustomer } from "@/lib/auth/AuthGateCustomer";
+import { Container } from "@mantine/core";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthGateCustomer>
+      <CustomerAppShell>
+        <Container size="lg">{children}</Container>
+      </CustomerAppShell>
+    </AuthGateCustomer>
   );
 }
 ````
@@ -11330,24 +11656,6 @@ export default function Page() {
 import { ReceptionContent } from '@/components/back-office/penerimaan/ReceptionContent';
 
 export default function Page(){return <ReceptionContent />}
-````
-
-## File: src/app/internal/(back-office)/outlet-admin/layout.tsx
-````typescript
-import { BackOfficeAppShell } from "@/components/back-office/shared/BackOfficeAppShell";
-import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
-// import { requireRole } from "@/lib/auth/AuthGateCustomer";
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <AuthGateEmployee allowedRoles={["OUTLET_ADMIN"]}>
-      <BackOfficeAppShell role="OUTLET_ADMIN">{children}</BackOfficeAppShell>
-    </AuthGateEmployee>
-  );
-}
 ````
 
 ## File: src/app/internal/(back-office)/super-admin/dashboard/page.tsx
@@ -11394,6 +11702,15 @@ export default function Page() {
 import { EmployeePerformanceContent } from "@/components/back-office/laporan/kinerja-karyawan/EmployeePerformanceContent";
 export default function Page() {
   return <EmployeePerformanceContent role="SUPER_ADMIN" />;
+}
+````
+
+## File: src/app/internal/(field-ops)/driver/riwayat/[assignmentId]/page.tsx
+````typescript
+import { DriverHistoryDetail } from "@/components/field-ops/driver/DriverHistoryDetail";
+
+export default function Page() {
+  return <DriverHistoryDetail />;
 }
 ````
 
@@ -11453,222 +11770,21 @@ export default function Page() {
 }
 ````
 
-## File: src/app/globals.css
-````css
-@import "tailwindcss";
+## File: src/app/internal/(field-ops)/worker/riwayat/[assignmentId]/page.tsx
+````typescript
+import { WorkerHistoryDetail } from "@/components/field-ops/worker/WorkerHistoryDetail";
 
-:root { color-scheme: light; }
-html, body { margin: 0; min-height: 100%; background: #f8fafc; }
-body { font-family: var(--font-body), sans-serif; }
-a { color: inherit; text-decoration: none; }
-* { box-sizing: border-box; }
-
-/* ============================================================
-   Popo Laundry — Brand Colors (Fresh Line-Dry)
-   Taruh di src/app/globals.css, atau import terpisah lalu
-   panggil di layout.tsx paling atas.
-   ============================================================ */
- 
-:root {
-  /* Primary */
-  --color-primary: #30afff;;         /* Rinse Blue — nav, header, elemen struktural */
-  --color-primary-dark: #3e83e2;    /* hover/active state tombol/link primary */
-  --color-primary-light: #eaf4fb;   /* background lembut, badge, highlight ringan */
- 
-  /* Accent / CTA */
-  --color-accent: #f2a93b;          /* Sundry Yellow — tombol aksi utama */
-  --color-accent-dark: #d6900f;     /* hover/active state tombol accent */
-  --color-accent-light: #fdf1de;    /* background lembut untuk badge/alert info */
- 
-  /* Base */
-  --color-background: #eaf4fb;      /* Chalk Linen — background utama */
-  --color-background-dark: #4d6270;
-  --color-surface: #ffffff;         /* kartu/panel di atas background */
-  --color-border: #e2e3de;          /* garis pembatas halus */
- 
-  /* Text */
-  --color-text-primary: #26313a;    /* Wet Slate — teks utama */
-  --color-text-secondary: #5f6b72;  /* teks sekunder/caption */
-  --color-text-on-primary: #ffffff; /* teks di atas background Rinse Blue */
-  --color-text-on-accent: #412402;  /* teks di atas background Sundry Yellow */
- 
-  /* Status */
-  --color-success: #6b9e78;         /* Fresh Sage — status selesai/berhasil */
-  --color-success-light: #eaf3ec;
-  --color-error: #c4483b;           /* Stain Red — alert, komplain, error */
-  --color-error-light: #fbeae8;
-  --color-warning: var(--color-accent);
-  --color-warning-light: var(--color-accent-light);
- 
-  /* Radius & elevation (opsional, mengikuti gaya flat design brand) */
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --shadow-sm: 0 1px 2px rgba(38, 49, 58, 0.06);
-  --shadow-md: 0 4px 12px rgba(38, 49, 58, 0.08);
+export default function Page() {
+  return <WorkerHistoryDetail />;
 }
- 
-.button-primary {
-  background: var(--color-accent);
-  color: var(--color-text-on-accent);
-  border-radius: var(--radius-sm);
-}
-
-.page {
-  --bg: #eaf4fb;
-  --surface: #ffffff;
-  --ink: #10304f;
-  --primary: #2f7fc1;
-  --accent: #f5b942;
-  --teal: #4fa895;
-  --ink-soft: #4c6884;
-}
-/* Dark mode belum dirancang untuk brand ini — override di sini nanti kalau dibutuhkan. */
 ````
 
-## File: src/components/authCustomer/GoogleLoginButton.tsx
+## File: src/app/internal/(field-ops)/worker/riwayat/page.tsx
 ````typescript
-"use client";
+import { WorkerHistory } from "@/components/field-ops/worker/WorkerHistory";
 
-import { useEffect, useRef } from "react";
-
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (config: {
-            client_id: string;
-            callback: (response: { credential: string }) => void;
-          }) => void;
-
-          renderButton: (
-            parent: HTMLElement,
-            options: {
-              theme?: "outline" | "filled_blue" | "filled_black";
-              size?: "large" | "medium" | "small";
-              width?: number;
-              text?: "signin_with" | "signup_with" | "continue_with";
-            },
-          ) => void;
-        };
-      };
-    };
-  }
-}
-
-const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-const GSI_SCRIPT_SRC = "https://accounts.google.com/gsi/client";
-
-type GoogleSignInButtonProps = {
-  onIdToken: (idToken: string) => void;
-  text?: "signin_with" | "signup_with";
-};
-
-export function GoogleSignInButton({
-  onIdToken,
-  text = "signin_with",
-}: GoogleSignInButtonProps) {
-  const buttonRef = useRef<HTMLDivElement>(null);
-  const callbackRef = useRef(onIdToken);
-
-  useEffect(() => {
-    callbackRef.current = onIdToken;
-  }, [onIdToken]);
-
-  useEffect(() => {
-    if (!GOOGLE_CLIENT_ID || !buttonRef.current) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const renderButton = () => {
-      if (
-        cancelled ||
-        !window.google?.accounts?.id ||
-        !buttonRef.current
-      ) {
-        return;
-      }
-
-      const container = buttonRef.current;
-
-      // Hapus button sebelumnya agar tidak duplicate
-      container.innerHTML = "";
-
-      // Lebar mengikuti container, maksimal 356px
-      const width = Math.min(container.clientWidth, 356);
-
-      window.google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: (response) => {
-          callbackRef.current(response.credential);
-        },
-      });
-
-      window.google.accounts.id.renderButton(container, {
-        theme: "outline",
-        size: "large",
-        width,
-        text,
-      });
-    };
-
-    // Google GSI sudah tersedia
-    if (window.google?.accounts?.id) {
-      // Tunggu layout selesai supaya clientWidth sudah benar
-      requestAnimationFrame(renderButton);
-
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    // Cek apakah script sedang dimuat oleh component lain
-    const existingScript =
-      document.querySelector<HTMLScriptElement>(
-        `script[src="${GSI_SCRIPT_SRC}"]`,
-      );
-
-    if (existingScript) {
-      existingScript.addEventListener("load", renderButton);
-
-      return () => {
-        cancelled = true;
-        existingScript.removeEventListener(
-          "load",
-          renderButton,
-        );
-      };
-    }
-
-    // Load Google Identity Services
-    const script = document.createElement("script");
-
-    script.src = GSI_SCRIPT_SRC;
-    script.async = true;
-    script.defer = true;
-    script.onload = renderButton;
-
-    document.head.appendChild(script);
-
-    return () => {
-      cancelled = true;
-    };
-  }, [text]);
-
-  return (
-    <div
-      ref={buttonRef}
-      style={{
-        width: "100%",
-        maxWidth: 356,
-        margin: "0 auto",
-        overflow: "hidden",
-      }}
-    />
-  );
+export default function Page() {
+  return <WorkerHistory />;
 }
 ````
 
@@ -12084,133 +12200,6 @@ export function EmployeeDetailHeader({ employee }: Props) {
         </Text>
       </Stack>
     </Group>
-  );
-}
-````
-
-## File: src/components/back-office/employee/InviteEmployeeContent.tsx
-````typescript
-"use client";
-
-import { Stack } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { useRouter } from "next/navigation";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { useInviteEmployee } from "@/hooks/employee.hooks";
-import { InviteEmployeeFormValues } from "@/lib/validation/employee.validation";
-import { InviteEmployeeForm } from "./InviteEmployeeForm";
-
-export function InviteEmployeeContent() {
-  const router = useRouter();
-  const inviteEmployee = useInviteEmployee();
-
-  const handleSubmit = async (values: InviteEmployeeFormValues) => {
-    inviteEmployee.mutate(values, {
-      onSuccess: () => {
-        notifications.show({
-          title: "Berhasil",
-          message: "Undangan karyawan berhasil dikirim.",
-          color: "green",
-        });
-
-        router.push("/internal/super-admin/karyawan");
-      },
-
-      onError: (error) => {
-        notifications.show({
-          title: "Gagal",
-          message: error instanceof Error ? error.message : "Gagal mengirim undangan.",
-          color: "red",
-        });
-      },
-    });
-  };
-
-  return (
-    <Stack gap="lg">
-      <PageHeader title="Undang Karyawan" description="Kirim undangan untuk membuat akun karyawan baru." />
-
-      <InviteEmployeeForm onSubmit={handleSubmit} isSubmitting={inviteEmployee.isPending} />
-    </Stack>
-  );
-}
-````
-
-## File: src/components/back-office/employee/InviteEmployeeForm.tsx
-````typescript
-"use client";
-
-import { Button, Group, Paper, Select, Stack, TextInput } from "@mantine/core";
-import { schemaResolver, useForm } from "@mantine/form";
-import { useRouter } from "next/navigation";
-import { inviteEmployeeSchema, type InviteEmployeeFormValues } from "@/lib/validation/employee.validation";
-
-type Props = {
-  onSubmit: (values: InviteEmployeeFormValues) => void;
-  isSubmitting?: boolean;
-};
-
-export function InviteEmployeeForm({ onSubmit, isSubmitting = false }: Props) {
-  const router = useRouter();
-
-  const form = useForm<InviteEmployeeFormValues>({
-    initialValues: {
-      name: "",
-      email: "",
-      role: "WORKER",
-    },
-
-    validate: schemaResolver(inviteEmployeeSchema),
-  });
-
-  return (
-    <Paper
-      withBorder
-      radius="md"
-      p="lg"
-      maw={600}
-      style={{
-        backgroundColor: "var(--color-surface)",
-      }}
-    >
-      <form onSubmit={form.onSubmit(onSubmit)}>
-        <Stack gap="md">
-          <TextInput label="Nama Karyawan" placeholder="Masukkan nama karyawan" withAsterisk {...form.getInputProps("name")} />
-
-          <TextInput label="Email" placeholder="nama@email.com" type="email" withAsterisk {...form.getInputProps("email")} />
-
-          <Select
-            label="Role"
-            withAsterisk
-            data={[
-              {
-                value: "OUTLET_ADMIN",
-                label: "Outlet Admin",
-              },
-              {
-                value: "WORKER",
-                label: "Worker",
-              },
-              {
-                value: "DRIVER",
-                label: "Driver",
-              },
-            ]}
-            {...form.getInputProps("role")}
-          />
-
-          <Group justify="flex-end" mt="sm">
-            <Button variant="default" onClick={() => router.back()} disabled={isSubmitting}>
-              Batal
-            </Button>
-
-            <Button type="submit" loading={isSubmitting}>
-              Kirim Undangan
-            </Button>
-          </Group>
-        </Stack>
-      </form>
-    </Paper>
   );
 }
 ````
@@ -12763,115 +12752,6 @@ export function SalesTrend({ data, period }: Props) {
           Pendapatan tertinggi: {formatCurrency(highestRevenue)}
         </Text>
       </Stack>
-    </Paper>
-  );
-}
-````
-
-## File: src/components/back-office/laundry-item/CreateLaundryItemContent.tsx
-````typescript
-"use client";
-
-import { Stack } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { useRouter } from "next/navigation";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { useCreateLaundryItem } from "@/hooks/laundry-item.hooks";
-import { CreateLaundryItemPayload } from "@/types/api/laundry-item.types";
-import { LaundryItemForm } from "./LaundryItemForm";
-
-export function CreateLaundryItemContent() {
-  const router = useRouter();
-  const createLaundryItem = useCreateLaundryItem();
-
-  const handleSubmit = async (values: CreateLaundryItemPayload) => {
-    await createLaundryItem.mutateAsync(values, {
-      onSuccess: () => {
-        notifications.show({
-          title: "Berhasil",
-          message: "Item laundry berhasil ditambahkan.",
-          color: "green",
-        });
-
-        router.push("/internal/super-admin/item-laundry");
-      },
-
-      onError: (error) => {
-        notifications.show({
-          title: "Gagal",
-          message: error instanceof Error ? error.message : "Gagal menambahkan item laundry.",
-          color: "red",
-        });
-      },
-    });
-  };
-
-  return (
-    <Stack gap="lg">
-      <PageHeader title="Tambah Item Laundry" description="Tambahkan jenis item laundry baru ke dalam sistem." />
-
-      <LaundryItemForm onSubmit={handleSubmit} isSubmitting={createLaundryItem.isPending} />
-    </Stack>
-  );
-}
-````
-
-## File: src/components/back-office/laundry-item/LaundryItemForm.tsx
-````typescript
-"use client";
-
-import { useRouter } from "next/navigation";
-import { Button, Group, Paper, Stack, TextInput } from "@mantine/core";
-import { schemaResolver, useForm } from "@mantine/form";
-import { laundryItemSchema, type LaundryItemFormValues } from "@/lib/validation/laundry-item.validation";
-
-type Props = {
-  initialValues?: LaundryItemFormValues;
-  onSubmit: (values: LaundryItemFormValues) => void;
-  isSubmitting?: boolean;
-  submitLabel?: string;
-};
-
-export function LaundryItemForm({
-  initialValues = {
-    name: "",
-  },
-  onSubmit,
-  isSubmitting = false,
-  submitLabel = "Tambah Item",
-}: Props) {
-  const router = useRouter();
-
-  const form = useForm<LaundryItemFormValues>({
-    initialValues,
-
-    validate: schemaResolver(laundryItemSchema),
-  });
-
-  return (
-    <Paper
-      withBorder
-      radius="md"
-      p="lg"
-      style={{
-        backgroundColor: "var(--color-surface)",
-      }}
-    >
-      <form onSubmit={form.onSubmit(onSubmit)}>
-        <Stack gap="md">
-          <TextInput label="Nama Item Laundry" placeholder="Contoh: Pakaian, Sepatu, Karpet" withAsterisk {...form.getInputProps("name")} />
-
-          <Group justify="flex-end" mt="sm">
-            <Button variant="default" onClick={() => router.back()} disabled={isSubmitting}>
-              Batal
-            </Button>
-
-            <Button type="submit" loading={isSubmitting}>
-              {submitLabel}
-            </Button>
-          </Group>
-        </Stack>
-      </form>
     </Paper>
   );
 }
@@ -14586,6 +14466,320 @@ export function OrderTimeline({ timeline, complaint }: OrderTimelineProps) {
 }
 ````
 
+## File: src/components/customer/CustomerAppShell.tsx
+````typescript
+"use client";
+import {Box} from "@mantine/core";
+import Header from "../shared/Headers/Header";
+import Footer from "../shared/Footer";
+
+export function CustomerAppShell({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+      <Box
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+      }}
+    >
+      <Header />
+
+      <Box component="main" style={{ flex: 1 }}>
+        {children}
+      </Box>
+
+      <Footer />
+    </Box>
+  );
+}
+````
+
+## File: src/components/field-ops/driver/DriverHistoryDetail.tsx
+````typescript
+"use client";
+
+import { AsyncStateView } from "@/components/ui/AsyncStateView";
+import { useHistoryDetail } from "@/hooks/driver.hooks";
+import { formatFieldOpsDate, formatFieldOpsTime } from "@/utils/fieldops.date";
+
+import { Badge, Button, Card, Divider, Group, Paper, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
+
+import { IconArrowLeft, IconClock, IconMapPin, IconPhone, IconTruckDelivery, IconUser } from "@tabler/icons-react";
+
+import Link from "next/link";
+import { useParams } from "next/navigation";
+
+export function DriverHistoryDetail() {
+  const { assignmentId } = useParams<{ assignmentId: string }>();
+
+  const detailQuery = useHistoryDetail(assignmentId);
+
+  return (
+    <Stack gap="md">
+      <Button component={Link} href="/internal/driver/riwayat" variant="subtle" leftSection={<IconArrowLeft size={16} />} w="fit-content">
+        Kembali ke Riwayat
+      </Button>
+
+      <AsyncStateView
+        isLoading={detailQuery.isPending}
+        isError={detailQuery.isError}
+        error={detailQuery.error}
+        data={detailQuery.data}
+        onRetry={() => detailQuery.refetch()}
+        skeleton={
+          <Stack gap="md">
+            <Skeleton height={120} radius="lg" />
+            <Skeleton height={190} radius="lg" />
+            <Skeleton height={120} radius="lg" />
+            <Skeleton height={180} radius="lg" />
+          </Stack>
+        }
+      >
+        {(assignment) => {
+          const taskTypeLabel = assignment.taskType === "PICKUP" ? "Penjemputan" : "Pengantaran";
+
+          return (
+            <Stack gap="md">
+              {/* Summary */}
+              <Card withBorder shadow="sm" radius="lg" p="lg">
+                <Stack gap="md">
+                  <Group justify="space-between" align="flex-start" wrap="nowrap">
+                    <Group gap="sm" wrap="nowrap">
+                      <ThemeIcon size={44} radius="xl" variant="light" color="blue">
+                        <IconTruckDelivery size={22} />
+                      </ThemeIcon>
+
+                      <Stack gap={2}>
+                        <Text size="xs" c="dimmed">
+                          Riwayat Tugas
+                        </Text>
+
+                        <Text fw={700} size="lg">
+                          {assignment.order.orderCode}
+                        </Text>
+                      </Stack>
+                    </Group>
+
+                    <Badge variant="light" color={assignment.taskType === "PICKUP" ? "orange" : "blue"} size="lg">
+                      {taskTypeLabel}
+                    </Badge>
+                  </Group>
+
+                  <Divider />
+
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">
+                      Status
+                    </Text>
+
+                    <Badge variant="light" color="green">
+                      Selesai
+                    </Badge>
+                  </Group>
+                </Stack>
+              </Card>
+
+              {/* Customer */}
+              <Card withBorder radius="lg" p="lg">
+                <Stack gap="md">
+                  <Text fw={600}>Informasi Pelanggan</Text>
+
+                  <Paper withBorder radius="md" p="md">
+                    <Stack gap="md">
+                      <Group gap="sm" align="flex-start" wrap="nowrap">
+                        <ThemeIcon variant="light" radius="xl" color="blue">
+                          <IconUser size={17} />
+                        </ThemeIcon>
+
+                        <Stack gap={2}>
+                          <Text size="xs" c="dimmed">
+                            Nama Pelanggan
+                          </Text>
+
+                          <Text size="sm" fw={600}>
+                            {assignment.order.customer.name}
+                          </Text>
+                        </Stack>
+                      </Group>
+
+                      <Divider />
+
+                      <Group gap="sm" align="flex-start" wrap="nowrap">
+                        <ThemeIcon variant="light" radius="xl" color="blue">
+                          <IconMapPin size={17} />
+                        </ThemeIcon>
+
+                        <Stack gap={2}>
+                          <Text size="xs" c="dimmed">
+                            Alamat
+                          </Text>
+
+                          <Text
+                            size="sm"
+                            style={{
+                              lineHeight: 1.5,
+                            }}
+                          >
+                            {assignment.order.addressSnapshot}
+                          </Text>
+                        </Stack>
+                      </Group>
+
+                      <Group gap="sm" align="flex-start" wrap="nowrap">
+                        <ThemeIcon variant="light" radius="xl" color="blue">
+                          <IconPhone size={17} />
+                        </ThemeIcon>
+
+                        <Stack gap={2}>
+                          <Text size="xs" c="dimmed">
+                            Nomor Telepon
+                          </Text>
+
+                          <Text
+                            component="a"
+                            href={`tel:${assignment.order.addressPhoneSnapshot}`}
+                            size="sm"
+                            fw={500}
+                            style={{
+                              color: "var(--color-primary-dark)",
+                              textDecoration: "none",
+                            }}
+                          >
+                            {assignment.order.addressPhoneSnapshot}
+                          </Text>
+                        </Stack>
+                      </Group>
+                    </Stack>
+                  </Paper>
+                </Stack>
+              </Card>
+
+              {/* Outlet */}
+              <Card withBorder radius="lg" p="lg">
+                <Stack gap="md">
+                  <Group gap="sm">
+                    <ThemeIcon variant="light" radius="xl" color="blue">
+                      <IconMapPin size={18} />
+                    </ThemeIcon>
+
+                    <Text fw={600}>Outlet</Text>
+                  </Group>
+
+                  <Divider />
+
+                  <Stack gap={4}>
+                    <Text size="sm" fw={600}>
+                      {assignment.outlet.name}
+                    </Text>
+
+                    <Text
+                      size="sm"
+                      c="dimmed"
+                      style={{
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {assignment.outlet.address}
+                    </Text>
+                  </Stack>
+                </Stack>
+              </Card>
+
+              {/* Timeline */}
+              <Card withBorder radius="lg" p="lg">
+                <Stack gap="md">
+                  <Group gap="sm">
+                    <ThemeIcon variant="light" radius="xl" color="blue">
+                      <IconClock size={18} />
+                    </ThemeIcon>
+
+                    <Text fw={600}>Riwayat Waktu</Text>
+                  </Group>
+
+                  <Divider />
+
+                  <Group justify="space-between" align="flex-start">
+                    <Text size="sm" c="dimmed">
+                      Tugas Diambil
+                    </Text>
+
+                    <Stack gap={0} align="flex-end">
+                      <Text size="sm" fw={500}>
+                        {formatFieldOpsDate(assignment.assignedAt)}
+                      </Text>
+
+                      <Text size="xs" c="dimmed">
+                        {formatFieldOpsTime(assignment.assignedAt)}
+                      </Text>
+                    </Stack>
+                  </Group>
+
+                  {assignment.taskType === "PICKUP" && (
+                    <Group justify="space-between" align="flex-start">
+                      <Text size="sm" c="dimmed">
+                        Laundry Diambil
+                      </Text>
+
+                      <Stack gap={0} align="flex-end">
+                        <Text size="sm" fw={500}>
+                          {formatFieldOpsDate(assignment.pickedUpAt)}
+                        </Text>
+
+                        <Text size="xs" c="dimmed">
+                          {formatFieldOpsTime(assignment.pickedUpAt)}
+                        </Text>
+                      </Stack>
+                    </Group>
+                  )}
+
+                  {assignment.taskType === "DELIVERY" && (
+                    <Group justify="space-between" align="flex-start">
+                      <Text size="sm" c="dimmed">
+                        Laundry Diantar
+                      </Text>
+
+                      <Stack gap={0} align="flex-end">
+                        <Text size="sm" fw={500}>
+                          {formatFieldOpsDate(assignment.deliveredAt)}
+                        </Text>
+
+                        <Text size="xs" c="dimmed">
+                          {formatFieldOpsTime(assignment.deliveredAt)}
+                        </Text>
+                      </Stack>
+                    </Group>
+                  )}
+
+                  <Group justify="space-between" align="flex-start">
+                    <Text size="sm" c="dimmed">
+                      Tugas Selesai
+                    </Text>
+
+                    <Stack gap={0} align="flex-end">
+                      <Text size="sm" fw={500}>
+                        {formatFieldOpsDate(assignment.completedAt)}
+                      </Text>
+
+                      <Text size="xs" c="dimmed">
+                        {formatFieldOpsTime(assignment.completedAt)}
+                      </Text>
+                    </Stack>
+                  </Group>
+                </Stack>
+              </Card>
+            </Stack>
+          );
+        }}
+      </AsyncStateView>
+    </Stack>
+  );
+}
+````
+
 ## File: src/components/field-ops/shared/AttendanceStatusCard.tsx
 ````typescript
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
@@ -15246,34 +15440,6 @@ export default function HeroSection() {
 }
 ````
 
-## File: src/components/shared/Headers/nav-links.ts
-````typescript
-import {IconMapPin, IconPackage, IconTruck, IconUser } from "@tabler/icons-react";
-
-export const NAV_LINKS = [
-  {
-    label: "Profil Saya",
-    href: "/profil",
-    icon: IconUser,
-  },
-  {
-    label: "Request Pickup",
-    href: "/request-pickup",
-    icon: IconTruck,
-  },
-  {
-    label: "Pesanan Saya",
-    href: "/pesanan",
-    icon: IconPackage,
-  },
-  {
-    label: "Alamat",
-    href: "/alamat",
-    icon: IconMapPin,
-  },
-] as const;
-````
-
 ## File: src/components/shared/Location/LocationPermission/hooks/useLocationPermission.tsx
 ````typescript
 "use client";
@@ -15339,22 +15505,61 @@ export function useLocationPermission() {
 }
 ````
 
+## File: src/components/shared/Location/LocationPermission/lib/browser-detect.ts
+````typescript
+export type BrowserName = "chrome" | "firefox" | "safari" | "edge" | "other";
+
+export function detectBrowser(): BrowserName {
+  if (typeof navigator === "undefined") return "other";
+
+  const ua = navigator.userAgent;
+
+  if (/Edg\//.test(ua)) return "edge";
+  if (/Chrome\//.test(ua) && !/Edg\//.test(ua)) return "chrome";
+  if (/Firefox\//.test(ua)) return "firefox";
+  if (/Safari\//.test(ua) && !/Chrome\//.test(ua)) return "safari";
+
+  return "other";
+}
+
+const INSTRUCTIONS: Record<BrowserName, string> = {
+  chrome:
+    'Klik ikon gembok di sebelah kiri address bar, lalu ubah izin Lokasi jadi "Izinkan".',
+  edge:
+    'Klik ikon gembok di sebelah kiri address bar, lalu ubah izin Lokasi jadi "Izinkan".',
+  firefox:
+    'Klik ikon gembok di sebelah kiri address bar, lalu hapus blokir izin Lokasi.',
+  safari:
+    "Buka menu Safari → Settings for This Website (atau Preferences → Websites → Location), lalu ubah izin jadi Allow.",
+  other:
+    'Buka pengaturan situs di browser Anda, cari izin "Lokasi", lalu ubah jadi diizinkan.',
+};
+
+export function getLocationPermissionInstruction(): string {
+  return INSTRUCTIONS[detectBrowser()];
+}
+````
+
 ## File: src/components/shared/AuthBootstrap.tsx
 ````typescript
 "use client";
 
 import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { AuthApi } from "@/lib/api/auth.api";
+import { ROLE_HOME } from "@/lib/constants/routes";
+import type { Role } from "@/types/api";
 
 const authApi = new AuthApi();
 
 export function AuthBootstrap({ children }: { children: React.ReactNode }) {
   const setUser = useAuthStore((s) => s.setUser);
   const clearUser = useAuthStore((s) => s.clearUser);
+  const router = useRouter();
+  const pathname = usePathname();
 
-  // queryKey WAJIB sama persis dengan yang dipakai useCurrentUser (auth.hooks.ts)
   const { data, isError, isSuccess } = useQuery({
     queryKey: ["auth", "me"],
     queryFn: authApi.me,
@@ -15366,7 +15571,82 @@ export function AuthBootstrap({ children }: { children: React.ReactNode }) {
     if (isError) clearUser();
   }, [isSuccess, isError, data, setUser, clearUser]);
 
+
+  useEffect(() => {
+    if (!isSuccess || !data) return;
+
+    const isEmployee = data.accountType !== "customer";
+
+  
+    if (!isEmployee) {
+      if (pathname === "/login") {
+        router.replace("/");
+      }
+      return;
+    }
+
+   
+    const home = ROLE_HOME[data.role as Role] ?? "/internal/login";
+
+   
+    if (pathname === "/internal/login" || pathname === "/") {
+      router.replace(home);
+    }
+  }, [isSuccess, data, pathname, router]);
+
   return <>{children}</>;
+}
+````
+
+## File: src/components/shared/Footer.tsx
+````typescript
+import { Box, Container, Flex, Stack, Text, Title } from "@mantine/core";
+
+export default function Footer() {
+  return (
+    <Box
+      component="footer"
+      style={{
+        backgroundColor: "var(--color-text-primary)",
+        color: "var(--color-background)",
+      }}
+    >
+      <Container size="lg" py={40} px={{ base: 20}}>
+        <Flex
+          direction={{ base: "column", sm: "row" }}
+          justify="space-between"
+          gap={{ base: 32, sm: 0 }}
+        >
+          <Stack gap={6}>
+            <Title order={4} c="var(--color-background)">
+              Popo Laundry
+            </Title>
+            <Text size="sm" opacity={0.75}>
+              Laundry dijemput, diproses, dan diantar kembali bersih, rapi,
+              tepat waktu.
+            </Text>
+          </Stack>
+
+          <Stack gap={6} ta={{ base: "left", sm: "right" }}>
+            <Text fw={600} size="md">
+              Kontak
+            </Text>
+            <Text size="sm" opacity={0.75}>
+              halo@popolaundry.id
+            </Text>
+            <Text size="sm" opacity={0.75}>
+              +62 812-0000-0000
+            </Text>
+          </Stack>
+        </Flex>
+
+        <Text size="xs" opacity={0.5} mt={40}>
+          © {new Date().getFullYear()} Popo Laundry. Seluruh hak cipta
+          dilindungi.
+        </Text>
+      </Container>
+    </Box>
+  );
 }
 ````
 
@@ -15934,122 +16214,6 @@ export function useComplaintHooks(role: string) {
 }
 ````
 
-## File: src/hooks/fieldOpsTaskNotification.hooks.ts
-````typescript
-"use client";
-
-import { DriverApi } from "@/lib/api/driver.api";
-import { WorkerApi } from "@/lib/api/worker.api";
-
-import { DRIVER_AVAILABLE_QUERY_KEY } from "@/hooks/driver.hooks";
-import { WORKER_AVAILABLE_QUERY_KEY } from "@/hooks/worker.hooks";
-
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
-
-type FieldOpsRole = "Driver" | "Worker";
-
-type UseFieldOpsTaskNotificationProps = {
-  role: FieldOpsRole;
-  onNewTask: () => void;
-};
-
-const driverApi = new DriverApi();
-const workerApi = new WorkerApi();
-
-const POLLING_INTERVAL = 30_000;
-
-export function useFieldOpsTaskNotification({ role, onNewTask }: UseFieldOpsTaskNotificationProps) {
-  // Menyimpan createdAt terbaru yang sudah pernah difetch simpan sebelumnya.
-  const knownTaskTimeRef = useRef<string | null>(null);
-
-  // Menandai bahwa response pertama sudah pernah dijadikan baseline.
-  const hasBaselineRef = useRef(false);
-
-  const notificationQueryKey = role === "Driver" ? [...DRIVER_AVAILABLE_QUERY_KEY, "notification"] : [...WORKER_AVAILABLE_QUERY_KEY, "notification"];
-
-  const notificationQuery = useQuery({
-    queryKey: notificationQueryKey,
-
-    queryFn: async () => {
-      const requestParams = {
-        page: 1,
-        pageSize: 1,
-        sortOrder: "desc" as const,
-      };
-
-      if (role === "Driver") {
-        return driverApi.getAvailable(requestParams);
-      }
-
-      return workerApi.getAvailable(requestParams);
-    },
-
-    refetchInterval: POLLING_INTERVAL,
-    refetchOnWindowFocus: true,
-  });
-
-  useEffect(() => {
-    // Query belum selesai fetch.
-    // Jangan buat baseline dulu.
-    if (!notificationQuery.data) {
-      return;
-    }
-
-    // Karena pageSize = 1,
-    // index 0 adalah task paling baru.
-    const newestTask = notificationQuery.data.data[0];
-
-    const incomingCreatedAt = newestTask?.createdAt ?? null;
-
-    // RESPONSE PERTAMA
-    // Response pertama hanya dijadikan baseline.
-    // Task yang sudah ada sebelum user membuka aplikasi tidak dianggap sebagai task baru.
-    if (!hasBaselineRef.current) {
-      knownTaskTimeRef.current = incomingCreatedAt;
-      hasBaselineRef.current = true;
-
-      return;
-    }
-
-    // RESPONSE BERIKUTNYA
-    // Kalau sekarang tidak ada available task,
-    // tidak ada yang perlu dibandingkan.
-    if (!incomingCreatedAt) {
-      return;
-    }
-
-    // Sebelumnya belum ada task,
-    // sekarang sudah ada task.
-    // Berarti task tersebut memang muncul setelah baseline.
-    if (!knownTaskTimeRef.current) {
-      knownTaskTimeRef.current = incomingCreatedAt;
-
-      onNewTask();
-
-      return;
-    }
-
-    // Ubah tanggal string menjadi timestamp number
-    // supaya bisa dibandingkan.
-    const knownTimestamp = new Date(knownTaskTimeRef.current).getTime();
-
-    const incomingTimestamp = new Date(incomingCreatedAt).getTime();
-
-    // Kalau waktu task dari API sekarang
-    // lebih baru daripada waktu task yang sudah dikenal,
-    // berarti ada task baru.
-    if (incomingTimestamp > knownTimestamp) {
-      knownTaskTimeRef.current = incomingCreatedAt;
-
-      onNewTask();
-    }
-  }, [notificationQuery.data, onNewTask]);
-
-  return notificationQuery;
-}
-````
-
 ## File: src/hooks/pricing.hooks.ts
 ````typescript
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -16374,6 +16538,48 @@ export function useShippingRateHooks() {
     handleDeactivateModalClose,
     handleDeactivateConfirm,
   };
+}
+````
+
+## File: src/hooks/profile.hooks.ts
+````typescript
+"use client";
+
+import { ProfileApi } from "@/lib/api/profileCustomer.api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AUTH_ME_QUERY_KEY } from "./authCustomer.hooks";
+
+const profileApi = new ProfileApi();
+
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: profileApi.updateProfile,
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY }),
+  });
+}
+
+export function useUpdateProfilePhoto() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: profileApi.updateProfilePhoto,
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY }),
+  });
+}
+
+export function useRequestEmailChange() {
+  return useMutation({ mutationFn: profileApi.requestEmailChange });
+}
+
+export function useConfirmEmailChange() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: profileApi.confirmEmailChange,
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY }),
+  });
 }
 ````
 
@@ -16817,6 +17023,73 @@ export class OutletApi {
 }
 ````
 
+## File: src/lib/api/profileCustomer.api.ts
+````typescript
+import {
+  UpdatePhotoResponse,
+  UpdateProfileResponse,
+} from "@/types/api/profile.type";
+import {
+  MAX_PHOTO_SIZE_BYTES,
+  profilePhotoSchema,
+  UpdateEmailSchema,
+  UpdateProfileSchema,
+} from "../validation/profile.validation";
+import { api, ApiError } from "./axios";
+import { MessageResponse } from "@/types/api";
+
+export class ProfileApi {
+  async updateProfile(payload: UpdateProfileSchema) {
+    const body: Record<string, string> = { name: payload.name! };
+    if (payload.phone) body.phone = payload.phone;
+    if (payload.newPassword) {
+      body.newPassword = payload.newPassword;
+      body.currentPassword = payload.currentPassword!;
+    }
+    const { data } = await api.patch<{ data: UpdateProfileResponse }>(
+      "/profile/me",
+      body,
+    );
+    return data.data;
+  }
+
+  async updateProfilePhoto(file: File) {
+    const parsed = profilePhotoSchema.safeParse(file);
+    if (!parsed.success) {
+      const isTooLarge = file.size > MAX_PHOTO_SIZE_BYTES;
+      const code = isTooLarge ? "FILE_TOO_LARGE" : "FILE_TYPE_INVALID";
+      throw new ApiError(code, parsed.error.issues[0].message);
+    }
+    const formData = new FormData();
+    formData.append("PROFILE_PHOTO", file);
+    const { data } = await api.patch<{ data: UpdatePhotoResponse }>(
+      "/profile/photo",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
+    return data.data;
+  }
+
+  async requestEmailChange(payload: UpdateEmailSchema) {
+    const { data } = await api.patch<{ data: MessageResponse }>(
+      "/profile/email",
+      payload,
+    );
+    return data.data;
+  }
+
+  async confirmEmailChange(token: string) {
+    const { data } = await api.post<{ data: MessageResponse }>(
+      "/profile/email/confirm",
+      { token },
+    );
+    return data.data;
+  }
+}
+````
+
 ## File: src/lib/api/report.api.ts
 ````typescript
 import type { ApiResponse } from "@/types/api";
@@ -16855,6 +17128,65 @@ export class ReportApi {
 
     return response.data;
   }
+}
+````
+
+## File: src/lib/auth/AuthGateCustomer.tsx
+````typescript
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Center, Loader } from "@mantine/core";
+import { useCurrentUser } from "@/hooks/authCustomer.hooks";
+
+export type AuthGateCustomerProps = {
+  children: React.ReactNode;
+};
+
+export function AuthGateCustomer({ children }: AuthGateCustomerProps) {
+  const router = useRouter();
+
+  const { data: user, isLoading, isError } = useCurrentUser();
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (isError || !user) {
+      const currentPath = window.location.pathname + window.location.search;
+      router.replace(`/login?intended_url=${encodeURIComponent(currentPath)}`);
+      return;
+    }
+
+    if (!user.isEmailVerified) {
+      router.replace("/login?reason=email-not-verified");
+      return;
+    }
+
+    if (user.accountType !== "customer") {
+      router.replace("/login");
+      return;
+    }
+  }, [user, isLoading, isError, router]);
+
+  if (isLoading || !user) {
+    return (
+      <Center mih="100vh">
+        <Loader size="md" />
+      </Center>
+    );
+  }
+
+  if (
+    !user ||
+    isError ||
+    !user.isEmailVerified ||
+    user.accountType !== "customer"
+  ) {
+    return null;
+  }
+
+  return <>{children}</>;
 }
 ````
 
@@ -16903,6 +17235,68 @@ export const STATUS_LABELS: Record<string, string> = {
   WAITING_CUSTOMER_CONFIRMATION: "Menunggu Konfirmasi",
   RECEIVED_BY_CUSTOMER: "Diterima",
 };
+````
+
+## File: src/lib/validation/auth.validation.ts
+````typescript
+import * as z from "zod"
+
+export const loginCustomerSchema = z.object({
+  email: z.string().email("Email tidak valid"),
+  password: z.string().min(8, "Minimal 8 karakter"),
+});
+
+export const registerCustomerSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email wajib diisi")
+    .email("Format email tidak valid"),
+});
+
+export const emailVerificationSchema = z.object({
+  name: z
+    .string()
+    .min(5, "Nama minimal 5 karakter")
+    .max(150, "Nama maksimal 150 karakter"),
+  password: z.string().min(8, "Kata sandi minimal 8 karakter"),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Format email tidak valid"),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, "Password minimal 8 karakter"),
+    confirmPassword: z.string().min(1, "Konfirmasi password wajib diisi"),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    message: "Konfirmasi password tidak cocok",
+    path: ["confirmPassword"],
+  });
+
+export const acceptInvitationSchema = z
+  .object({
+    password: z.string().min(8, "Password minimal 8 karakter"),
+    confirmPassword: z.string().min(1, "Konfirmasi password wajib diisi"),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    message: "Konfirmasi password tidak cocok",
+    path: ["confirmPassword"],
+  });
+
+export const employeeLoginSchema = z.object({
+  email: z.string().email("Format email tidak valid."),
+  password: z.string().min(1, "Password wajib diisi."),
+});
+
+export type LoginCustomerSchema = z.infer<typeof loginCustomerSchema>;
+export type EmployeeLoginSchema = z.infer<typeof employeeLoginSchema>;
+export type RegisterCustomerSchema = z.infer<typeof registerCustomerSchema>;
+export type EmailVerificationSchema = z.infer<typeof emailVerificationSchema>;
+export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;
+export type AcceptInvitationSchema = z.infer<typeof acceptInvitationSchema>;
 ````
 
 ## File: src/lib/validation/employee.validation.ts
@@ -17103,6 +17497,56 @@ export type FilterOutletValues = z.infer<
 >;
 ````
 
+## File: src/lib/validation/profile.validation.ts
+````typescript
+import * as z from "zod"
+
+export const updateProfileSchema = z
+  .object({
+    name: z.string().min(1, "Nama tidak boleh kosong").max(100).optional(),
+    phone: z
+      .string()
+      .min(8, "Nomor telepon tidak valid")
+      .max(20)
+      .optional()
+      .or(z.literal("")),
+    currentPassword: z.string().optional().or(z.literal("")),
+    newPassword: z.string().optional().or(z.literal("")),
+  })
+  .refine((v) => (v.newPassword ? v.newPassword.length >= 8 : true), {
+    message: "Password baru minimal 8 karakter",
+    path: ["newPassword"],
+  })
+  .refine((v) => (v.newPassword ? !!v.currentPassword : true), {
+    message: "Password saat ini wajib diisi untuk mengganti password",
+    path: ["currentPassword"],
+  });
+
+export const updateEmailSchema = z.object({
+  newEmail: z.string().email("Format email tidak valid"),
+});
+
+const ALLOWED_PHOTO_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+];
+export const MAX_PHOTO_SIZE_BYTES = 1 * 1024 * 1024;
+
+export const profilePhotoSchema = z
+  .instanceof(File, { message: "File wajib diunggah" })
+  .refine((file) => ALLOWED_PHOTO_TYPES.includes(file.type), {
+    message: "Hanya menerima file .jpg, .jpeg, .png, atau .gif.",
+  })
+  .refine((file) => file.size <= MAX_PHOTO_SIZE_BYTES, {
+    message: "Ukuran file maksimal 1 MB.",
+  });
+
+export type UpdateProfileSchema = z.infer<typeof updateProfileSchema>;
+export type UpdateEmailSchema = z.infer<typeof updateEmailSchema>;
+````
+
 ## File: src/lib/validation/worker.validation.ts
 ````typescript
 import zod from "zod/v4";
@@ -17132,28 +17576,87 @@ export const workerQuantitySchema = zod.object({
 });
 ````
 
-## File: src/lib/safe-redirect.ts
+## File: src/providers/Providers.tsx
 ````typescript
-import * as z from "zod"
+"use client";
 
-const FALLBACK_PATH = "/beranda";
+import { useState } from "react";
+import { MantineProvider } from "@mantine/core";
+import "@mantine/carousel/styles.css";
+import "@mantine/dates/styles.css";
+import { Notifications } from "@mantine/notifications";
+import { ModalsProvider } from "@mantine/modals";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { theme } from "@/lib/theme/theme";
+import { AuthBootstrap } from "@/components/shared/AuthBootstrap";
 
-export const safeRedirectPathSchema = z
-  .string()
-  .max(500)
-  .refine((val) => val.startsWith("/"), { message: "URL harus path relatif" })
-  .refine((val) => !val.startsWith("//") && !val.startsWith("/\\"), {
-    message: "URL tidak boleh protocol-relative",
-  })
-  .refine((val) => !/^\/[a-z][a-z0-9+.-]*:/i.test(val) && !val.includes("://"), {
-    message: "URL tidak boleh mengandung skema lain",
-  });
+export function Providers({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+            retry: 1,
+            refetchOnWindowFocus: false,
+          },
+        },
+      }),
+  );
 
-export function getSafeRedirectPath(intendedUrl: string | null): string {
-  if (!intendedUrl) return FALLBACK_PATH;
-  const result = safeRedirectPathSchema.safeParse(intendedUrl);
-  return result.success ? result.data : FALLBACK_PATH;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider theme={theme} defaultColorScheme="light">
+        <ModalsProvider>
+          <Notifications position="top-right" />
+          <AuthBootstrap>{children}</AuthBootstrap>
+        </ModalsProvider>
+      </MantineProvider>
+      {process.env.NODE_ENV === "development" && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
+    </QueryClientProvider>
+  );
 }
+````
+
+## File: src/stores/useAuthStore.ts
+````typescript
+"use client";
+
+import { create } from "zustand";
+
+export type AuthUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  accountType: "customer" | "employee";
+  isEmailVerified: boolean;
+  profilePhotoUrl?: string | null;
+  phone?: string | null;
+  authProvider: string;
+  currentOutletId?: string | null;
+};
+
+type AuthState = {
+  user: AuthUser | null;
+  isInitializing: boolean;
+};
+
+type AuthActions = {
+  setUser: (user: AuthUser) => void;
+  clearUser: () => void;
+};
+
+export const useAuthStore = create<AuthState & AuthActions>((set) => ({
+  user: null,
+  isInitializing: true,
+
+  setUser: (user) => set({ user, isInitializing: false }),
+  clearUser: () => set({ user: null, isInitializing: false }),
+}));
 ````
 
 ## File: src/types/api/complaint.types.ts
@@ -17552,95 +18055,6 @@ export type PaginatedEmployeePerformanceResponse = {
 };
 ````
 
-## File: src/app/(auth)/lupa-password/page.tsx
-````typescript
-"use client";
-
-import { ForgotPasswordForm } from "@/components/authCustomer/ForgotPasswordForm";
-import {
-  Anchor,
-  Center,
-  Group,
-  Paper,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
-import { IconChevronLeft } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
-
-export default function ForgotPasswordPage() {
-  const router = useRouter();
-
-  function handleBack() {
-    router.push("/login");
-  }
-
-  return (
-    <Center
-      mih="100vh"
-      px={{ base: 16, sm: 24 }}
-      py={{ base: 24, sm: 40 }}
-    >
-      <Stack
-        w="100%"
-        maw={420}
-        gap="sm"
-      >
-        <Anchor
-          component="button"
-          type="button"
-          onClick={handleBack}
-          fw={600}
-          c="var(--color-text-primary)"
-          style={{
-            alignSelf: "flex-start",
-          }}
-        >
-          <Group gap={4}>
-            <IconChevronLeft size={16} stroke={2} />
-            Kembali
-          </Group>
-        </Anchor>
-
-        <Paper
-          w="100%"
-          p={{ base: 24, sm: 32 }}
-          radius="md"
-          withBorder
-          style={{
-            backgroundColor: "var(--color-surface)",
-          }}
-        >
-          <Stack gap="md">
-            <div>
-              <Title
-                order={3}
-                style={{
-                  color: "var(--color-text-primary)",
-                }}
-              >
-                Lupa Kata Sandi?
-              </Title>
-
-              <Text
-                size="sm"
-                c="var(--color-text-secondary)"
-              >
-                Jangan khawatir! Masukkan email kamu di bawah untuk mengatur
-                ulang kata sandi.
-              </Text>
-            </div>
-
-            <ForgotPasswordForm />
-          </Stack>
-        </Paper>
-      </Stack>
-    </Center>
-  );
-}
-````
-
 ## File: src/app/(customer)/pesanan/[id]/invoice/page.tsx
 ````typescript
 import { Box} from "@mantine/core";
@@ -17685,226 +18099,63 @@ export default async function OrderDetailPage({
 }
 ````
 
-## File: src/app/(customer)/profil/page.tsx
+## File: src/app/(customer)/profil/edit/page.tsx
 ````typescript
 "use client";
 
-import {
-  Anchor,
-  Avatar,
-  Badge,
-  Button,
-  Divider,
-  Flex,
-  Group,
-  Paper,
-  SimpleGrid,
-  Stack,
-  Text,
-  ThemeIcon,
-  Title,
-} from "@mantine/core";
-import {
-  IconCheck,
-  IconPencil,
-  IconX,
-  IconUser,
-  IconMail,
-  IconPhone,
-  IconChevronLeft,
-} from "@tabler/icons-react";
-import Link from "next/link";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { EmailChangeForm } from "@/components/customer/profil/emailChangeForm";
+import { ProfileForm } from "@/components/customer/profil/profileForm";
+import { ProfilePhotoUpload } from "@/components/customer/profil/profilePhotoUpload";
+import { Paper, Stack, Divider, Anchor, Group } from "@mantine/core";
+import { IconChevronLeft } from "@tabler/icons-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-
-
-export default function ProfilPage({
-  fallbackHref = "/",
-}: {
-  fallbackHref?: string;
-}) {
+export default function ProfilePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const from = searchParams.get("from");
 
-  const { user } = useAuthStore();
-
-  if (!user) return null;
-
-  const initials = user.name
-    ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase()
-    : "?";
-
-
   function handleBack() {
-    if (from) {
-      router.replace(from);
-      return;
-    }
-
-    router.back();
+    router.replace(
+      from ? `/profil?from=${encodeURIComponent(from)}` : "/profil",
+    );
   }
-
+  
   return (
-    <Stack gap="xl" mx="auto" py={{ base: 16, sm: 32 }}>
-      <Anchor
-        component="button"
-        type="button"
-        onClick={handleBack}
-        fw={600}
-        c="var(--color-text-primary)"
-      >
-        <Group gap={2}>
-          <IconChevronLeft size={16} stroke={2} />
-          Kembali
-        </Group>
-      </Anchor>
-      <Flex direction="column" align="center" ta="center">
-        <Title order={2} style={{ color: "var(--color-text-primary)" }}>
-          Profil Saya
-        </Title>
-        <Text size="sm" c="var(--color-text-secondary)">
-          Data personal dan informasi akun kamu.
-        </Text>
-      </Flex>
-      {/* Card ringkasan — banner + avatar + aksi */}
-      <Paper withBorder radius="md" style={{ overflow: "hidden" }}>
-        <div
-          style={{
-            height: 88,
-            backgroundImage:
-              "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)",
-          }}
-        />
-
-        <Stack align="center" gap={6} px="xl" pb="xl" mt={-44}>
-          <Avatar size={88} radius="xl" src={user.profilePhotoUrl || undefined}>
-            {initials}
-          </Avatar>
-
-          <Text fw={600} size="lg" mt={4}>
-            {user.name}
-          </Text>
-          <Text size="sm" c="var(--color-text-secondary)">
-            {user.email}
-          </Text>
-
-          {user.isEmailVerified ? (
-            <Badge
-              size="sm"
-              variant="light"
-              leftSection={<IconCheck size={12} />}
-              style={{
-                backgroundColor: "var(--color-success-light)",
-                color: "var(--color-success)",
-              }}
-              mt={4}
-            >
-              Email terverifikasi
-            </Badge>
-          ) : (
-            <Badge
-              size="sm"
-              variant="light"
-              leftSection={<IconX size={12} />}
-              style={{
-                backgroundColor: "var(--color-error-light)",
-                color: "var(--color-error)",
-              }}
-              mt={4}
-            >
-              Belum terverifikasi
-            </Badge>
-          )}
-
-          <Group grow w="100%" gap="sm" mt="lg">
-            <Button
-              component={Link}
-              href="/profil/edit"
-              leftSection={<IconPencil size={16} />}
-              style={{
-                backgroundColor: "var(--color-accent)",
-                color: "var(--color-text-on-accent)",
-              }}
-            >
-              Edit Profil
-            </Button>
+    <Paper
+      maw={480}
+      mx="auto"
+      p={32}
+      radius="md"
+      withBorder
+      style={{ backgroundColor: "var(--color-surface)" }}
+    >
+      <Stack gap="xl">
+        <Anchor
+          component="button"
+          type="button"
+          onClick={handleBack}
+          fw={600}
+          c="var(--c-text-primary"
+        >
+          <Group gap={2}>
+            <IconChevronLeft stroke={2} />
+            Profil Saya
           </Group>
-        </Stack>
-      </Paper>
+        </Anchor>
 
-      {/* Card info akun */}
-      <Paper withBorder radius="md" p="lg">
-        <Title order={4} mb="lg">
-          Informasi Akun
-        </Title>
+        <ProfilePhotoUpload />
 
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
-          <ProfileField
-            icon={IconUser}
-            label="Nama Lengkap"
-            value={user.name}
-          />
-          <ProfileField icon={IconMail} label="Email" value={user.email} />
-          <ProfileField
-            icon={IconPhone}
-            label="Nomor Telepon"
-            value={user.phone || "Belum diisi"}
-          />
-        </SimpleGrid>
+        <Divider />
 
-        <Divider my="lg" />
+        <ProfileForm />
 
-        <Text fw={500} size="sm">
-          Keamanan Akun
-        </Text>
-        <Text size="xs" c="var(--color-text-secondary)" mt={2}>
-          Terakhir diperbarui melalui halaman edit profil.
-        </Text>
-      </Paper>
-    </Stack>
-  );
-}
+        <Divider />
 
-function ProfileField({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: React.ComponentType<{ size?: number }>;
-  label: string;
-  value: string;
-}) {
-  return (
-    <Group gap="sm" align="flex-start" wrap="nowrap">
-      <ThemeIcon
-        size={36}
-        radius="md"
-        variant="light"
-        style={{
-          backgroundColor: "var(--color-primary-light)",
-          color: "var(--color-primary)",
-          flexShrink: 0,
-        }}
-      >
-        <Icon size={18} />
-      </ThemeIcon>
-      <div style={{ minWidth: 0 }}>
-        <Text size="xs" c="var(--color-text-secondary)">
-          {label}
-        </Text>
-        <Text size="sm" fw={500} truncate>
-          {value}
-        </Text>
-      </div>
-    </Group>
+        <EmailChangeForm />
+      </Stack>
+    </Paper>
   );
 }
 ````
@@ -17923,25 +18174,6 @@ export default function Page() {
 import { SalesReportContent } from "@/components/back-office/laporan/penjualan/SalesReportContent";
 export default function Page() {
   return <SalesReportContent role="SUPER_ADMIN" />;
-}
-````
-
-## File: src/app/internal/(back-office)/super-admin/layout.tsx
-````typescript
-import { BackOfficeAppShell } from "@/components/back-office/shared/BackOfficeAppShell";
-import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
-// import { requireRole } from "@/lib/auth/AuthGateCustomer";
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  // await requireRole(["SUPER_ADMIN"]);
-  return (
-    <AuthGateEmployee allowedRoles={["SUPER_ADMIN"]}>
-      <BackOfficeAppShell role="SUPER_ADMIN">{children}</BackOfficeAppShell>
-    </AuthGateEmployee>
-  );
 }
 ````
 
@@ -18043,15 +18275,6 @@ export default function Page() {
       <DriverAvailableAssignments />
     </Stack>
   );
-}
-````
-
-## File: src/app/internal/(field-ops)/worker/riwayat/page.tsx
-````typescript
-import { WorkerHistory } from "@/components/field-ops/worker/WorkerHistory";
-
-export default function Page() {
-  return <WorkerHistory />;
 }
 ````
 
@@ -18206,12 +18429,208 @@ export default function Page() {
 }
 ````
 
-## File: src/app/internal/layout.tsx
+## File: src/app/page.tsx
 ````typescript
-import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
+"use client";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return <AuthGateEmployee allowedRoles={["DRIVER", "OUTLET_ADMIN", "SUPER_ADMIN", "WORKER"]}>{children}</AuthGateEmployee>;
+import { Box, Container, SimpleGrid, Stack, Title } from "@mantine/core";
+import Footer from "@/components/shared/Footer";
+import FeatureCard, {
+  FEATURES,
+} from "@/components/landing-page/FeatureSection";
+import Header from "@/components/shared/Headers/Header";
+import CaraKerja from "@/components/landing-page/CaraKerjaSection";
+import CarouselSection from "@/components/landing-page/CarouselSection";
+import HeroSection from "@/components/landing-page/HeroSection";
+import { LocationPermissionGate } from "@/components/shared/Location/LocationPermission/LocationPermissionGate";
+
+export default function Page() {
+  return (
+    <Box
+      style={{ backgroundColor: "var(--color-background)", minHeight: "100vh" }}
+    >
+      {/* Header */}
+
+      <Header />
+
+      <Container size="lg" pt={40}>
+        <Stack gap="xl">
+          {/* Hero section — carousel */}
+          <HeroSection />
+
+          <CarouselSection />
+
+          {/* Cara Kerja - section */}
+          <CaraKerja />
+
+          <LocationPermissionGate />
+
+          {/* Layanan / features */}
+          <Box component="section" py={20}>
+            <Stack gap="md">
+              <Title
+                id="layanan-heading"
+                order={2}
+                py={20}
+                style={{ color: "var(--color-text-primary)" }}
+              >
+                Layanan kami
+              </Title>
+              <SimpleGrid cols={{ base: 1, sm: 3 }}>
+                {FEATURES.map((f) => (
+                  <FeatureCard key={f.title} {...f} />
+                ))}
+              </SimpleGrid>
+            </Stack>
+          </Box>
+        </Stack>
+      </Container>
+      {/* Footer */}
+      <Footer />
+    </Box>
+  );
+}
+````
+
+## File: src/components/authCustomer/GoogleLoginButton.tsx
+````typescript
+"use client";
+
+import { useEffect, useRef } from "react";
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: {
+            client_id: string;
+            callback: (response: { credential: string }) => void;
+          }) => void;
+
+          renderButton: (
+            parent: HTMLElement,
+            options: {
+              theme?: "outline" | "filled_blue" | "filled_black";
+              size?: "large" | "medium" | "small";
+              width?: number;
+              text?: "signin_with" | "signup_with" | "continue_with";
+            },
+          ) => void;
+        };
+      };
+    };
+  }
+}
+
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+const GSI_SCRIPT_SRC = "https://accounts.google.com/gsi/client";
+
+type GoogleSignInButtonProps = {
+  onIdToken: (idToken: string) => void;
+  text?: "signin_with" | "signup_with";
+};
+
+export function GoogleSignInButton({
+  onIdToken,
+  text = "signin_with",
+}: GoogleSignInButtonProps) {
+  const buttonRef = useRef<HTMLDivElement>(null);
+  const callbackRef = useRef(onIdToken);
+
+  useEffect(() => {
+    callbackRef.current = onIdToken;
+  }, [onIdToken]);
+
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID || !buttonRef.current) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const renderButton = () => {
+      if (
+        cancelled ||
+        !window.google?.accounts?.id ||
+        !buttonRef.current
+      ) {
+        return;
+      }
+
+      const container = buttonRef.current;
+
+      container.innerHTML = "";
+
+      const width = Math.min(container.clientWidth, 356);
+
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: (response) => {
+          callbackRef.current(response.credential);
+        },
+      });
+
+      window.google.accounts.id.renderButton(container, {
+        theme: "outline",
+        size: "large",
+        width,
+        text,
+      });
+    };
+
+    if (window.google?.accounts?.id) {
+
+      requestAnimationFrame(renderButton);
+
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const existingScript =
+      document.querySelector<HTMLScriptElement>(
+        `script[src="${GSI_SCRIPT_SRC}"]`,
+      );
+
+    if (existingScript) {
+      existingScript.addEventListener("load", renderButton);
+
+      return () => {
+        cancelled = true;
+        existingScript.removeEventListener(
+          "load",
+          renderButton,
+        );
+      };
+    }
+
+    // Load Google Identity Services
+    const script = document.createElement("script");
+
+    script.src = GSI_SCRIPT_SRC;
+    script.async = true;
+    script.defer = true;
+    script.onload = renderButton;
+
+    document.head.appendChild(script);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [text]);
+
+  return (
+    <div
+      ref={buttonRef}
+      style={{
+        width: "100%",
+        maxWidth: 356,
+        margin: "0 auto",
+        overflow: "hidden",
+      }}
+    />
+  );
 }
 ````
 
@@ -18355,6 +18774,7 @@ export function DashboardContent({
 ````typescript
 "use client";
 
+import { useState } from "react";
 import { Button, Paper, Stack } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -18362,18 +18782,46 @@ import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { useEmployeeHooks } from "@/hooks/employee.hooks";
 import { EmployeeFilters } from "./EmployeeFilters";
 import { EmployeeTable } from "./EmployeeTable";
+import { InviteEmployeeModal } from "./InviteEmployeeModal";
 import TableSkeleton from "../shared/TableSkeleton";
 
 export function EmployeeContent() {
-  const { router, filters, sortBy, sortOrder, outlets, handleFilterChange, setSortBy, setPage, setSortOrder, handleReset, employees, setPageSize } =
-    useEmployeeHooks();
+  const {
+    router,
+    filters,
+    sortBy,
+    sortOrder,
+    outlets,
+    handleFilterChange,
+    setSortBy,
+    setPage,
+    setSortOrder,
+    handleReset,
+    employees,
+    setPageSize,
+    inviteEmployee,
+  } = useEmployeeHooks();
+
+  const [inviteOpened, setInviteOpened] = useState(false);
+
+  const handleInviteSubmit = (values: Parameters<typeof inviteEmployee.mutate>[0]) => {
+    inviteEmployee.mutate(values, {
+      onSuccess: () => {
+        setInviteOpened(false);
+      },
+    });
+  };
+
   return (
     <Stack gap="lg">
       <PageHeader
         title="Karyawan"
         description="Kelola akun internal dan penempatan karyawan."
         action={
-          <Button leftSection={<IconPlus size={16} />} onClick={() => router.push("/internal/super-admin/karyawan/undang")}>
+          <Button
+            leftSection={<IconPlus size={16} />}
+            onClick={() => setInviteOpened(true)}
+          >
             Undang Karyawan
           </Button>
         }
@@ -18425,12 +18873,23 @@ export function EmployeeContent() {
                   setPageSize(value);
                   setPage(1);
                 }}
-                onView={(employeeId) => router.push(`/internal/super-admin/karyawan/${employeeId}`)}
+                onView={(employeeId) =>
+                  router.push(
+                    `/internal/super-admin/karyawan/${employeeId}`,
+                  )
+                }
               />
             )}
           </AsyncStateView>
         </Stack>
       </Paper>
+
+      <InviteEmployeeModal
+        opened={inviteOpened}
+        onClose={() => setInviteOpened(false)}
+        onSubmit={handleInviteSubmit}
+        isSubmitting={inviteEmployee.isPending}
+      />
     </Stack>
   );
 }
@@ -19101,88 +19560,6 @@ export function SalesReportSummary({ report }: Props) {
 }
 ````
 
-## File: src/components/back-office/laundry-item/EditLaundryItemContent.tsx
-````typescript
-"use client";
-
-import { Center, Loader, Stack, Text } from "@mantine/core";
-import { useParams, useRouter } from "next/navigation";
-import { notifications } from "@mantine/notifications";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { useLaundryItem, useUpdateLaundryItem } from "@/hooks/laundry-item.hooks";
-import { LaundryItemForm } from "./LaundryItemForm";
-import type { UpdateLaundryItemPayload } from "@/types/api/laundry-item.types";
-
-export function EditLaundryItemContent() {
-  const router = useRouter();
-  const params = useParams<{
-    laundryItemId: string;
-  }>();
-  const laundryItemId = params.laundryItemId;
-  const { data: laundryItem, isLoading, isError } = useLaundryItem(laundryItemId);
-  const updateLaundryItem = useUpdateLaundryItem();
-  
-  const handleSubmit = async (values: UpdateLaundryItemPayload) => {
-    await updateLaundryItem.mutateAsync(
-      {
-        laundryItemId,
-        payload: values,
-      },
-      {
-        onSuccess: () => {
-          notifications.show({
-            title: "Berhasil",
-            message: "Item laundry berhasil diperbarui.",
-            color: "green",
-          });
-
-          router.push("/internal/super-admin/item-laundry");
-        },
-
-        onError: (error) => {
-          notifications.show({
-            title: "Gagal",
-            message: error instanceof Error ? error.message : "Gagal memperbarui item laundry.",
-            color: "red",
-          });
-        },
-      },
-    );
-  };
-
-  if (isLoading) {
-    return (
-      <Center h={300}>
-        <Loader />
-      </Center>
-    );
-  }
-
-  if (isError || !laundryItem) {
-    return (
-      <Center h={300}>
-        <Text c="red">Gagal memuat data item laundry.</Text>
-      </Center>
-    );
-  }
-
-  return (
-    <Stack gap="lg">
-      <PageHeader title="Edit Item Laundry" description="Perbarui informasi item laundry." />
-
-      <LaundryItemForm
-        initialValues={{
-          name: laundryItem.name,
-        }}
-        onSubmit={handleSubmit}
-        isSubmitting={updateLaundryItem.isPending}
-        submitLabel="Simpan Perubahan"
-      />
-    </Stack>
-  );
-}
-````
-
 ## File: src/components/back-office/laundry-item/LaundryItemContent.tsx
 ````typescript
 "use client";
@@ -19194,12 +19571,12 @@ import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { LaundryItemFilters } from "./LaundryItemFilters";
 import { LaundryItemTable } from "./LaundryItemTable";
+import { LaundryItemModal } from "./LaundryItemModal";
 import { useLaundryItemHooks } from "@/hooks/laundry-item.hooks";
 import TableSkeleton from "../shared/TableSkeleton";
 
 export function LaundryItemContent() {
   const {
-    router,
     form,
     setPage,
     handleReset,
@@ -19209,7 +19586,16 @@ export function LaundryItemContent() {
     selectedItem,
     deactivateLaundryItem,
     handleDeactivate,
+
+    itemModalOpened,
+    editingItem,
+    handleCreate,
+    handleEdit,
+    handleCloseItemModal,
+    handleSubmitItem,
+    isItemSubmitting,
   } = useLaundryItemHooks();
+
   return (
     <>
       <Stack gap="lg">
@@ -19217,7 +19603,10 @@ export function LaundryItemContent() {
           title="Laundry Item"
           description="Kelola jenis item laundry yang tersedia dalam sistem."
           action={
-            <Button leftSection={<IconPlus size={16} />} onClick={() => router.push("/internal/super-admin/item-laundry/baru")}>
+            <Button
+              leftSection={<IconPlus size={16} />}
+              onClick={handleCreate}
+            >
               Tambah Item
             </Button>
           }
@@ -19255,17 +19644,38 @@ export function LaundryItemContent() {
                   onPageChange={setPage}
                   onPageSizeChange={(value) => {
                     setPageSize(value as 10 | 20 | 50);
-
                     setPage(1);
                   }}
-                  onEdit={(item) => router.push(`/internal/super-admin/item-laundry/${item.id}`)}
-                  onDeactivate={(item) => setSelectedItem(item)}
+                  onEdit={handleEdit}
+                  onDeactivate={(item) =>
+                    setSelectedItem(item)
+                  }
                 />
               )}
             </AsyncStateView>
           </Stack>
         </Paper>
       </Stack>
+
+      <LaundryItemModal
+        opened={itemModalOpened}
+        onClose={handleCloseItemModal}
+        initialValues={{
+          name: editingItem?.name ?? "",
+        }}
+        onSubmit={handleSubmitItem}
+        isSubmitting={isItemSubmitting}
+        title={
+          editingItem
+            ? "Edit Item Laundry"
+            : "Tambah Item Laundry"
+        }
+        submitLabel={
+          editingItem
+            ? "Simpan Perubahan"
+            : "Tambah Item"
+        }
+      />
 
       <ConfirmDialog
         opened={Boolean(selectedItem)}
@@ -21893,52 +22303,63 @@ export function EmployeeLoginForm() {
 }
 ````
 
-## File: src/components/shared/Footer.tsx
+## File: src/components/shared/Headers/Header.tsx
 ````typescript
-import { Box, Container, Flex, Stack, Text, Title } from "@mantine/core";
+import {
+  Box,
+  Burger,
+  Container,
+  Drawer,
+  Flex,
+  Stack,
+  Title,
+  Anchor,
+} from "@mantine/core";
+import Link from "next/link";
+import { useDisclosure } from "@mantine/hooks";
+import { HeaderProfile } from "./HeaderProfile";
+import { NAV_LINKS } from "./nav-links";
 
-export default function Footer() {
+export default function Header() {
+  const [opened, { toggle, close }] = useDisclosure();
+
   return (
     <Box
-      component="footer"
+      component="header"
       style={{
-        backgroundColor: "var(--color-text-primary)",
-        color: "var(--color-background)",
+        position: "sticky",
+        top: 0,
+        zIndex: 10,
+        backgroundColor: "var(--color-background)",
+        borderBottom:
+          "3px solid color-mix(in srgb, var(--color-primary-dark) 13%, transparent)",
       }}
     >
-      <Container size="lg" py={40} px={{ base: 20}}>
-        <Flex
-          direction={{ base: "column", sm: "row" }}
-          justify="space-between"
-          gap={{ base: 32, sm: 0 }}
-        >
-          <Stack gap={6}>
-            <Title order={4} c="var(--color-background)">
-              Popo Laundry
-            </Title>
-            <Text size="sm" opacity={0.75}>
-              Laundry dijemput, diproses, dan diantar kembali bersih, rapi,
-              tepat waktu.
-            </Text>
-          </Stack>
+      <Container size="lg" py="sm">
+        <Flex align="center" justify="space-between" gap="md" mih={48}>
+          <Flex align="center" gap="xs" style={{ flexShrink: 0 }}>
+            <Anchor
+              component={Link}
+              href="/"
+              underline="never"
+              style={{ textDecoration: "none" }}
+            >
+              <Title
+                order={3}
+                style={{
+                  color: "var(--color-primary-dark)",
+                  letterSpacing: -0.5,
+                }}
+              >
+                Popo Laundry
+              </Title>
+            </Anchor>
+          </Flex>
 
-          <Stack gap={6} ta={{ base: "left", sm: "right" }}>
-            <Text fw={600} size="md">
-              Kontak
-            </Text>
-            <Text size="sm" opacity={0.75}>
-              halo@popolaundry.id
-            </Text>
-            <Text size="sm" opacity={0.75}>
-              +62 812-0000-0000
-            </Text>
-          </Stack>
+          <Box style={{ flexShrink: 0 }}>
+            <HeaderProfile />
+          </Box>
         </Flex>
-
-        <Text size="xs" opacity={0.5} mt={40}>
-          © {new Date().getFullYear()} Popo Laundry. Seluruh hak cipta
-          dilindungi.
-        </Text>
       </Container>
     </Box>
   );
@@ -21963,216 +22384,126 @@ export function useDashboard(params?: DashboardQuery) {
 }
 ````
 
-## File: src/hooks/driver.hooks.ts
+## File: src/hooks/fieldOpsTaskNotification.hooks.ts
 ````typescript
+"use client";
+
 import { DriverApi } from "@/lib/api/driver.api";
-import type { DriverAvailableQuery, DriverHistoryQuery, TaskType } from "@/types/api/driver.types";
-import { notifications } from "@mantine/notifications";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import dayjs from "dayjs";
-import { useState } from "react";
+import { WorkerApi } from "@/lib/api/worker.api";
 
-export const DRIVER_QUERY_KEY = ["driver"] as const;
-export const DRIVER_AVAILABLE_QUERY_KEY = [...DRIVER_QUERY_KEY, "available"] as const;
-export const DRIVER_ACTIVE_QUERY_KEY = [...DRIVER_QUERY_KEY, "active"] as const;
-export const DRIVER_HISTORY_QUERY_KEY = [...DRIVER_QUERY_KEY, "history"] as const;
+import { DRIVER_AVAILABLE_QUERY_KEY } from "@/hooks/driver.hooks";
+import { WORKER_AVAILABLE_QUERY_KEY } from "@/hooks/worker.hooks";
 
-type TaskTypeFilter = TaskType | "ALL";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
+
+type FieldOpsRole = "Driver" | "Worker";
+
+type UseFieldOpsTaskNotificationProps = {
+  role: FieldOpsRole;
+  onNewTask: () => void;
+};
+
 const driverApi = new DriverApi();
+const workerApi = new WorkerApi();
 
-export function useAvailable() {
-  const AVAILABLE_PAGE_SIZE = 5;
+const POLLING_INTERVAL = 30_000;
 
-  const [page, setPage] = useState<number>(1);
-  const [taskType, setTaskType] = useState<TaskTypeFilter>("ALL");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
-  const query: DriverAvailableQuery = {
-    page: page,
-    pageSize: AVAILABLE_PAGE_SIZE,
-    ...(taskType !== "ALL" && { taskType }),
-    sortOrder: sortOrder,
-  };
-
-  const availableQuery = useQuery({
-    queryKey: [...DRIVER_AVAILABLE_QUERY_KEY, query],
-    queryFn: () => driverApi.getAvailable(query),
-  });
-
-  function handlerTaskTypeFilter(value: string | null) {
-    if (!value) return;
-    setTaskType(value as TaskTypeFilter);
-    setPage(1);
-  }
-
-  function handleSortChange(value: "asc" | "desc") {
-    setSortOrder(value);
-    setPage(1);
-  }
-
-  return {
-    availableQuery,
-    page,
-    taskType,
-    sortOrder,
-    setPage,
-    handlerTaskTypeFilter,
-    handleSortChange,
-  };
-}
-
-export function useClaim() {
+export function useFieldOpsTaskNotification({ role, onNewTask }: UseFieldOpsTaskNotificationProps) {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (assignmentId: string) => driverApi.claim(assignmentId),
-    onSuccess: async () => {
-      notifications.show({
-        title: "Tugas berhasil diambil",
-        message: "Tugas telah menjadi tugas aktif Anda",
-        color: "green",
-      });
-      await queryClient.invalidateQueries({ queryKey: DRIVER_QUERY_KEY });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        title: "Gagal mengambil tugas",
-        message: error.message,
-        color: "red",
-      });
-    },
-  });
-}
+  const availableQuery = role === "Driver" ? DRIVER_AVAILABLE_QUERY_KEY : WORKER_AVAILABLE_QUERY_KEY;
+  // Menyimpan createdAt terbaru yang sudah pernah difetch simpan sebelumnya.
+  const knownTaskTimeRef = useRef<string | null>(null);
+  // Menandai bahwa response pertama sudah pernah dijadikan baseline.
+  const hasBaselineRef = useRef(false);
 
-export function useActive() {
-  return useQuery({
-    queryKey: DRIVER_ACTIVE_QUERY_KEY,
-    queryFn: () => driverApi.getActive(),
-  });
-}
+  const notificationQueryKey = role === "Driver" ? [...DRIVER_AVAILABLE_QUERY_KEY, "notification"] : [...WORKER_AVAILABLE_QUERY_KEY, "notification"];
 
-export function useStart() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (assignmentId: string) => driverApi.startAssignment(assignmentId),
-    onSuccess: async () => {
-      notifications.show({
-        title: "Tugas berhasil dimulai",
-        message: "Silakan mengerjakan tugas dengan aman!",
-        color: "green",
-      });
-      await queryClient.invalidateQueries({ queryKey: DRIVER_ACTIVE_QUERY_KEY });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        title: "Gagal memulai tugas",
-        message: error.message,
-        color: "red",
-      });
-    },
-  });
-}
+  const notificationQuery = useQuery({
+    queryKey: notificationQueryKey,
 
-export function usePickup() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (assignmentId: string) => driverApi.pickupCollected(assignmentId),
-    onSuccess: async () => {
-      notifications.show({
-        title: "Pickup berhasil!",
-        message: "Silakan antar laundry ke outlet.",
-        color: "green",
-      });
-      await queryClient.invalidateQueries({ queryKey: DRIVER_ACTIVE_QUERY_KEY });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        title: "Gagal melakukan pickup",
-        message: error.message,
-        color: "red",
-      });
-    },
-  });
-}
+    queryFn: async () => {
+      const requestParams = {
+        page: 1,
+        pageSize: 1,
+        sortOrder: "desc" as const,
+      };
 
-export function useCompleteDelivery() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (assignmentId: string) => driverApi.completeDelivery(assignmentId),
-    onSuccess: async () => {
-      notifications.show({
-        title: "Pengantaran selesai",
-        message: "Tugas telah berhasil diselesaikan.",
-        color: "green",
-      });
-      await queryClient.invalidateQueries({ queryKey: DRIVER_QUERY_KEY }); // invalidatenya ke key utama karena setelah complete otomatis trigger cache historylist.
+      if (role === "Driver") {
+        return driverApi.getAvailable(requestParams);
+      }
+
+      return workerApi.getAvailable(requestParams);
     },
-    onError: (error: Error) => {
-      notifications.show({
-        title: "Gagal menyelesaikan pengantaran",
-        message: error.message,
-        color: "red",
-      });
-    },
-  });
-}
 
-export function useHistoryList() {
-  const HISTORY_PAGE_SIZE = 5;
-
-  const [page, setPage] = useState<number>(1);
-  const [taskType, setTaskType] = useState<TaskTypeFilter>("ALL");
-  const [period, setPeriod] = useState<string>(() => dayjs().format("YYYY-MM"));
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
-  // query params
-  const query: DriverHistoryQuery = {
-    page: page,
-    pageSize: HISTORY_PAGE_SIZE,
-    period,
-    ...(taskType !== "ALL" && { taskType }),
-    sortOrder,
-  };
-  const historyQuery = useQuery({
-    queryKey: [...DRIVER_HISTORY_QUERY_KEY, query],
-    queryFn: () => driverApi.getHistoryList(query),
+    refetchInterval: POLLING_INTERVAL,
+    refetchOnWindowFocus: true,
   });
 
-  function handlePeriodChange(value: string) {
-    setPeriod(value);
-    setPage(1);
-  }
+  useEffect(() => {
+    // Query belum selesai fetch.
+    // Jangan buat baseline dulu.
+    if (!notificationQuery.data) {
+      return;
+    }
 
-  function handleTaskTypeFilter(value: string | null) {
-    if (!value) return;
-    setTaskType(value as TaskTypeFilter);
-    setPage(1);
-  }
+    // Karena pageSize = 1,
+    // index 0 adalah task paling baru.
+    const newestTask = notificationQuery.data.data[0];
 
-  function handleSortChange(value: "asc" | "desc") {
-    setSortOrder(value);
-    setPage(1);
-  }
+    const incomingCreatedAt = newestTask?.createdAt ?? null;
 
-  return {
-    historyQuery,
+    // RESPONSE PERTAMA
+    // Response pertama hanya dijadikan baseline.
+    // Task yang sudah ada sebelum user membuka aplikasi tidak dianggap sebagai task baru.
+    if (!hasBaselineRef.current) {
+      knownTaskTimeRef.current = incomingCreatedAt;
+      hasBaselineRef.current = true;
 
-    page,
-    period,
-    taskType,
-    sortOrder,
+      return;
+    }
 
-    setPage,
-    handlePeriodChange,
-    handleTaskTypeFilter,
-    handleSortChange,
-  };
-}
+    // RESPONSE BERIKUTNYA
+    // Kalau sekarang tidak ada available task,
+    // tidak ada yang perlu dibandingkan.
+    if (!incomingCreatedAt) {
+      return;
+    }
 
-export function useHistoryDetail(assignmentId: string) {
-  return useQuery({
-    queryKey: [...DRIVER_HISTORY_QUERY_KEY, "detail", assignmentId],
-    queryFn: () => driverApi.getHistoryDetail(assignmentId),
-  });
+    // Sebelumnya belum ada task,
+    // sekarang sudah ada task.
+    // Berarti task tersebut memang muncul setelah baseline.
+    if (!knownTaskTimeRef.current) {
+      knownTaskTimeRef.current = incomingCreatedAt;
+
+      onNewTask();
+      void queryClient.invalidateQueries({
+        queryKey: availableQuery,
+      });
+
+      return;
+    }
+
+    // Ubah tanggal string menjadi timestamp number
+    // supaya bisa dibandingkan.
+    const knownTimestamp = new Date(knownTaskTimeRef.current).getTime();
+
+    const incomingTimestamp = new Date(incomingCreatedAt).getTime();
+
+    // Kalau waktu task dari API sekarang
+    // lebih baru daripada waktu task yang sudah dikenal,
+    // berarti ada task baru.
+    if (incomingTimestamp > knownTimestamp) {
+      knownTaskTimeRef.current = incomingCreatedAt;
+
+      onNewTask();
+      void queryClient.invalidateQueries({
+        queryKey: availableQuery,
+      });
+    }
+  }, [availableQuery, notificationQuery.data, onNewTask, queryClient]);
+
+  return notificationQuery;
 }
 ````
 
@@ -22192,7 +22523,7 @@ const laundryItemApi = new LaundryItemApi();
 
 export const LAUNDRY_ITEMS_QUERY_KEY = ["laundry-items"];
 
-export function useLaundryItems(params?: LaundryItemQuery, options?: {enabled?: boolean}) {
+export function useLaundryItems(params?: LaundryItemQuery, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: [...LAUNDRY_ITEMS_QUERY_KEY, params],
     queryFn: () => laundryItemApi.getLaundryItems(params),
@@ -22254,12 +22585,15 @@ export function useDeactivateLaundryItem() {
   });
 }
 
-
 export function useLaundryItemHooks() {
   const router = useRouter();
+  const createLaundryItem = useCreateLaundryItem();
+  const updateLaundryItem = useUpdateLaundryItem();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<10 | 20 | 50>(10);
   const [selectedItem, setSelectedItem] = useState<LaundryItem | null>(null);
+  const [itemModalOpened, setItemModalOpened] = useState(false);
+  const [editingItem, setEditingItem] = useState<LaundryItem | null>(null);
   const form = useForm<FilterLaundryItemValues>({
     mode: "controlled",
     initialValues: {
@@ -22289,6 +22623,77 @@ export function useLaundryItemHooks() {
     setPage(1);
   };
 
+  const handleCreate = () => {
+    setEditingItem(null);
+    setItemModalOpened(true);
+  };
+
+  const handleEdit = (item: LaundryItem) => {
+    setEditingItem(item);
+    setItemModalOpened(true);
+  };
+
+  const handleCloseItemModal = () => {
+    if (createLaundryItem.isPending || updateLaundryItem.isPending) {
+      return;
+    }
+
+    setItemModalOpened(false);
+    setEditingItem(null);
+  };
+
+  const handleSubmitItem = async (values: CreateLaundryItemPayload) => {
+    if (editingItem) {
+      await updateLaundryItem.mutateAsync(
+        {
+          laundryItemId: editingItem.id,
+          payload: values,
+        },
+        {
+          onSuccess: () => {
+            notifications.show({
+              title: "Berhasil",
+              message: "Item laundry berhasil diperbarui.",
+              color: "green",
+            });
+
+            handleCloseItemModal();
+          },
+
+          onError: (error) => {
+            notifications.show({
+              title: "Gagal",
+              message: error instanceof Error ? error.message : "Gagal memperbarui item laundry.",
+              color: "red",
+            });
+          },
+        },
+      );
+
+      return;
+    }
+
+    await createLaundryItem.mutateAsync(values, {
+      onSuccess: () => {
+        notifications.show({
+          title: "Berhasil",
+          message: "Item laundry berhasil ditambahkan.",
+          color: "green",
+        });
+
+        handleCloseItemModal();
+      },
+
+      onError: (error) => {
+        notifications.show({
+          title: "Gagal",
+          message: error instanceof Error ? error.message : "Gagal menambahkan item laundry.",
+          color: "red",
+        });
+      },
+    });
+  };
+
   const handleDeactivate = async () => {
     if (!selectedItem) return;
 
@@ -22312,18 +22717,30 @@ export function useLaundryItemHooks() {
     });
   };
 
-  return {
-    router,
-    form,
-    setPage,
-    handleReset,
-    laundryItems,
-    setPageSize,
-    setSelectedItem,
-    selectedItem,
-    deactivateLaundryItem,
-    handleDeactivate,
-  };
+ return {
+  router,
+  form,
+  setPage,
+  handleReset,
+  laundryItems,
+  setPageSize,
+
+  setSelectedItem,
+  selectedItem,
+  deactivateLaundryItem,
+  handleDeactivate,
+
+  itemModalOpened,
+  editingItem,
+  handleCreate,
+  handleEdit,
+  handleCloseItemModal,
+  handleSubmitItem,
+
+  isItemSubmitting:
+    createLaundryItem.isPending ||
+    updateLaundryItem.isPending,
+};
 }
 ````
 
@@ -22470,48 +22887,6 @@ export function useOutletHooks() {
 }
 ````
 
-## File: src/hooks/profile.hooks.ts
-````typescript
-"use client";
-
-import { ProfileApi } from "@/lib/api/profileCustomer.api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AUTH_ME_QUERY_KEY } from "./authCustomer.hooks";
-
-const profileApi = new ProfileApi();
-
-export function useUpdateProfile() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: profileApi.updateProfile,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY }),
-  });
-}
-
-export function useUpdateProfilePhoto() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: profileApi.updateProfilePhoto,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY }),
-  });
-}
-
-export function useRequestEmailChange() {
-  return useMutation({ mutationFn: profileApi.requestEmailChange });
-}
-
-export function useConfirmEmailChange() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: profileApi.confirmEmailChange,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY }),
-  });
-}
-````
-
 ## File: src/lib/api/attendance.api.ts
 ````typescript
 import type {
@@ -22569,185 +22944,6 @@ export class DashboardApi {
 }
 ````
 
-## File: src/lib/api/profileCustomer.api.ts
-````typescript
-import {
-  UpdatePhotoResponse,
-  UpdateProfileResponse,
-} from "@/types/api/profile.type";
-import {
-  MAX_PHOTO_SIZE_BYTES,
-  profilePhotoSchema,
-  UpdateEmailSchema,
-  UpdateProfileSchema,
-} from "../validation/profile.validation";
-import { api, ApiError } from "./axios";
-import { MessageResponse } from "@/types/api";
-
-export class ProfileApi {
-  async updateProfile(payload: UpdateProfileSchema) {
-    const body: Record<string, string> = { name: payload.name! };
-    if (payload.phone) body.phone = payload.phone;
-    if (payload.newPassword) {
-      body.newPassword = payload.newPassword;
-      body.currentPassword = payload.currentPassword!;
-    }
-    const { data } = await api.patch<{ data: UpdateProfileResponse }>(
-      "/profile/me",
-      body,
-    );
-    return data.data;
-  }
-
-  async updateProfilePhoto(file: File) {
-    const parsed = profilePhotoSchema.safeParse(file);
-    if (!parsed.success) {
-      const isTooLarge = file.size > MAX_PHOTO_SIZE_BYTES;
-      const code = isTooLarge ? "FILE_TOO_LARGE" : "FILE_TYPE_INVALID";
-      throw new ApiError(code, parsed.error.issues[0].message);
-    }
-    const formData = new FormData();
-    formData.append("PROFILE_PHOTO", file);
-    const { data } = await api.patch<{ data: UpdatePhotoResponse }>(
-      "/profile/photo",
-      formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-      },
-    );
-    return data.data;
-  }
-
-  async requestEmailChange(payload: UpdateEmailSchema) {
-    const { data } = await api.patch<{ data: MessageResponse }>(
-      "/profile/email",
-      payload,
-    );
-    return data.data;
-  }
-
-  async confirmEmailChange(token: string) {
-    const { data } = await api.post<{ data: MessageResponse }>(
-      "/profile/email/confirm",
-      { token },
-    );
-    return data.data;
-  }
-}
-````
-
-## File: src/lib/validation/auth.validation.ts
-````typescript
-import * as z from "zod"
-
-export const loginCustomerSchema = z.object({
-  email: z.string().email("Email tidak valid"),
-  password: z.string().min(8, "Minimal 8 karakter"),
-});
-
-export const registerCustomerSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email wajib diisi")
-    .email("Format email tidak valid"),
-});
-
-export const emailVerificationSchema = z.object({
-  name: z
-    .string()
-    .min(5, "Nama minimal 5 karakter")
-    .max(150, "Nama maksimal 150 karakter"),
-  password: z.string().min(8, "Kata sandi minimal 8 karakter"),
-});
-
-export const forgotPasswordSchema = z.object({
-  email: z.string().email("Format email tidak valid"),
-});
-
-export const resetPasswordSchema = z
-  .object({
-    password: z.string().min(8, "Password minimal 8 karakter"),
-    confirmPassword: z.string().min(1, "Konfirmasi password wajib diisi"),
-  })
-  .refine((values) => values.password === values.confirmPassword, {
-    message: "Konfirmasi password tidak cocok",
-    path: ["confirmPassword"],
-  });
-
-export const acceptInvitationSchema = z
-  .object({
-    password: z.string().min(8, "Password minimal 8 karakter"),
-    confirmPassword: z.string().min(1, "Konfirmasi password wajib diisi"),
-  })
-  .refine((values) => values.password === values.confirmPassword, {
-    message: "Konfirmasi password tidak cocok",
-    path: ["confirmPassword"],
-  });
-
-export const employeeLoginSchema = z.object({
-  email: z.string().email("Format email tidak valid."),
-  password: z.string().min(1, "Password wajib diisi."),
-});
-
-export type LoginCustomerSchema = z.infer<typeof loginCustomerSchema>;
-export type EmployeeLoginSchema = z.infer<typeof employeeLoginSchema>;
-export type RegisterCustomerSchema = z.infer<typeof registerCustomerSchema>;
-export type EmailVerificationSchema = z.infer<typeof emailVerificationSchema>;
-export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
-export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;
-export type AcceptInvitationSchema = z.infer<typeof acceptInvitationSchema>;
-````
-
-## File: src/lib/validation/profile.validation.ts
-````typescript
-import * as z from "zod"
-
-export const updateProfileSchema = z
-  .object({
-    name: z.string().min(1, "Nama tidak boleh kosong").max(100).optional(),
-    phone: z
-      .string()
-      .min(8, "Nomor telepon tidak valid")
-      .max(20)
-      .optional()
-      .or(z.literal("")),
-    currentPassword: z.string().optional().or(z.literal("")),
-    newPassword: z.string().optional().or(z.literal("")),
-  })
-  .refine((v) => (v.newPassword ? v.newPassword.length >= 8 : true), {
-    message: "Password baru minimal 8 karakter",
-    path: ["newPassword"],
-  })
-  .refine((v) => (v.newPassword ? !!v.currentPassword : true), {
-    message: "Password saat ini wajib diisi untuk mengganti password",
-    path: ["currentPassword"],
-  });
-
-export const updateEmailSchema = z.object({
-  newEmail: z.string().email("Format email tidak valid"),
-});
-
-const ALLOWED_PHOTO_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/gif",
-];
-export const MAX_PHOTO_SIZE_BYTES = 1 * 1024 * 1024;
-
-export const profilePhotoSchema = z
-  .instanceof(File, { message: "File wajib diunggah" })
-  .refine((file) => ALLOWED_PHOTO_TYPES.includes(file.type), {
-    message: "Hanya menerima file .jpg, .jpeg, .png, atau .gif.",
-  })
-  .refine((file) => file.size <= MAX_PHOTO_SIZE_BYTES, {
-    message: "Ukuran file maksimal 1 MB.",
-  });
-
-export type UpdateProfileSchema = z.infer<typeof updateProfileSchema>;
-export type UpdateEmailSchema = z.infer<typeof updateEmailSchema>;
-````
-
 ## File: src/types/api/laundry-item.types.ts
 ````typescript
 export type LaundryItem = {
@@ -22772,6 +22968,116 @@ export type CreateLaundryItemPayload = {
 export type UpdateLaundryItemPayload = {
   name: string;
 };
+````
+
+## File: .gitignore
+````
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+
+*.zip
+Archive.zip
+FE.md
+````
+
+## File: src/app/(auth)/internal/(auth)/login/page.tsx
+````typescript
+"use client";
+
+import { Center, Paper, Stack } from "@mantine/core";
+import { EmployeeLoginForm } from "@/components/internalAuth/EmployeeLoginForm";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { getEmployeeHome } from "@/utils";
+
+export default function EmployeeLoginPage() {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+
+  const isCheckingAuth = useAuthStore((state) => state.isInitializing);
+  const isAlreadyLogin = user?.accountType === "employee";
+
+  useEffect(() => {
+    if (isCheckingAuth) return; // check auth sampai selesai.
+    if (isAlreadyLogin) {
+      router.replace(getEmployeeHome(user.role));
+    }
+  }, [isCheckingAuth, isAlreadyLogin, user, router]);
+
+  if (isCheckingAuth) return null; // supaya ketika masih cek auth tidak menampilkan component
+  if (isAlreadyLogin) return null; // supaya tidak menampilkan component saat mau pindah page
+  return (
+    <Center mih="100vh" px="md">
+      <Paper w="100%" maw={420} p={32} radius="md" withBorder>
+        <Stack gap="md">
+          <EmployeeLoginForm />
+        </Stack>
+      </Paper>
+    </Center>
+  );
+}
+````
+
+## File: src/app/(auth)/login/page.tsx
+````typescript
+import { Suspense } from "react";
+import { Center, Loader } from "@mantine/core";
+import LoginPageContent from "@/components/authCustomer/LoginCustomerContent";
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <Center mih="100vh">
+          <Loader size="md" />
+        </Center>
+      }
+    >
+      <LoginPageContent />
+    </Suspense>
+  );
+}
 ````
 
 ## File: src/app/(customer)/alamat/page.tsx
@@ -22904,67 +23210,6 @@ export default function ComplaintPage() {
 }
 ````
 
-## File: src/app/(customer)/profil/edit/page.tsx
-````typescript
-"use client";
-
-import { EmailChangeForm } from "@/components/customer/profil/emailChangeForm";
-import { ProfileForm } from "@/components/customer/profil/profileForm";
-import { ProfilePhotoUpload } from "@/components/customer/profil/profilePhotoUpload";
-import { Paper, Stack, Divider, Anchor, Group } from "@mantine/core";
-import { IconChevronLeft } from "@tabler/icons-react";
-import { useRouter, useSearchParams } from "next/navigation";
-
-export default function ProfilePage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const from = searchParams.get("from");
-
-  function handleBack() {
-    router.replace(
-      from ? `/profil?from=${encodeURIComponent(from)}` : "/profil",
-    );
-  }
-  
-  return (
-    <Paper
-      maw={480}
-      mx="auto"
-      p={32}
-      radius="md"
-      withBorder
-      style={{ backgroundColor: "var(--color-surface)" }}
-    >
-      <Stack gap="xl">
-        <Anchor
-          component="button"
-          type="button"
-          onClick={handleBack}
-          fw={600}
-          c="var(--c-text-primary"
-        >
-          <Group gap={2}>
-            <IconChevronLeft stroke={2} />
-            Profil Saya
-          </Group>
-        </Anchor>
-
-        <ProfilePhotoUpload />
-
-        <Divider />
-
-        <ProfileForm />
-
-        <Divider />
-
-        <EmailChangeForm />
-      </Stack>
-    </Paper>
-  );
-}
-````
-
 ## File: src/app/(customer)/request-pickup/page.tsx
 ````typescript
 "use client";
@@ -23016,22 +23261,6 @@ export default function RequestPickupPage() {
 }
 ````
 
-## File: src/app/internal/(back-office)/layout.tsx
-````typescript
-import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
-import { BackOfficeNotificationWatcher } from "@/components/back-office/shared/BackOfficeNotificationWatcher";
-
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return (
-    <AuthGateEmployee allowedRoles={["OUTLET_ADMIN", "SUPER_ADMIN"]}>
-      <BackOfficeNotificationWatcher />
-
-      {children}
-    </AuthGateEmployee>
-  );
-}
-````
-
 ## File: src/app/internal/(field-ops)/driver/absensi/page.tsx
 ````typescript
 "use client";
@@ -23046,26 +23275,6 @@ export default function Page() {
 
       <AttendanceHistory/>
     </Stack>
-  );
-}
-````
-
-## File: src/app/internal/(field-ops)/driver/layout.tsx
-````typescript
-import { FieldOpsAppShell } from "@/components/field-ops/shared/FieldOpsAppShell";
-import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
-
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <AuthGateEmployee allowedRoles={["DRIVER"]}>
-      <FieldOpsAppShell role="Driver" basePath="/internal/driver">
-        {children}
-      </FieldOpsAppShell>
-    </AuthGateEmployee>
   );
 }
 ````
@@ -23088,31 +23297,50 @@ export default function Page() {
 }
 ````
 
-## File: src/app/internal/(field-ops)/worker/layout.tsx
+## File: src/app/layout.tsx
 ````typescript
-import { FieldOpsAppShell } from "@/components/field-ops/shared/FieldOpsAppShell";
-import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
+import "@mantine/notifications/styles.css";
+import "leaflet/dist/leaflet.css";
+import "@mantine/dates/styles.css";
+import '@mantine/charts/styles.css';
+import "./globals.css";
+import { Providers } from "@/providers/Providers";
+import { Baloo_2, Plus_Jakarta_Sans } from "next/font/google";
 
-export default async function Layout({ children }: { children: React.ReactNode }) {
+export const metadata = {
+  title: "Popo Laundry",
+  description: "Laundry pickup, tracking, payment, dan delivery.",
+  icons: {
+    icon: [
+      { url: "/favicon/favicon.ico", sizes: "any" },
+      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/favicon/apple-touch-icon.png",
+  },
+  manifest: "/favicon/site.webmanifest",
+};
+
+const display = Baloo_2({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-display",
+});
+const body = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-body",
+});
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <AuthGateEmployee allowedRoles={["WORKER"]}>
-      <FieldOpsAppShell role="Worker" basePath="/internal/worker">
-        {children}
-      </FieldOpsAppShell>
-    </AuthGateEmployee>
-  );
-}
-````
-
-## File: src/app/internal/(field-ops)/layout.tsx
-````typescript
-import { AuthGateEmployee } from "@/lib/auth/AuthGateEmployee";
-
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return (
-    <AuthGateEmployee allowedRoles={["DRIVER", "WORKER"]}>
-      {children}
-    </AuthGateEmployee>
+    <html lang="id" className={`${display.variable} ${body.variable}`}>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   );
 }
 ````
@@ -24060,495 +24288,601 @@ export function ReceptionFilters({ query, onChange, onSortByChange, onSortOrderC
 }
 ````
 
-## File: src/components/customer/CustomerAppShell.tsx
-````typescript
-"use client";
-import {Box} from "@mantine/core";
-import Header from "../shared/Headers/Header";
-import Footer from "../shared/Footer";
-
-export function CustomerAppShell({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-      <Box
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-      }}
-    >
-      <Header />
-
-      <Box component="main" style={{ flex: 1 }}>
-        {children}
-      </Box>
-
-      <Footer />
-    </Box>
-  );
-}
-````
-
-## File: src/components/field-ops/driver/DriverAvailableAssignment.tsx
+## File: src/components/field-ops/driver/DriverHistory.tsx
 ````typescript
 "use client";
 
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { useAvailable, useClaim } from "@/hooks/driver.hooks";
+import { useHistoryList } from "@/hooks/driver.hooks";
+import type { TaskType } from "@/types/api/driver.types";
 import { formatFieldOpsDate, formatFieldOpsTime } from "@/utils/fieldops.date";
+import { ActionIcon, Badge, Button, Card, Grid, Group, Pagination, Paper, Select, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
+import { MonthPickerInput } from "@mantine/dates";
+import { IconArrowNarrowDown, IconArrowNarrowRight, IconArrowNarrowUp, IconCalendarMonth, IconChecklist, IconClock } from "@tabler/icons-react";
+import dayjs from "dayjs";
+import Link from "next/link";
 
-import { ActionIcon, Badge, Button, Card, Group, Pagination, Paper, Select, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
+const TASK_TYPE_INFO: Record<
+  TaskType,
+  {
+    label: string;
+    color: string;
+  }
+> = {
+  PICKUP: {
+    label: "Penjemputan",
+    color: "blue",
+  },
+  DELIVERY: {
+    label: "Pengantaran",
+    color: "yellow",
+  },
+};
 
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconClock, IconMapPin } from "@tabler/icons-react";
+export function DriverHistory() {
+  const {
+    historyQuery,
 
-import { useRouter } from "next/navigation";
+    page,
+    period,
+    taskType,
+    sortOrder,
 
-import { openActionConfirmModal } from "../shared/OpenActionConfirmModal";
-
-const TASK_OPTION = [
-  { value: "ALL", label: "Semua" },
-  { value: "PICKUP", label: "Jemput" },
-  { value: "DELIVERY", label: "Antar" },
-];
-
-function getTaskLabel(taskType: string) {
-  if (taskType === "PICKUP") return "Jemput";
-  if (taskType === "DELIVERY") return "Antar";
-
-  return taskType;
-}
-
-export function DriverAvailableAssignments() {
-  const router = useRouter();
-
-  const { availableQuery, taskType, sortOrder, setPage, handlerTaskTypeFilter, handleSortChange } = useAvailable();
-
-  const claim = useClaim();
+    setPage,
+    handlePeriodChange,
+    handleTaskTypeFilter,
+    handleSortChange,
+  } = useHistoryList();
 
   return (
     <Stack gap="md">
-      {/* Filter */}
-      <Group justify="space-between" align="flex-end">
-        <Select label="Tipe Tugas" data={TASK_OPTION} value={taskType} onChange={handlerTaskTypeFilter} w={180} />
+      <Stack gap={4}>
+        <Text fw={700} size="lg">
+          Riwayat Tugas
+        </Text>
 
-        <Group gap="xs">
-          <ActionIcon
-            variant={sortOrder === "asc" ? "filled" : "light"}
-            size="lg"
-            aria-label="Urutkan terlama"
-            onClick={() => handleSortChange("asc")}
-          >
-            <IconArrowNarrowUp size={18} />
-          </ActionIcon>
+        <Text size="sm" c="dimmed">
+          Daftar tugas yang telah Anda selesaikan.
+        </Text>
+      </Stack>
 
-          <ActionIcon
-            variant={sortOrder === "desc" ? "filled" : "light"}
-            size="lg"
-            aria-label="Urutkan terbaru"
-            onClick={() => handleSortChange("desc")}
-          >
-            <IconArrowNarrowDown size={18} />
-          </ActionIcon>
-        </Group>
-      </Group>
-
-      {/* Query state */}
       <AsyncStateView
-        isLoading={availableQuery.isPending}
-        isError={availableQuery.isError}
-        error={availableQuery.error}
-        data={availableQuery.data}
-        onRetry={() => availableQuery.refetch()}
+        isLoading={historyQuery.isPending}
+        isError={historyQuery.isError}
+        error={historyQuery.error}
+        data={historyQuery.data}
+        onRetry={() => historyQuery.refetch()}
+        emptyTitle="Belum ada riwayat tugas"
+        emptyDescription="Belum ada tugas selesai pada bulan dan filter yang dipilih."
         skeleton={
-          <Stack gap="sm">
-            <Skeleton height={180} radius="lg" />
-            <Skeleton height={180} radius="lg" />
-            <Skeleton height={180} radius="lg" />
+          <Stack gap="md">
+            <Skeleton height={88} radius="lg" />
+
+            <Card withBorder radius="lg" p="lg">
+              <Stack gap="md">
+                <Skeleton height={20} width="30%" />
+                <Skeleton height={20} width="50%" />
+                <Skeleton height={16} width="40%" />
+              </Stack>
+            </Card>
+
+            <Card withBorder radius="lg" p="lg">
+              <Stack gap="md">
+                <Skeleton height={20} width="30%" />
+                <Skeleton height={20} width="50%" />
+                <Skeleton height={16} width="40%" />
+              </Stack>
+            </Card>
           </Stack>
         }
       >
-        {(response) => (
-          <Stack gap="md">
-            {response.data.length === 0 ? (
-              <EmptyState title="Belum ada tugas" description="Belum ada tugas yang tersedia untuk diambil." />
-            ) : (
-              response.data.map((assignment) => (
-                <Card key={assignment.id} withBorder radius="lg" padding="lg" shadow="xs">
-                  <Stack gap="md">
-                    {/* Jenis tugas */}
+        {(response) => {
+          const { historyList, summary } = response.data;
+          const { meta } = response;
 
-                    <Badge variant="light" color={assignment.taskType === "PICKUP" ? "orange" : "blue"} size="lg">
-                      {getTaskLabel(assignment.taskType)}
-                    </Badge>
+          return (
+            <Stack gap="md">
+              <Paper withBorder radius="lg" p="md" bg="var(--color-primary-light)">
+                <Group gap="sm">
+                  <ThemeIcon variant="light" radius="xl" size="lg" color="blue">
+                    <IconChecklist size={18} />
+                  </ThemeIcon>
 
-                    {/* Alamat */}
-                    <Group align="flex-start" wrap="nowrap" gap="sm">
-                      <ThemeIcon variant="light" color="blue" radius="xl" size="lg">
-                        <IconMapPin size={18} />
-                      </ThemeIcon>
+                  <Stack gap={1}>
+                    <Text size="xs" c="dimmed">
+                      Tugas Selesai per {period}
+                    </Text>
 
-                      <Stack gap={2}>
-                        <Text size="xs" c="dimmed">
-                          Alamat Tujuan
-                        </Text>
-
-                        <Text
-                          size="sm"
-                          fw={600}
-                          style={{
-                            lineHeight: 1.5,
-                          }}
-                        >
-                          {assignment.order.addressSnapshot}
-                        </Text>
-                      </Stack>
-                    </Group>
-
-                    {assignment.taskType === "PICKUP" &&
-                      assignment.order.pickupScheduledAt && ( //jadwal jemput hanya untuk pickup
-                        <Paper withBorder radius="md" p="sm" bg="var(--color-primary-light)">
-                          <Group gap="sm" wrap="nowrap">
-                            <ThemeIcon variant="light" color="blue" radius="xl" size="md">
-                              <IconClock size={16} />
-                            </ThemeIcon>
-
-                            <Stack gap={1}>
-                              <Text size="xs" c="dimmed">
-                                Jadwal Jemput
-                              </Text>
-
-                              <Text size="sm" fw={600}>
-                                {formatFieldOpsDate(assignment.order.pickupScheduledAt)}, {formatFieldOpsTime(assignment.order.pickupScheduledAt)}
-                              </Text>
-                            </Stack>
-                          </Group>
-                        </Paper>
-                      )}
-
-                    {/* Action */}
-                    <Button
-                      fullWidth
-                      radius="md"
-                      loading={claim.isPending}
-                      style={{
-                        backgroundColor: "var(--color-accent)",
-                        color: "var(--color-text-on-accent)",
-                      }}
-                      onClick={() =>
-                        openActionConfirmModal({
-                          title: "Ambil tugas?",
-                          message: `Ambil tugas ${assignment.order.orderCode}?`,
-                          confirmLabel: "Ambil Tugas",
-                          onConfirm: () =>
-                            claim.mutate(assignment.id, {
-                              onSuccess: () => {
-                                router.push("/internal/driver/tugas/aktif");
-                              },
-                            }),
-                        })
-                      }
-                    >
-                      Ambil Tugas
-                    </Button>
+                    <Text fw={700} size="lg">
+                      {summary.totalCompleted}
+                    </Text>
                   </Stack>
-                </Card>
-              ))
-            )}
+                </Group>
+              </Paper>
 
-            {/* Pagination */}
-            {response.meta.totalPages > 1 && (
-              <Group justify="center">
-                <Pagination value={response.meta.page} total={response.meta.totalPages} onChange={setPage} />
-              </Group>
-            )}
+              <Grid gap="xs" align="flex-end">
+                <Grid.Col span={5}>
+                  <MonthPickerInput
+                    label="Bulan"
+                    placeholder="Pilih bulan"
+                    value={`${period}-01`}
+                    valueFormat="MMM YYYY"
+                    leftSection={<IconCalendarMonth size={17} />}
+                    clearable={false}
+                    onChange={(value) => {
+                      if (!value) return;
 
-            <Text size="xs" c="dimmed" ta="center">
-              Total {response.meta.totalItems} tugas tersedia
-            </Text>
-          </Stack>
-        )}
+                      handlePeriodChange(dayjs(value).format("YYYY-MM"));
+                    }}
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={4}>
+                  <Select
+                    label="Tipe Tugas"
+                    value={taskType}
+                    onChange={handleTaskTypeFilter}
+                    allowDeselect={false}
+                    data={[
+                      {
+                        value: "ALL",
+                        label: "Semua",
+                      },
+                      {
+                        value: "PICKUP",
+                        label: "Pickup",
+                      },
+                      {
+                        value: "DELIVERY",
+                        label: "Delivery",
+                      },
+                    ]}
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={3}>
+                  <Stack gap={4}>
+                    <Text size="sm" fw={500}>
+                      Urutkan
+                    </Text>
+
+                    <Group gap={4} wrap="nowrap">
+                      <ActionIcon
+                        variant={sortOrder === "asc" ? "filled" : "light"}
+                        size="lg"
+                        aria-label="Urutkan terlama"
+                        onClick={() => handleSortChange("asc")}
+                      >
+                        <IconArrowNarrowUp size={18} />
+                      </ActionIcon>
+
+                      <ActionIcon
+                        variant={sortOrder === "desc" ? "filled" : "light"}
+                        size="lg"
+                        aria-label="Urutkan terbaru"
+                        onClick={() => handleSortChange("desc")}
+                      >
+                        <IconArrowNarrowDown size={18} />
+                      </ActionIcon>
+                    </Group>
+                  </Stack>
+                </Grid.Col>
+              </Grid>
+
+              <Stack gap="sm">
+                {historyList.map((item) => {
+                  const taskInfo = TASK_TYPE_INFO[item.taskType];
+
+                  return (
+                    <Card key={item.id} withBorder radius="lg" p="lg">
+                      <Stack gap="md">
+                        {/* Baris atas: label kiri, tanggal kanan */}
+                        <Grid align="center">
+                          <Grid.Col span="auto">
+                            <Badge variant="light" color={taskInfo.color}>
+                              {taskInfo.label}
+                            </Badge>
+                          </Grid.Col>
+                          <Grid.Col span="content">
+                            <Text size="xs" c="dimmed">
+                              {formatFieldOpsDate(item.completedAt)}
+                            </Text>
+                          </Grid.Col>
+                        </Grid>
+
+                        {/* Baris bawah: kode order kiri, jam kanan */}
+                        <Grid align="center">
+                          <Grid.Col span="auto">
+                            <Stack gap={2}>
+                              <Text size="xs" c="dimmed">
+                                Kode Order
+                              </Text>
+                              <Text fw={700}>{item.order.orderCode}</Text>
+                            </Stack>
+                          </Grid.Col>
+                          <Grid.Col span="content">
+                            <Group gap="xs">
+                              <IconClock size={16} color="var(--color-text-secondary)" />
+                              <Text size="sm" c="dimmed">
+                                Selesai pukul {formatFieldOpsTime(item.completedAt)}
+                              </Text>
+                            </Group>
+                          </Grid.Col>
+                        </Grid>
+                        <Button
+                          component={Link}
+                          href={`/internal/driver/riwayat/${item.id}`}
+                          color="var(--color-accent)"
+                          rightSection={<IconArrowNarrowRight />}
+                          size={"compact-sm"}
+                        >
+                          Lihat detail
+                        </Button>
+                      </Stack>
+                    </Card>
+                  );
+                })}
+              </Stack>
+
+              {meta.totalPages > 1 && (
+                <Group justify="center">
+                  <Pagination value={page} total={meta.totalPages} onChange={setPage} size="sm" />
+                </Group>
+              )}
+            </Stack>
+          );
+        }}
       </AsyncStateView>
     </Stack>
   );
 }
 ````
 
-## File: src/components/field-ops/worker/WorkerAvailableAssignment.tsx
+## File: src/components/shared/Headers/HeaderProfile.tsx
 ````typescript
 "use client";
 
-import { AsyncStateView } from "@/components/ui/AsyncStateView";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { openActionConfirmModal } from "../shared/OpenActionConfirmModal";
-import { useAvailable, useClaim } from "@/hooks/worker.hooks";
-import { ActionIcon, Badge, Button, Group, Pagination, Paper, Select, Skeleton, Stack, Text } from "@mantine/core";
-import { IconArrowNarrowDown, IconArrowNarrowUp } from "@tabler/icons-react";
+import {
+  Avatar, Group, Menu, Skeleton, Text, UnstyledButton, Button, Box,
+} from "@mantine/core";
+import {
+  IconChevronDown,
+  IconLogout,
+} from "@tabler/icons-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useLogout } from "@/hooks/authCustomer.hooks";
+import { NAV_LINKS } from "./nav-links";
+import { notifications } from "@mantine/notifications";
 
-const STATION_OPTIONS = [
-  {
-    value: "ALL",
-    label: "Semua",
-  },
-  {
-    value: "WASHING",
-    label: "Cuci",
-  },
-  {
-    value: "IRONING",
-    label: "Setrika",
-  },
-  {
-    value: "PACKING",
-    label: "Packing",
-  },
-];
-
-function getStationLabel(stationType: string) {
-  if (stationType === "WASHING") {
-    return "Cuci";
-  }
-
-  if (stationType === "IRONING") {
-    return "Setrika";
-  }
-
-  if (stationType === "PACKING") {
-    return "Packing";
-  }
-
-  return stationType;
-}
-
-export function WorkerAvailableAssignments() {
+export function HeaderProfile() {
+  const user = useAuthStore((s) => s.user);
+  const isInitializing = useAuthStore((s) => s.isInitializing);
   const router = useRouter();
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
 
-  const { availableQuery, stationType, sortOrder, setPage, handleStationFilter, handleSortChange } = useAvailable();
+  if (isInitializing) {
+    return (
+      <Group gap="xs">
+        <Skeleton height={36} width={36} radius="xl" />
+        <Skeleton height={14} width={80} visibleFrom="sm" />
+      </Group>
+    );
+  }
 
-  const claim = useClaim();
+  if (!user) {
+    return (
+      <Group gap="sm">
+        <Button component={Link} href="/login" variant="subtle" size="sm">
+          Masuk
+        </Button>
+        <Button
+          component={Link}
+          href="/register"
+          size="sm"
+          style={{
+            backgroundColor: "var(--color-accent)",
+            color: "var(--color-text-on-accent)",
+          }}
+        >
+          Daftar
+        </Button>
+      </Group>
+    );
+  }
+
+  const initials = user.name
+    ? user.name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
+    : "?";
+
+  const handleLogout = () => {
+  logout(undefined, {
+    onSuccess: () => {
+      useAuthStore.getState().clearUser();
+
+      notifications.show({
+        title: "Berhasil",
+        message: "Kamu berhasil keluar dari akun.",
+        color: "green",
+      });
+
+      router.replace("/login");
+    },
+
+    onError: (error) => {
+      notifications.show({
+        title: "Gagal",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Gagal keluar dari akun. Silakan coba lagi.",
+        color: "red",
+      });
+    },
+  });
+};
 
   return (
-    <Stack gap="md">
-      {/* filter */}
-      <Group justify="space-between" align="flex-end">
-        <Select label="Stasiun" data={STATION_OPTIONS} value={stationType} onChange={handleStationFilter} w={180} />
+    <Menu shadow="md" width={220} position="bottom-end">
+      <Menu.Target>
+        <UnstyledButton>
+          <Group gap="xs">
+            <Avatar
+              src={user?.profilePhotoUrl || undefined}
+              radius="xl"
+              size={40}
+              style={{ backgroundColor: "var(--color-primary)" }}
+            >
+              {initials}
+            </Avatar>
+            <Text fw={500} size="lg" visibleFrom="sm">{user.name}</Text>
+            <Box visibleFrom="sm" component="span" style={{ display: "inline-flex" }}>
+              <IconChevronDown size={16} style={{ color: "var(--color-text-secondary)" }} />
+            </Box>
+          </Group>
+        </UnstyledButton>
+      </Menu.Target>
 
-        <Group>
-          <ActionIcon
-            variant={sortOrder === "asc" ? "filled" : "light"}
-            size={"lg"}
-            aria-label="Urutkan terlama"
-            onClick={() => handleSortChange("asc")}
+      <Menu.Dropdown>
+        <Menu.Label style={{ wordBreak: "break-all" }}>{user.email}</Menu.Label>
+
+        {NAV_LINKS.map(({ label, href, icon: Icon }) => (
+          <Menu.Item
+            key={href}
+            component={Link}
+            href={href}
+            leftSection={<Icon size={16} />}
           >
-            <IconArrowNarrowUp size={18} />
-          </ActionIcon>
-          <ActionIcon
-            variant={sortOrder === "desc" ? "filled" : "light"}
-            size={"lg"}
-            aria-label="Urutkan terbaru"
-            onClick={() => handleSortChange("desc")}
-          >
-            <IconArrowNarrowDown size={18} />
-          </ActionIcon>
-        </Group>
-      </Group>
-
-      {/* query state */}
-      <AsyncStateView
-        isLoading={availableQuery.isPending}
-        isError={availableQuery.isError}
-        error={availableQuery.error}
-        data={availableQuery.data}
-        onRetry={() => availableQuery.refetch()}
-        skeleton={
-          <Stack gap="sm">
-            <Skeleton height={70} radius="md" />
-            <Skeleton height={70} radius="md" />
-            <Skeleton height={70} radius="md" />
-          </Stack>
-        }
-      >
-        {(response) => (
-          <Stack gap="md">
-            {/* assignment list */}
-            {response.data.length === 0 ? (
-              <EmptyState title="Belum ada tugas" description="Belum ada tugas yang tersedia untuk diambil." />
-            ) : (
-              response.data.map((assignment) => (
-                <Paper key={assignment.id} withBorder radius="md" p="md">
-                  <Group justify="space-between">
-                    <Stack gap={4}>
-                      <Badge color={"orange"} variant="light" w={"100"} h={25}>
-                        {getStationLabel(assignment.stationType)}
-                      </Badge>
-
-                      <Text size="sm" fw={600}>
-                        {assignment.order.orderCode}
-                      </Text>
-                    </Stack>
-
-                    <Button
-                      size="xs"
-                      color="blue"
-                      loading={claim.isPending}
-                      loaderProps={{ type: "dots" }}
-                      onClick={() =>
-                        openActionConfirmModal({
-                          title: "Ambil tugas?",
-                          message: `Ambil tugas ${assignment.order.orderCode}?`,
-                          confirmLabel: "Ambil Tugas",
-                          onConfirm: () =>
-                            claim.mutate(assignment.id, {
-                              onSuccess: () => {
-                                router.push("/internal/worker/tugas/aktif");
-                              },
-                            }),
-                        })
-                      }
-                    >
-                      Ambil Tugas
-                    </Button>
-                  </Group>
-                </Paper>
-              ))
-            )}
-
-            {/* pagination */}
-            {response.meta.totalPages > 1 && (
-              <Group justify="center">
-                <Pagination value={response.meta.page} total={response.meta.totalPages} onChange={setPage} />
-              </Group>
-            )}
-
-            <Text size="xs" c="dimmed" ta="center">
-              Total {response.meta.totalItems} tugas tersedia
-            </Text>
-          </Stack>
-        )}
-      </AsyncStateView>
-    </Stack>
+            {label}
+          </Menu.Item>
+        ))}
+        <Menu.Divider />
+        <Menu.Item
+          color="red"
+          leftSection={<IconLogout size={16} />}
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+        >
+          {isLoggingOut ? "Keluar..." : "Keluar"}
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
   );
 }
 ````
 
-## File: src/hooks/attendance.hooks.ts
+## File: src/hooks/driver.hooks.ts
 ````typescript
-import { AttendanceApi } from "@/lib/api/attendance.api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { DriverApi } from "@/lib/api/driver.api";
+import type { DriverAvailableQuery, DriverHistoryQuery, TaskType } from "@/types/api/driver.types";
 import { notifications } from "@mantine/notifications";
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import type { AttendanceHistoryQuery } from "@/types/api/attendance.types";
+import { useState } from "react";
 
+export const DRIVER_QUERY_KEY = ["driver"] as const;
+export const DRIVER_AVAILABLE_QUERY_KEY = [...DRIVER_QUERY_KEY, "available"] as const;
+export const DRIVER_ACTIVE_QUERY_KEY = [...DRIVER_QUERY_KEY, "active"] as const;
+export const DRIVER_HISTORY_QUERY_KEY = [...DRIVER_QUERY_KEY, "history"] as const;
 
-export const ATTENDANCE_QUERY_KEY = ["attendance"] as const;
-export const ATTENDANCE_STATUS_QUERY_KEY = [...ATTENDANCE_QUERY_KEY, "status"] as const;
-export const ATTENDANCE_HISTORY_QUERY_KEY = [...ATTENDANCE_QUERY_KEY, "history"] as const;
+type TaskTypeFilter = TaskType | "ALL";
+const driverApi = new DriverApi();
 
-// attendanceapi configuration
-const attendanceApi = new AttendanceApi();
-
-// attendance status
-export function useAttendanceStatus() {
-  return useQuery({
-    queryKey: ATTENDANCE_STATUS_QUERY_KEY,
-    queryFn: () => attendanceApi.getStatus(),
-  });
-}
-
-// clock-in
-export function useClockIn() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () => attendanceApi.clockIn(),
-    onSuccess: async () => {
-      notifications.show({
-        title: "Absensi Berhasil!",
-        message: "Absensi Masuk Berhasil! Selamat bekerja!",
-        color: "green",
-      });
-      await queryClient.invalidateQueries({ queryKey: ATTENDANCE_QUERY_KEY });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        title: "Absensi Gagal!",
-        message: error.message,
-        color: "red",
-      });
-    },
-  });
-}
-
-export function useClockOut() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () => attendanceApi.clockOut(),
-    onSuccess: async () => {
-      notifications.show({
-        title: "Absensi Berhasil!",
-        message: "Absensi Pulang berhasil! Selamat Melanjutkan Kegiatan!",
-        color: "green",
-      });
-      await queryClient.invalidateQueries({ queryKey: ATTENDANCE_QUERY_KEY });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        title: "Absensi Gagal!",
-        message: error.message,
-        color: "red",
-      });
-    },
-  });
-}
-
-export function useAttendanceHistory() {
-  const HISTORY_PAGE_SIZE = 5;
+export function useAvailable() {
+  const AVAILABLE_PAGE_SIZE = 5;
 
   const [page, setPage] = useState<number>(1);
-  const [period, setPeriod] = useState<string>(() => dayjs().format("YYYY-MM"));
+  const [taskType, setTaskType] = useState<TaskTypeFilter>("ALL");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  // query params
-  const query: AttendanceHistoryQuery = {
+  const query: DriverAvailableQuery = {
     page: page,
-    pageSize: HISTORY_PAGE_SIZE,
-    period: period,
+    pageSize: AVAILABLE_PAGE_SIZE,
+    ...(taskType !== "ALL" && { taskType }),
     sortOrder: sortOrder,
   };
 
-  // fetching endpoint history
-  const historyQuery = useQuery({
-    queryKey: [...ATTENDANCE_HISTORY_QUERY_KEY, query],
-    queryFn: () => attendanceApi.getHistory(query),
+  const availableQuery = useQuery({
+    queryKey: [...DRIVER_AVAILABLE_QUERY_KEY, query],
+    queryFn: () => driverApi.getAvailable(query),
   });
 
-  // handlers
-
-  function handlePeriodChange(value: string | null) {
+  function handlerTaskTypeFilter(value: string | null) {
     if (!value) return;
-    setPeriod(dayjs(value).format("YYYY-MM"));
+    setTaskType(value as TaskTypeFilter);
     setPage(1);
   }
 
   function handleSortChange(value: "asc" | "desc") {
-    setSortOrder(value); //kalo diclick pertama, akan ganti ke asc.
+    setSortOrder(value);
+    setPage(1);
+  }
+
+  return {
+    availableQuery,
+    page,
+    taskType,
+    sortOrder,
+    setPage,
+    handlerTaskTypeFilter,
+    handleSortChange,
+  };
+}
+
+export function useClaim() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (assignmentId: string) => driverApi.claim(assignmentId),
+    onSuccess: async () => {
+      notifications.show({
+        title: "Tugas berhasil diambil",
+        message: "Tugas telah menjadi tugas aktif Anda",
+        color: "green",
+      });
+      await queryClient.invalidateQueries({ queryKey: DRIVER_QUERY_KEY });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        title: "Gagal mengambil tugas",
+        message: error.message,
+        color: "red",
+      });
+    },
+  });
+}
+
+export function useActive() {
+  return useQuery({
+    queryKey: DRIVER_ACTIVE_QUERY_KEY,
+    queryFn: () => driverApi.getActive(),
+    refetchInterval: 60_000,
+  });
+}
+
+export function useStart() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (assignmentId: string) => driverApi.startAssignment(assignmentId),
+    onSuccess: async () => {
+      notifications.show({
+        title: "Tugas berhasil dimulai",
+        message: "Silakan mengerjakan tugas dengan aman!",
+        color: "green",
+      });
+      await queryClient.invalidateQueries({ queryKey: DRIVER_ACTIVE_QUERY_KEY });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        title: "Gagal memulai tugas",
+        message: error.message,
+        color: "red",
+      });
+    },
+  });
+}
+
+export function usePickup() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (assignmentId: string) => driverApi.pickupCollected(assignmentId),
+    onSuccess: async () => {
+      notifications.show({
+        title: "Pickup berhasil!",
+        message: "Silakan antar laundry ke outlet.",
+        color: "green",
+      });
+      await queryClient.invalidateQueries({ queryKey: DRIVER_ACTIVE_QUERY_KEY });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        title: "Gagal melakukan pickup",
+        message: error.message,
+        color: "red",
+      });
+    },
+  });
+}
+
+export function useCompleteDelivery() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (assignmentId: string) => driverApi.completeDelivery(assignmentId),
+    onSuccess: async () => {
+      notifications.show({
+        title: "Pengantaran selesai",
+        message: "Tugas telah berhasil diselesaikan.",
+        color: "green",
+      });
+      await queryClient.invalidateQueries({ queryKey: DRIVER_QUERY_KEY, }); // invalidatenya ke key utama karena setelah complete otomatis trigger cache historylist.
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        title: "Gagal menyelesaikan pengantaran",
+        message: error.message,
+        color: "red",
+      });
+    },
+  });
+}
+
+export function useHistoryList() {
+  const HISTORY_PAGE_SIZE = 5;
+
+  const [page, setPage] = useState<number>(1);
+  const [taskType, setTaskType] = useState<TaskTypeFilter>("ALL");
+  const [period, setPeriod] = useState<string>(() => dayjs().format("YYYY-MM"));
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  // query params
+  const query: DriverHistoryQuery = {
+    page: page,
+    pageSize: HISTORY_PAGE_SIZE,
+    period,
+    ...(taskType !== "ALL" && { taskType }),
+    sortOrder,
+  };
+  const historyQuery = useQuery({
+    queryKey: [...DRIVER_HISTORY_QUERY_KEY, query],
+    queryFn: () => driverApi.getHistoryList(query),
+  });
+
+  function handlePeriodChange(value: string) {
+    setPeriod(value);
+    setPage(1);
+  }
+
+  function handleTaskTypeFilter(value: string | null) {
+    if (!value) return;
+    setTaskType(value as TaskTypeFilter);
+    setPage(1);
+  }
+
+  function handleSortChange(value: "asc" | "desc") {
+    setSortOrder(value);
     setPage(1);
   }
 
   return {
     historyQuery,
 
+    page,
     period,
+    taskType,
     sortOrder,
 
     setPage,
     handlePeriodChange,
+    handleTaskTypeFilter,
     handleSortChange,
   };
+}
+
+export function useHistoryDetail(assignmentId: string) {
+  return useQuery({
+    queryKey: [...DRIVER_HISTORY_QUERY_KEY, "detail", assignmentId],
+    queryFn: () => driverApi.getHistoryDetail(assignmentId),
+  });
 }
 ````
 
@@ -24630,6 +24964,150 @@ export class AddressApi {
     return data.data;
   }
 }
+````
+
+## File: src/lib/api/axios.ts
+````typescript
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+
+export const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+export class ApiError extends Error {
+  code: string;
+  fields?: Record<string, string>;
+
+  constructor(code: string, message: string, fields?: Record<string, string>) {
+    super(message);
+
+    this.name = "ApiError";
+    this.code = code;
+    this.fields = fields;
+  }
+}
+
+type ErrorEnvelope = {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+    fields?: Record<string, string>;
+  };
+};
+
+type RetryableRequestConfig = InternalAxiosRequestConfig & {
+  _retry?: boolean;
+};
+
+let refreshPromise: Promise<void> | null = null;
+
+const NO_REFRESH_ENDPOINTS = [
+  "/auth/login",
+  "/auth/employee/login",
+  "/auth/employee/accept-invitation",
+  "/auth/employee/forgot-password",
+  "/auth/employee/reset-password",
+  "/auth/register",
+  "/auth/verify-email",
+  "/auth/resend-verification",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+  "/auth/login/google",
+  "/auth/refresh",
+];
+
+function shouldSkipRefresh(url?: string): boolean {
+  if (!url) return false;
+
+  return NO_REFRESH_ENDPOINTS.some((endpoint) => url.includes(endpoint));
+}
+
+export async function refreshAccessToken(): Promise<void> {
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  refreshPromise = axios
+    .post(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+      {},
+      {
+        withCredentials: true,
+      },
+    )
+    .then(() => {})
+    .finally(() => {
+      refreshPromise = null;
+    });
+
+  return refreshPromise;
+}
+
+api.interceptors.response.use(
+  (response) => response,
+
+  async (error: AxiosError<ErrorEnvelope>) => {
+    const originalRequest = error.config as RetryableRequestConfig | undefined;
+    const status = error.response?.status;
+
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
+
+    if (shouldSkipRefresh(originalRequest.url)) {
+      const payload = error.response?.data?.error;
+      return Promise.reject(
+        new ApiError(
+          payload?.code ?? "UNKNOWN_ERROR",
+          payload?.message ?? "Terjadi kesalahan. Silakan coba lagi.",
+          payload?.fields,
+        ),
+      );
+    }
+
+
+    const code = error.response?.data?.error?.code;
+
+    // HANYA coba refresh untuk token yang benar-benar EXPIRED
+    // (pernah login, tokennya basi). Kalau ACCESS_TOKEN_REQUIRED
+    // (belum pernah login sama sekali / tidak ada cookie), refresh
+    // dijamin gagal karena refreshToken juga tidak ada — percuma dicoba.
+    if (code === "ACCESS_TOKEN_EXPIRED" && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        await refreshAccessToken();
+        return api(originalRequest);
+      } catch (refreshError) {
+
+        // Hindari infinite reload: cuma redirect kalau BELUM di /login,
+        // dan pakai client-side navigation, bukan full reload.
+        if (
+          typeof window !== "undefined" &&
+          !window.location.pathname.startsWith("/login")
+        ) {
+          window.location.href = "/login";
+        }
+
+        return Promise.reject(refreshError);
+      }
+    }
+
+    const payload = error.response?.data?.error;
+    return Promise.reject(
+      new ApiError(
+        payload?.code ?? "UNKNOWN_ERROR",
+        payload?.message ?? "Terjadi kesalahan. Silakan coba lagi.",
+        payload?.fields,
+      ),
+    );
+  },
+);
 ````
 
 ## File: src/lib/api/driver.api.ts
@@ -24794,148 +25272,6 @@ export class EmployeeApi {
 }
 ````
 
-## File: src/lib/auth/AuthGateCustomer.tsx
-````typescript
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Center, Loader } from "@mantine/core";
-import { useCurrentUser } from "@/hooks/authCustomer.hooks";
-
-export type AuthGateCustomerProps = {
-  children: React.ReactNode;
-};
-
-export function AuthGateCustomer({ children }: AuthGateCustomerProps) {
-  const router = useRouter();
-
-  const { data: user, isLoading, isError } = useCurrentUser();
-
-  useEffect(() => {
-    if (isLoading) return;
-
-    if (isError || !user) {
-      const currentPath = window.location.pathname + window.location.search;
-      router.replace(`/login?intended_url=${encodeURIComponent(currentPath)}`);
-      return;
-    }
-
-    if (!user.isEmailVerified) {
-      router.replace("/login?reason=email-not-verified");
-      return;
-    }
-
-    if (user.accountType !== "customer") {
-      router.replace("/login");
-      return;
-    }
-  }, [user, isLoading, isError, router]);
-
-  if (isLoading || !user) {
-    return (
-      <Center mih="100vh">
-        <Loader size="md" />
-      </Center>
-    );
-  }
-
-  if (
-    !user ||
-    isError ||
-    !user.isEmailVerified ||
-    user.accountType !== "customer"
-  ) {
-    return null;
-  }
-
-  return <>{children}</>;
-}
-````
-
-## File: src/providers/Providers.tsx
-````typescript
-"use client";
-
-import { useState } from "react";
-import { MantineProvider } from "@mantine/core";
-import "@mantine/carousel/styles.css";
-import "@mantine/dates/styles.css";
-import { Notifications } from "@mantine/notifications";
-import { ModalsProvider } from "@mantine/modals";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { theme } from "@/lib/theme/theme";
-import { AuthBootstrap } from "@/components/shared/AuthBootstrap";
-
-export function Providers({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000,
-            retry: 1,
-            refetchOnWindowFocus: false,
-          },
-        },
-      }),
-  );
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <MantineProvider theme={theme} defaultColorScheme="light">
-        <ModalsProvider>
-          <Notifications position="top-right" />
-          <AuthBootstrap>{children}</AuthBootstrap>
-        </ModalsProvider>
-      </MantineProvider>
-      {process.env.NODE_ENV === "development" && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
-    </QueryClientProvider>
-  );
-}
-````
-
-## File: src/stores/useAuthStore.ts
-````typescript
-"use client";
-
-import { create } from "zustand";
-
-export type AuthUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  accountType: "customer" | "employee";
-  isEmailVerified: boolean;
-  profilePhotoUrl?: string | null;
-  phone?: string | null;
-  authProvider: string;
-  currentOutletId?: string | null;
-};
-
-type AuthState = {
-  user: AuthUser | null;
-  isInitializing: boolean;
-};
-
-type AuthActions = {
-  setUser: (user: AuthUser) => void;
-  clearUser: () => void;
-};
-
-export const useAuthStore = create<AuthState & AuthActions>((set) => ({
-  user: null,
-  isInitializing: true,
-
-  setUser: (user) => set({ user, isInitializing: false }),
-  clearUser: () => set({ user: null, isInitializing: false }),
-}));
-````
-
 ## File: src/types/api/orders.types.ts
 ````typescript
 import type { OrderStatusGroupKey } from "@/lib/constants/order";
@@ -25064,271 +25400,6 @@ export type Complaint = {
   decidedAt: string | null;
   createdAt: string;
 };
-````
-
-## File: .gitignore
-````
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-.DS_Store
-
-*.zip
-Archive.zip
-FE.md
-````
-
-## File: src/app/(auth)/reset-password/page.tsx
-````typescript
-"use client";
-
-import { ResetPasswordForm } from "@/components/authCustomer/ResetPasswordForm";
-import {
-  Anchor,
-  Center,
-  Group,
-  Loader,
-  Paper,
-  Stack,
-} from "@mantine/core";
-import { IconChevronLeft } from "@tabler/icons-react";
-import { Suspense } from "react";
-import { useRouter } from "next/navigation";
-
-export default function ResetPasswordPage() {
-  const router = useRouter();
-
-  function handleBack() {
-    router.push("/login");
-  }
-
-  return (
-    <Center
-      mih="100vh"
-      px={{ base: 16, sm: 24 }}
-      py={{ base: 24, sm: 40 }}
-    >
-      <Stack
-        w="100%"
-        maw={420}
-        gap="sm"
-      >
-        <Anchor
-          component="button"
-          type="button"
-          onClick={handleBack}
-          fw={600}
-          c="var(--color-text-primary)"
-          style={{
-            alignSelf: "flex-start",
-          }}
-        >
-          <Group gap={4}>
-            <IconChevronLeft size={16} stroke={2} />
-            Kembali
-          </Group>
-        </Anchor>
-
-        <Suspense
-          fallback={
-            <Paper
-              p={{ base: 24, sm: 32 }}
-              radius="md"
-              withBorder
-              style={{
-                backgroundColor: "var(--color-surface)",
-              }}
-            >
-              <Center mih={200}>
-                <Loader size="md" />
-              </Center>
-            </Paper>
-          }
-        >
-          <Paper
-            w="100%"
-            p={{ base: 24, sm: 32 }}
-            radius="md"
-            withBorder
-            style={{
-              backgroundColor: "var(--color-surface)",
-            }}
-          >
-            <Stack gap="md">
-              <ResetPasswordForm />
-            </Stack>
-          </Paper>
-        </Suspense>
-      </Stack>
-    </Center>
-  );
-}
-````
-
-## File: src/app/(customer)/layout.tsx
-````typescript
-import { CustomerAppShell } from "@/components/customer/CustomerAppShell";
-import { AuthGateCustomer } from "@/lib/auth/AuthGateCustomer";
-import { Container } from "@mantine/core";
-
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return (
-    <AuthGateCustomer>
-      <CustomerAppShell>
-        <Container size="lg">{children}</Container>
-      </CustomerAppShell>
-    </AuthGateCustomer>
-  );
-}
-````
-
-## File: src/app/layout.tsx
-````typescript
-import "@mantine/core/styles.css";
-import "@mantine/dates/styles.css";
-import "@mantine/notifications/styles.css";
-import "leaflet/dist/leaflet.css";
-import "@mantine/dates/styles.css";
-import '@mantine/charts/styles.css';
-import "./globals.css";
-import { Providers } from "@/providers/Providers";
-import { Baloo_2, Plus_Jakarta_Sans } from "next/font/google";
-
-export const metadata = {
-  title: "Popo Laundry",
-  description: "Laundry pickup, tracking, payment, dan delivery.",
-  icons: {
-    icon: [
-      { url: "/favicon/favicon.ico", sizes: "any" },
-      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-    ],
-    apple: "/favicon/apple-touch-icon.png",
-  },
-  manifest: "/favicon/site.webmanifest",
-};
-
-const display = Baloo_2({
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  variable: "--font-display",
-});
-const body = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-body",
-});
-
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html lang="id" className={`${display.variable} ${body.variable}`}>
-      <body>
-        <Providers>{children}</Providers>
-      </body>
-    </html>
-  );
-}
-````
-
-## File: src/app/page.tsx
-````typescript
-"use client";
-
-import { Box, Container, SimpleGrid, Stack, Title } from "@mantine/core";
-import Footer from "@/components/shared/Footer";
-import FeatureCard, {
-  FEATURES,
-} from "@/components/landing-page/FeatureSection";
-import Header from "@/components/shared/Headers/Header";
-import CaraKerja from "@/components/landing-page/CaraKerjaSection";
-import CarouselSection from "@/components/landing-page/CarouselSection";
-import HeroSection from "@/components/landing-page/HeroSection";
-import { LocationPermissionGate } from "@/components/shared/Location/LocationPermission/LocationPermissionGate";
-
-export default function Page() {
-  return (
-    <Box
-      style={{ backgroundColor: "var(--color-background)", minHeight: "100vh" }}
-    >
-      {/* Header */}
-
-      <Header />
-
-      <Container size="lg" pt={40}>
-        <Stack gap="xl">
-          {/* Hero section — carousel */}
-          <HeroSection />
-
-          <CarouselSection />
-
-          {/* Cara Kerja - section */}
-          <CaraKerja />
-
-          <LocationPermissionGate />
-
-          {/* Layanan / features */}
-          <Box component="section" py={20}>
-            <Stack gap="md">
-              <Title
-                id="layanan-heading"
-                order={2}
-                py={20}
-                style={{ color: "var(--color-text-primary)" }}
-              >
-                Layanan kami
-              </Title>
-              <SimpleGrid cols={{ base: 1, sm: 3 }}>
-                {FEATURES.map((f) => (
-                  <FeatureCard key={f.title} {...f} />
-                ))}
-              </SimpleGrid>
-            </Stack>
-          </Box>
-        </Stack>
-      </Container>
-      {/* Footer */}
-      <Footer />
-    </Box>
-  );
-}
 ````
 
 ## File: src/components/back-office/dashboard/PendingBypass.tsx
@@ -26671,6 +26742,192 @@ function getConfirmErrorMessage(error: unknown): string {
 }
 ````
 
+## File: src/components/field-ops/driver/DriverAvailableAssignment.tsx
+````typescript
+"use client";
+
+import { AsyncStateView } from "@/components/ui/AsyncStateView";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { useAvailable, useClaim } from "@/hooks/driver.hooks";
+import { formatFieldOpsDate, formatFieldOpsTime } from "@/utils/fieldops.date";
+
+import { ActionIcon, Badge, Button, Card, Group, Pagination, Paper, Select, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
+
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconClock, IconMapPin } from "@tabler/icons-react";
+
+import { useRouter } from "next/navigation";
+
+import { openActionConfirmModal } from "../shared/OpenActionConfirmModal";
+
+const TASK_OPTION = [
+  { value: "ALL", label: "Semua" },
+  { value: "PICKUP", label: "Jemput" },
+  { value: "DELIVERY", label: "Antar" },
+];
+
+function getTaskLabel(taskType: string) {
+  if (taskType === "PICKUP") return "Jemput";
+  if (taskType === "DELIVERY") return "Antar";
+
+  return taskType;
+}
+
+export function DriverAvailableAssignments() {
+  const router = useRouter();
+
+  const { availableQuery, taskType, sortOrder, setPage, handlerTaskTypeFilter, handleSortChange } = useAvailable();
+
+  const claim = useClaim();
+
+  return (
+    <Stack gap="md">
+      {/* Filter */}
+      <Group justify="space-between" align="flex-end">
+        <Select label="Tipe Tugas" data={TASK_OPTION} value={taskType} onChange={handlerTaskTypeFilter} w={180} />
+
+        <Group gap="xs">
+          <ActionIcon
+            variant={sortOrder === "asc" ? "filled" : "light"}
+            size="lg"
+            aria-label="Urutkan terlama"
+            onClick={() => handleSortChange("asc")}
+          >
+            <IconArrowNarrowUp size={18} />
+          </ActionIcon>
+
+          <ActionIcon
+            variant={sortOrder === "desc" ? "filled" : "light"}
+            size="lg"
+            aria-label="Urutkan terbaru"
+            onClick={() => handleSortChange("desc")}
+          >
+            <IconArrowNarrowDown size={18} />
+          </ActionIcon>
+        </Group>
+      </Group>
+
+      {/* Query state */}
+      <AsyncStateView
+        isLoading={availableQuery.isPending}
+        isError={availableQuery.isError}
+        error={availableQuery.error}
+        data={availableQuery.data}
+        onRetry={() => availableQuery.refetch()}
+        skeleton={
+          <Stack gap="sm">
+            <Skeleton height={180} radius="lg" />
+            <Skeleton height={180} radius="lg" />
+            <Skeleton height={180} radius="lg" />
+          </Stack>
+        }
+      >
+        {(response) => (
+          <Stack gap="md">
+            {response.data.length === 0 ? (
+              <EmptyState title="Belum ada tugas" description="Belum ada tugas yang tersedia untuk diambil." />
+            ) : (
+              response.data.map((assignment) => (
+                <Card key={assignment.id} withBorder radius="lg" padding="lg" shadow="xs">
+                  <Stack gap="md">
+                    {/* Jenis tugas */}
+
+                    <Badge variant="light" color={assignment.taskType === "PICKUP" ? "orange" : "blue"} size="lg">
+                      {getTaskLabel(assignment.taskType)}
+                    </Badge>
+
+                    {/* Alamat */}
+                    <Group align="flex-start" wrap="nowrap" gap="sm">
+                      <ThemeIcon variant="light" color="blue" radius="xl" size="lg">
+                        <IconMapPin size={18} />
+                      </ThemeIcon>
+
+                      <Stack gap={2}>
+                        <Text size="xs" c="dimmed">
+                          Alamat Tujuan
+                        </Text>
+
+                        <Text
+                          size="sm"
+                          fw={600}
+                          style={{
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          {assignment.order.addressSnapshot}
+                        </Text>
+                      </Stack>
+                    </Group>
+
+                    {assignment.taskType === "PICKUP" &&
+                      assignment.order.pickupScheduledAt && ( //jadwal jemput hanya untuk pickup
+                        <Paper withBorder radius="md" p="sm" bg="var(--color-primary-light)">
+                          <Group gap="sm" wrap="nowrap">
+                            <ThemeIcon variant="light" color="blue" radius="xl" size="md">
+                              <IconClock size={16} />
+                            </ThemeIcon>
+
+                            <Stack gap={1}>
+                              <Text size="xs" c="dimmed">
+                                Jadwal Jemput
+                              </Text>
+
+                              <Text size="sm" fw={600}>
+                                {formatFieldOpsDate(assignment.order.pickupScheduledAt)}, {formatFieldOpsTime(assignment.order.pickupScheduledAt)}
+                              </Text>
+                            </Stack>
+                          </Group>
+                        </Paper>
+                      )}
+
+                    {/* Action */}
+                    <Button
+                      fullWidth
+                      radius="md"
+                      loading={claim.isPending && claim.variables === assignment.id}
+                      disabled={claim.isPending && claim.variables !== assignment.id}
+                      style={{
+                        backgroundColor: "var(--color-accent)",
+                        color: "var(--color-text-on-accent)",
+                      }}
+                      onClick={() =>
+                        openActionConfirmModal({
+                          title: "Ambil tugas?",
+                          message: `Ambil tugas ${assignment.order.orderCode}?`,
+                          confirmLabel: "Ambil Tugas",
+                          onConfirm: () =>
+                            claim.mutate(assignment.id, {
+                              onSuccess: () => {
+                                router.push("/internal/driver/tugas/aktif");
+                              },
+                            }),
+                        })
+                      }
+                    >
+                      Ambil Tugas
+                    </Button>
+                  </Stack>
+                </Card>
+              ))
+            )}
+
+            {/* Pagination */}
+            {response.meta.totalPages > 1 && (
+              <Group justify="center">
+                <Pagination value={response.meta.page} total={response.meta.totalPages} onChange={setPage} />
+              </Group>
+            )}
+
+            <Text size="xs" c="dimmed" ta="center">
+              Total {response.meta.totalItems} tugas tersedia
+            </Text>
+          </Stack>
+        )}
+      </AsyncStateView>
+    </Stack>
+  );
+}
+````
+
 ## File: src/components/field-ops/shared/AttendanceHistory.tsx
 ````typescript
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
@@ -27019,66 +27276,547 @@ export function FieldOpsHome({ children }: FieldOpsHomeProps) {
 }
 ````
 
-## File: src/components/shared/Headers/Header.tsx
+## File: src/components/field-ops/worker/WorkerAvailableAssignment.tsx
 ````typescript
-import {
-  Box,
-  Burger,
-  Container,
-  Drawer,
-  Flex,
-  Stack,
-  Title,
-  Anchor,
-} from "@mantine/core";
-import Link from "next/link";
-import { useDisclosure } from "@mantine/hooks";
-import { HeaderProfile } from "./HeaderProfile";
-import { NAV_LINKS } from "./nav-links";
+"use client";
 
-export default function Header() {
-  const [opened, { toggle, close }] = useDisclosure();
+import { AsyncStateView } from "@/components/ui/AsyncStateView";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { openActionConfirmModal } from "../shared/OpenActionConfirmModal";
+import { useAvailable, useClaim } from "@/hooks/worker.hooks";
+import { ActionIcon, Badge, Button, Group, Pagination, Paper, Select, Skeleton, Stack, Text } from "@mantine/core";
+import { IconArrowNarrowDown, IconArrowNarrowUp } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
+
+const STATION_OPTIONS = [
+  {
+    value: "ALL",
+    label: "Semua",
+  },
+  {
+    value: "WASHING",
+    label: "Cuci",
+  },
+  {
+    value: "IRONING",
+    label: "Setrika",
+  },
+  {
+    value: "PACKING",
+    label: "Packing",
+  },
+];
+
+function getStationLabel(stationType: string) {
+  if (stationType === "WASHING") {
+    return "Cuci";
+  }
+
+  if (stationType === "IRONING") {
+    return "Setrika";
+  }
+
+  if (stationType === "PACKING") {
+    return "Packing";
+  }
+
+  return stationType;
+}
+
+export function WorkerAvailableAssignments() {
+  const router = useRouter();
+
+  const { availableQuery, stationType, sortOrder, setPage, handleStationFilter, handleSortChange } = useAvailable();
+
+  const claim = useClaim();
 
   return (
-    <Box
-      component="header"
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        backgroundColor: "var(--color-background)",
-        borderBottom:
-          "3px solid color-mix(in srgb, var(--color-primary-dark) 13%, transparent)",
-      }}
-    >
-      <Container size="lg" py="sm">
-        <Flex align="center" justify="space-between" gap="md" mih={48}>
-          <Flex align="center" gap="xs" style={{ flexShrink: 0 }}>
-            <Anchor
-              component={Link}
-              href="/"
-              underline="never"
-              style={{ textDecoration: "none" }}
-            >
-              <Title
-                order={3}
-                style={{
-                  color: "var(--color-primary-dark)",
-                  letterSpacing: -0.5,
-                }}
-              >
-                Popo Laundry
-              </Title>
-            </Anchor>
-          </Flex>
+    <Stack gap="md">
+      {/* filter */}
+      <Group justify="space-between" align="flex-end">
+        <Select label="Stasiun" data={STATION_OPTIONS} value={stationType} onChange={handleStationFilter} w={180} />
 
-          <Box style={{ flexShrink: 0 }}>
-            <HeaderProfile />
-          </Box>
-        </Flex>
-      </Container>
-    </Box>
+        <Group>
+          <ActionIcon
+            variant={sortOrder === "asc" ? "filled" : "light"}
+            size={"lg"}
+            aria-label="Urutkan terlama"
+            onClick={() => handleSortChange("asc")}
+          >
+            <IconArrowNarrowUp size={18} />
+          </ActionIcon>
+          <ActionIcon
+            variant={sortOrder === "desc" ? "filled" : "light"}
+            size={"lg"}
+            aria-label="Urutkan terbaru"
+            onClick={() => handleSortChange("desc")}
+          >
+            <IconArrowNarrowDown size={18} />
+          </ActionIcon>
+        </Group>
+      </Group>
+
+      {/* query state */}
+      <AsyncStateView
+        isLoading={availableQuery.isPending}
+        isError={availableQuery.isError}
+        error={availableQuery.error}
+        data={availableQuery.data}
+        onRetry={() => availableQuery.refetch()}
+        skeleton={
+          <Stack gap="sm">
+            <Skeleton height={70} radius="md" />
+            <Skeleton height={70} radius="md" />
+            <Skeleton height={70} radius="md" />
+          </Stack>
+        }
+      >
+        {(response) => (
+          <Stack gap="md">
+            {/* assignment list */}
+            {response.data.length === 0 ? (
+              <EmptyState title="Belum ada tugas" description="Belum ada tugas yang tersedia untuk diambil." />
+            ) : (
+              response.data.map((assignment) => (
+                <Paper key={assignment.id} withBorder radius="md" p="md">
+                  <Group justify="space-between">
+                    <Stack gap={4}>
+                      <Badge color={"orange"} variant="light" w={"100"} h={25}>
+                        {getStationLabel(assignment.stationType)}
+                      </Badge>
+
+                      <Text size="sm" fw={600}>
+                        {assignment.order.orderCode}
+                      </Text>
+                    </Stack>
+
+                    <Button
+                      size="xs"
+                      color="blue"
+                      loading={claim.isPending && claim.variables === assignment.id}
+                      disabled={claim.isPending && claim.variables !== assignment.id}
+                      loaderProps={{ type: "dots" }}
+                      onClick={() =>
+                        openActionConfirmModal({
+                          title: "Ambil tugas?",
+                          message: `Ambil tugas ${assignment.order.orderCode}?`,
+                          confirmLabel: "Ambil Tugas",
+                          onConfirm: () =>
+                            claim.mutate(assignment.id, {
+                              onSuccess: () => {
+                                router.push("/internal/worker/tugas/aktif");
+                              },
+                            }),
+                        })
+                      }
+                    >
+                      Ambil Tugas
+                    </Button>
+                  </Group>
+                </Paper>
+              ))
+            )}
+
+            {/* pagination */}
+            {response.meta.totalPages > 1 && (
+              <Group justify="center">
+                <Pagination value={response.meta.page} total={response.meta.totalPages} onChange={setPage} />
+              </Group>
+            )}
+
+            <Text size="xs" c="dimmed" ta="center">
+              Total {response.meta.totalItems} tugas tersedia
+            </Text>
+          </Stack>
+        )}
+      </AsyncStateView>
+    </Stack>
   );
+}
+````
+
+## File: src/components/field-ops/worker/WorkerHistory.tsx
+````typescript
+"use client";
+
+import { AsyncStateView } from "@/components/ui/AsyncStateView";
+import { useHistoryList } from "@/hooks/worker.hooks";
+import type { StationType } from "@/types/api/worker.types";
+import { formatFieldOpsDate, formatFieldOpsTime } from "@/utils/fieldops.date";
+
+import { ActionIcon, Badge, Button, Card, Grid, Group, Pagination, Paper, Select, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
+
+import { MonthPickerInput } from "@mantine/dates";
+
+import { IconArrowNarrowDown, IconArrowNarrowRight, IconArrowNarrowUp, IconCalendarMonth, IconChecklist, IconClock } from "@tabler/icons-react";
+
+import dayjs from "dayjs";
+import Link from "next/link";
+
+const STATION_INFO: Record<
+  StationType,
+  {
+    label: string;
+    color: string;
+  }
+> = {
+  WASHING: {
+    label: "Washing",
+    color: "blue",
+  },
+  IRONING: {
+    label: "Ironing",
+    color: "yellow",
+  },
+  PACKING: {
+    label: "Packing",
+    color: "grape",
+  },
+};
+
+export function WorkerHistory() {
+  const {
+    historyQuery,
+
+    page,
+    period,
+    stationType,
+    sortOrder,
+
+    setPage,
+    handlePeriodChange,
+    handleStationFilter,
+    handleSortChange,
+  } = useHistoryList();
+
+  return (
+    <Stack gap="md">
+      <Stack gap={4}>
+        <Text fw={700} size="lg">
+          Riwayat Tugas
+        </Text>
+
+        <Text size="sm" c="dimmed">
+          Daftar tugas yang telah Anda selesaikan.
+        </Text>
+      </Stack>
+
+      <AsyncStateView
+        isLoading={historyQuery.isPending}
+        isError={historyQuery.isError}
+        error={historyQuery.error}
+        data={historyQuery.data}
+        onRetry={() => historyQuery.refetch()}
+        emptyTitle="Belum ada riwayat tugas"
+        emptyDescription="Belum ada tugas selesai pada bulan dan filter yang dipilih."
+        skeleton={
+          <Stack gap="md">
+            <Skeleton height={88} radius="lg" />
+
+            <Card withBorder radius="lg" p="lg">
+              <Stack gap="md">
+                <Skeleton height={20} width="30%" />
+                <Skeleton height={20} width="50%" />
+                <Skeleton height={16} width="40%" />
+              </Stack>
+            </Card>
+
+            <Card withBorder radius="lg" p="lg">
+              <Stack gap="md">
+                <Skeleton height={20} width="30%" />
+                <Skeleton height={20} width="50%" />
+                <Skeleton height={16} width="40%" />
+              </Stack>
+            </Card>
+          </Stack>
+        }
+      >
+        {(response) => {
+          const { historyList, summary } = response.data;
+          const { meta } = response;
+
+          return (
+            <Stack gap="md">
+              <Paper withBorder radius="lg" p="md" bg="var(--color-primary-light)">
+                <Group gap="sm">
+                  <ThemeIcon variant="light" radius="xl" size="lg" color="blue">
+                    <IconChecklist size={18} />
+                  </ThemeIcon>
+
+                  <Stack gap={1}>
+                    <Text size="xs" c="dimmed">
+                      Tugas Selesai per {period}
+                    </Text>
+
+                    <Text fw={700} size="lg">
+                      {summary.totalCompleted}
+                    </Text>
+                  </Stack>
+                </Group>
+              </Paper>
+
+              <Grid gap="xs" align="flex-end">
+                <Grid.Col span={5}>
+                  <MonthPickerInput
+                    label="Bulan"
+                    placeholder="Pilih bulan"
+                    value={`${period}-01`}
+                    valueFormat="MMM YYYY"
+                    leftSection={<IconCalendarMonth size={17} />}
+                    clearable={false}
+                    onChange={(value) => {
+                      if (!value) return;
+
+                      handlePeriodChange(dayjs(value).format("YYYY-MM"));
+                    }}
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={4}>
+                  <Select
+                    label="Station"
+                    value={stationType}
+                    onChange={handleStationFilter}
+                    allowDeselect={false}
+                    data={[
+                      {
+                        value: "ALL",
+                        label: "Semua",
+                      },
+                      {
+                        value: "WASHING",
+                        label: "Washing",
+                      },
+                      {
+                        value: "IRONING",
+                        label: "Ironing",
+                      },
+                      {
+                        value: "PACKING",
+                        label: "Packing",
+                      },
+                    ]}
+                  />
+                </Grid.Col>
+
+                <Grid.Col span={3}>
+                  <Stack gap={4}>
+                    <Text size="sm" fw={500}>
+                      Urutkan
+                    </Text>
+
+                    <Group gap={4} wrap="nowrap">
+                      <ActionIcon
+                        variant={sortOrder === "asc" ? "filled" : "light"}
+                        size="lg"
+                        aria-label="Urutkan terlama"
+                        onClick={() => handleSortChange("asc")}
+                      >
+                        <IconArrowNarrowUp size={18} />
+                      </ActionIcon>
+
+                      <ActionIcon
+                        variant={sortOrder === "desc" ? "filled" : "light"}
+                        size="lg"
+                        aria-label="Urutkan terbaru"
+                        onClick={() => handleSortChange("desc")}
+                      >
+                        <IconArrowNarrowDown size={18} />
+                      </ActionIcon>
+                    </Group>
+                  </Stack>
+                </Grid.Col>
+              </Grid>
+
+              <Stack gap="sm">
+                {historyList.map((item) => {
+                  const stationInfo = STATION_INFO[item.stationType];
+
+                  return (
+                    <Card key={item.id} withBorder radius="lg" p="lg">
+                      <Stack gap="md">
+                        {/* Baris atas: station kiri, tanggal kanan */}
+                        <Grid align="center">
+                          <Grid.Col span="auto">
+                            <Badge variant="light" color={stationInfo.color}>
+                              {stationInfo.label}
+                            </Badge>
+                          </Grid.Col>
+
+                          <Grid.Col span="content">
+                            <Text size="xs" c="dimmed">
+                              {formatFieldOpsDate(item.completedAt)}
+                            </Text>
+                          </Grid.Col>
+                        </Grid>
+
+                        {/* Baris bawah: kode order kiri, jam kanan */}
+                        <Grid align="center">
+                          <Grid.Col span="auto">
+                            <Stack gap={2}>
+                              <Text size="xs" c="dimmed">
+                                Kode Order
+                              </Text>
+
+                              <Text fw={700}>{item.order.orderCode}</Text>
+                            </Stack>
+                          </Grid.Col>
+
+                          <Grid.Col span="content">
+                            <Group gap="xs">
+                              <IconClock size={16} color="var(--color-text-secondary)" />
+
+                              <Text size="sm" c="dimmed">
+                                Selesai pukul {formatFieldOpsTime(item.completedAt)}
+                              </Text>
+                            </Group>
+                          </Grid.Col>
+                        </Grid>
+
+                        <Button
+                          component={Link}
+                          href={`/internal/worker/riwayat/${item.id}`}
+                          color="var(--color-accent)"
+                          rightSection={<IconArrowNarrowRight />}
+                          size={"compact-sm"}
+                        >
+                          Lihat detail
+                        </Button>
+                      </Stack>
+                    </Card>
+                  );
+                })}
+              </Stack>
+
+              {meta.totalPages > 1 && (
+                <Group justify="center">
+                  <Pagination value={page} total={meta.totalPages} onChange={setPage} size="sm" />
+                </Group>
+              )}
+            </Stack>
+          );
+        }}
+      </AsyncStateView>
+    </Stack>
+  );
+}
+````
+
+## File: src/hooks/attendance.hooks.ts
+````typescript
+import { AttendanceApi } from "@/lib/api/attendance.api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { notifications } from "@mantine/notifications";
+import { useState } from "react";
+import dayjs from "dayjs";
+import type { AttendanceHistoryQuery } from "@/types/api/attendance.types";
+
+
+export const ATTENDANCE_QUERY_KEY = ["attendance"] as const;
+export const ATTENDANCE_STATUS_QUERY_KEY = [...ATTENDANCE_QUERY_KEY, "status"] as const;
+export const ATTENDANCE_HISTORY_QUERY_KEY = [...ATTENDANCE_QUERY_KEY, "history"] as const;
+
+// attendanceapi configuration
+const attendanceApi = new AttendanceApi();
+
+// attendance status
+export function useAttendanceStatus() {
+  return useQuery({
+    queryKey: ATTENDANCE_STATUS_QUERY_KEY,
+    queryFn: () => attendanceApi.getStatus(),
+    refetchOnMount:'always'
+  });
+}
+
+// clock-in
+export function useClockIn() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => attendanceApi.clockIn(),
+    onSuccess: async () => {
+      notifications.show({
+        title: "Absensi Berhasil!",
+        message: "Absensi Masuk Berhasil! Selamat bekerja!",
+        color: "green",
+      });
+      await queryClient.invalidateQueries({ queryKey: ATTENDANCE_QUERY_KEY });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        title: "Absensi Gagal!",
+        message: error.message,
+        color: "red",
+      });
+    },
+  });
+}
+
+export function useClockOut() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => attendanceApi.clockOut(),
+    onSuccess: async () => {
+      notifications.show({
+        title: "Absensi Berhasil!",
+        message: "Absensi Pulang berhasil! Selamat Melanjutkan Kegiatan!",
+        color: "green",
+      });
+      await queryClient.invalidateQueries({ queryKey: ATTENDANCE_QUERY_KEY });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        title: "Absensi Gagal!",
+        message: error.message,
+        color: "red",
+      });
+    },
+  });
+}
+
+export function useAttendanceHistory() {
+  const HISTORY_PAGE_SIZE = 5;
+
+  const [page, setPage] = useState<number>(1);
+  const [period, setPeriod] = useState<string>(() => dayjs().format("YYYY-MM"));
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  // query params
+  const query: AttendanceHistoryQuery = {
+    page: page,
+    pageSize: HISTORY_PAGE_SIZE,
+    period: period,
+    sortOrder: sortOrder,
+  };
+
+  // fetching endpoint history
+  const historyQuery = useQuery({
+    queryKey: [...ATTENDANCE_HISTORY_QUERY_KEY, query],
+    queryFn: () => attendanceApi.getHistory(query),
+  });
+
+  // handlers
+
+  function handlePeriodChange(value: string | null) {
+    if (!value) return;
+    setPeriod(dayjs(value).format("YYYY-MM"));
+    setPage(1);
+  }
+
+  function handleSortChange(value: "asc" | "desc") {
+    setSortOrder(value); //kalo diclick pertama, akan ganti ke asc.
+    setPage(1);
+  }
+
+  return {
+    historyQuery,
+
+    period,
+    sortOrder,
+
+    setPage,
+    handlePeriodChange,
+    handleSortChange,
+  };
 }
 ````
 
@@ -27236,6 +27974,7 @@ export function useCurrentOutletAttendance(query: OutletAttendanceQuery, options
 
 export function useEmployeeHooks() {
   const router = useRouter();
+  const inviteEmployee = useInviteEmployee();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<10 | 20 | 50>(10);
   const [filters, setFilters] = useState<Pick<EmployeeQuery, "search" | "role" | "accountStatus" | "workStatus" | "outletId">>({});
@@ -27288,6 +28027,7 @@ export function useEmployeeHooks() {
     handleReset,
     employees,
     setPageSize,
+    inviteEmployee
   };
 }
 
@@ -27368,229 +28108,6 @@ export function useEmployeeAttendanceHooks() {
     handleSort,
     handleReset,
   };
-}
-````
-
-## File: src/hooks/worker.hooks.ts
-````typescript
-import { ApiError } from "@/lib/api/axios";
-import { WorkerApi } from "@/lib/api/worker.api";
-import type { StationType, WorkerAvailableQuery, WorkerBypassPayload, WorkerHistoryQuery, WorkerValidatePayload } from "@/types/api/worker.types";
-import { notifications } from "@mantine/notifications";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import dayjs from "dayjs";
-import { useState } from "react";
-
-export const WORKER_QUERY_KEY = ["worker"] as const;
-export const WORKER_AVAILABLE_QUERY_KEY = [...WORKER_QUERY_KEY, "available"] as const;
-export const WORKER_ACTIVE_QUERY_KEY = [...WORKER_QUERY_KEY, "active"] as const;
-export const WORKER_HISTORY_QUERY_KEY = [...WORKER_QUERY_KEY, "history"] as const;
-
-type StationFilter = StationType | "ALL";
-const workerApi = new WorkerApi();
-
-export function useAvailable() {
-  const AVAILABLE_PAGE_SIZE = 5;
-
-  const [page, setPage] = useState<number>(1);
-  const [stationType, setStationType] = useState<StationFilter>("ALL");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
-  const query: WorkerAvailableQuery = {
-    page: page,
-    pageSize: AVAILABLE_PAGE_SIZE,
-    ...(stationType !== "ALL" && { stationType }),
-    sortOrder: sortOrder,
-  };
-
-  // fetching endpoint available
-
-  const availableQuery = useQuery({
-    queryKey: [...WORKER_AVAILABLE_QUERY_KEY, query],
-    queryFn: () => workerApi.getAvailable(query),
-  });
-
-  function handleStationFilter(value: string | null) {
-    if (!value) return;
-    setStationType(value as StationFilter);
-    setPage(1);
-  }
-
-  function handleSortChange(value: "asc" | "desc") {
-    setSortOrder(value);
-    setPage(1);
-  }
-  return {
-    availableQuery,
-
-    page,
-    stationType,
-    sortOrder,
-
-    setPage,
-    handleStationFilter,
-    handleSortChange,
-  };
-}
-
-export function useClaim() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (assignmentId: string) => workerApi.claim(assignmentId),
-    onSuccess: async () => {
-      notifications.show({
-        title: "Tugas berhasil diambil!",
-        message: "Tugas telah menjadi tugas aktif anda.",
-        color: "green",
-      });
-      await queryClient.invalidateQueries({ queryKey: WORKER_QUERY_KEY });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        title: "Gagal mengambil tugas",
-        message: error.message,
-        color: "red",
-      });
-    },
-  });
-}
-
-export function useActive() {
-  return useQuery({
-    queryKey: WORKER_ACTIVE_QUERY_KEY,
-    queryFn: () => workerApi.getActive(),
-    refetchInterval:10_000 // supaya ketika ON_HOLD_BYPASS terapprove atau tereject, page tidak diam di situ saja.
-  });
-}
-
-export function useValidateQuantities() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ assignmentId, payload }: { assignmentId: string; payload: WorkerValidatePayload }) =>
-      workerApi.validateQuantities(assignmentId, payload),
-    onSuccess: async () => {
-      notifications.show({
-        title: "Validasi Berhasil",
-        message: "Kuantitas sesuai, silahkan memulai tugas anda!",
-        color: "green",
-      });
-      await queryClient.invalidateQueries({ queryKey: WORKER_ACTIVE_QUERY_KEY });
-    },
-    onError: async (error) => {
-      if (error instanceof ApiError && error.code === "QUANTITY_MISMATCH") {
-        await queryClient.invalidateQueries({ queryKey: WORKER_ACTIVE_QUERY_KEY });
-        return;
-      }
-      notifications.show({
-        title: "Validasi Gagal",
-        message: error instanceof Error ? error.message : "Terjadi Kesalahan",
-        color: "red",
-      });
-    },
-  });
-}
-
-export function useRequestBypass() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ assignmentId, payload }: { assignmentId: string; payload: WorkerBypassPayload }) => workerApi.requestBypass(assignmentId, payload),
-    onSuccess: async () => {
-      notifications.show({
-        title: "Permintaan bypass terkirim!",
-        message: "Silahkan menunggu konfirmasi dari Outlet admin.",
-        color: "green",
-      });
-      await queryClient.invalidateQueries({ queryKey: WORKER_ACTIVE_QUERY_KEY });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        title: "Permintaan bypass gagal!",
-        message: error.message,
-        color: "red",
-      });
-    },
-  });
-}
-
-export function useComplete() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (assignmentId: string) => workerApi.complete(assignmentId),
-    onSuccess: async () => {
-      notifications.show({
-        title: "Tugas Selesai!",
-        message: "Tugas berhasil diselesaikan, terimakasih atas kerja keras anda.",
-        color: "green",
-      });
-      await queryClient.invalidateQueries({ queryKey: WORKER_QUERY_KEY });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        title: "Gagal menyelesaikan tugas",
-        message: error.message,
-        color: "red",
-      });
-    },
-  });
-}
-
-export function useHistoryList() {
-  const HISTORY_PAGE_SIZE = 5;
-
-  const [page, setPage] = useState<number>(1);
-  const [stationType, setStationType] = useState<StationFilter>("ALL");
-  const [period, setPeriod] = useState<string>(() => dayjs().format("YYYY-MM"));
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
-  // query params
-  const query: WorkerHistoryQuery = {
-    page: page,
-    pageSize: HISTORY_PAGE_SIZE,
-    period,
-    ...(stationType !== "ALL" && { stationType }),
-    sortOrder,
-  };
-  const historyQuery = useQuery({
-    queryKey: [...WORKER_HISTORY_QUERY_KEY, query],
-    queryFn: () => workerApi.getHistoryList(query),
-  });
-
-  function handlePeriodChange(value: string) {
-    setPeriod(value);
-    setPage(1);
-  }
-
-  function handleStationFilter(value: string | null) {
-    if (!value) return;
-    setStationType(value as StationFilter);
-    setPage(1);
-  }
-
-  function handleSortChange(value: "asc" | "desc") {
-    setSortOrder(value);
-    setPage(1);
-  }
-
-  return {
-    historyQuery,
-
-    page,
-    period,
-    stationType,
-    sortOrder,
-
-    setPage,
-    handlePeriodChange,
-    handleStationFilter,
-    handleSortChange,
-  };
-}
-
-export function useHistoryDetail(assignmentId: string) {
-  return useQuery({
-    queryKey: [...WORKER_HISTORY_QUERY_KEY, "detail", assignmentId],
-    queryFn: () => workerApi.getHistoryDetail(assignmentId),
-  });
 }
 ````
 
@@ -27993,6 +28510,201 @@ export type OutletAttendanceResponse = {
 };
 ````
 
+## File: src/types/api/index.ts
+````typescript
+export type Role = "CUSTOMER" | "WORKER" | "DRIVER" | "OUTLET_ADMIN" | "SUPER_ADMIN";
+
+export type RegisterCustomerResponse = {
+  customerId: string;
+  email: string;
+  message: string;
+};
+
+export type GoogleLoginPayload = { idToken: string };
+
+export type LoginUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: "CUSTOMER";
+  isEmailVerified: boolean;
+};
+
+export type LoginCustomerResponse = {
+  user: LoginUser;
+  homeUrl: string;
+};
+
+export type EmployeeLoginResponse = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
+
+export type VerifyEmailPayload = {
+  token: string;
+  name: string;
+  password: string;
+};
+
+export type AcceptInvitationPayload = {
+  token: string;
+  password: string;
+};
+
+export type VerificationPayload = {
+  email: string;
+};
+
+export type MessageResponse = {
+  message: string;
+};
+
+export type ResetPasswordCustomerPayload = {
+  token: string;
+  newPassword: string;
+};
+
+export type Me = {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  accountType: "customer" | "employee";
+  phone: string | null;
+  profilePhotoUrl: string | null;
+  isEmailVerified: boolean;
+  authProvider: string;
+};
+
+export type MeResponse = {
+  success: true;
+  data: Me;
+};
+
+export type AccountStatus = "INVITED" | "ACTIVE" | "INACTIVE";
+export type AttendanceStatus = "OFF_DUTY" | "ON_DUTY";
+export type AvailabilityStatus = "AVAILABLE" | "BUSY";
+export type PaymentStatus = "UNPAID" | "PENDING" | "PAID" | "FAILED" | "CANCELLED" | "EXPIRED";
+export type InternalOrderState = "ON_HOLD_BYPASS" | "PAUSED_OFF_HOURS";
+export type CustomerOrderStatus =
+  | "MENUNGGU_PENJEMPUTAN_DRIVER"
+  | "LAUNDRY_SEDANG_MENUJU_OUTLET"
+  | "LAUNDRY_TELAH_SAMPAI_OUTLET"
+  | "LAUNDRY_SEDANG_DICUCI"
+  | "LAUNDRY_SEDANG_DISETRIKA"
+  | "LAUNDRY_SEDANG_DI_PACKING"
+  | "MENUNGGU_PEMBAYARAN"
+  | "LAUNDRY_SIAP_DIANTAR"
+  | "LAUNDRY_SEDANG_DIKIRIM_MENUJU_CUSTOMER"
+  | "MENUNGGU_KONFIRMASI_CUSTOMER"
+  | "SELESAI"
+  | "DIBATALKAN_CUSTOMER"
+  | "DALAM_PENANGANAN_KOMPLAIN";
+
+export interface SessionUser {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  accountStatus: AccountStatus;
+  outletId?: string;
+  stationType?: "WASHING" | "IRONING" | "PACKING";
+  isEmailVerified?: boolean;
+}
+
+export interface ListQuery {
+  page: number;
+  pageSize: 10 | 20 | 50 | number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  filters?: Record<string, string | number | boolean | undefined>;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+}
+
+export interface OrderListItem {
+  id: string;
+  orderNumber: string;
+  customerName: string;
+  outletName: string;
+  status: CustomerOrderStatus;
+  paymentStatus: PaymentStatus;
+  createdAt: string;
+  total?: number;
+}
+
+export type PaginationMeta = {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+};
+export type EmployeeRole = "OUTLET_ADMIN" | "WORKER" | "DRIVER";
+export type WorkStatus = "OFF_DUTY" | "AVAILABLE" | "BUSY";
+export type BypassStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type StationType = "WASHING" | "IRONING" | "PACKING";
+export type SortOrder = "asc" | "desc";
+export type ComplaintCategory = "TIDAK_SESUAI" | "RUSAK" | "HILANG";
+
+export type ComplaintStatus = "OPEN" | "APPROVED" | "REJECTED";
+
+export type CustomerStatus =
+  | "SCHEDULED"
+  | "WAITING_DRIVER_PICKUP"
+  | "ON_THE_WAY_TO_OUTLET"
+  | "ARRIVED_AT_OUTLET"
+  | "WASHING"
+  | "IRONING"
+  | "PACKING"
+  | "WAITING_PAYMENT"
+  | "OVERDUE"
+  | "READY_FOR_DELIVERY"
+  | "ON_THE_WAY_TO_CUSTOMER"
+  | "WAITING_CUSTOMER_CONFIRMATION"
+  | "RECEIVED_BY_CUSTOMER";
+
+export type BillPaymentStatus =
+  | "UNPAID"
+  | "PAID";
+
+export type PickupDeliveryType =
+  | "PICKUP"
+  | "DELIVERY";
+
+export type DriverAssignmentStatus =
+  | "QUEUED"
+  | "ASSIGNED"
+  | "IN_PROGRESS"
+  | "COMPLETED";
+export type WorkerAssignmentStatus =
+  | "QUEUED"
+  | "ASSIGNED"
+  | "IN_PROGRESS"
+  | "ON_HOLD_BYPASS"
+  | "COMPLETED";
+````
+
 ## File: src/types/api/order.types.ts
 ````typescript
 import {
@@ -28371,27 +29083,6 @@ export type WorkerHistoryDetailResponse = {
     quantity: number;
   }[];
 };
-````
-
-## File: src/app/(auth)/login/page.tsx
-````typescript
-import { Suspense } from "react";
-import { Center, Loader } from "@mantine/core";
-import LoginPageContent from "@/components/authCustomer/LoginCustomerContent";
-
-export default function LoginPage() {
-  return (
-    <Suspense
-      fallback={
-        <Center mih="100vh">
-          <Loader size="md" />
-        </Center>
-      }
-    >
-      <LoginPageContent />
-    </Suspense>
-  );
-}
 ````
 
 ## File: src/components/back-office/penerimaan/ReceptionTable.tsx
@@ -28866,140 +29557,6 @@ export function AddressList() {
 }
 ````
 
-## File: src/components/shared/Headers/HeaderProfile.tsx
-````typescript
-"use client";
-
-import {
-  Avatar, Group, Menu, Skeleton, Text, UnstyledButton, Button, Box,
-} from "@mantine/core";
-import {
-  IconChevronDown,
-  IconLogout,
-} from "@tabler/icons-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/stores/useAuthStore";
-import { useLogout } from "@/hooks/authCustomer.hooks";
-import { NAV_LINKS } from "./nav-links";
-import { notifications } from "@mantine/notifications";
-
-export function HeaderProfile() {
-  const user = useAuthStore((s) => s.user);
-  const isInitializing = useAuthStore((s) => s.isInitializing);
-  const router = useRouter();
-  const { mutate: logout, isPending: isLoggingOut } = useLogout();
-
-  if (isInitializing) {
-    return (
-      <Group gap="xs">
-        <Skeleton height={36} width={36} radius="xl" />
-        <Skeleton height={14} width={80} visibleFrom="sm" />
-      </Group>
-    );
-  }
-
-  if (!user) {
-    return (
-      <Group gap="sm">
-        <Button component={Link} href="/login" variant="subtle" size="sm">
-          Masuk
-        </Button>
-        <Button
-          component={Link}
-          href="/register"
-          size="sm"
-          style={{
-            backgroundColor: "var(--color-accent)",
-            color: "var(--color-text-on-accent)",
-          }}
-        >
-          Daftar
-        </Button>
-      </Group>
-    );
-  }
-
-  const initials = user.name
-    ? user.name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
-    : "?";
-
-  const handleLogout = () => {
-  logout(undefined, {
-    onSuccess: () => {
-      useAuthStore.getState().clearUser();
-
-      notifications.show({
-        title: "Berhasil",
-        message: "Kamu berhasil keluar dari akun.",
-        color: "green",
-      });
-
-      router.replace("/login");
-    },
-
-    onError: (error) => {
-      notifications.show({
-        title: "Gagal",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Gagal keluar dari akun. Silakan coba lagi.",
-        color: "red",
-      });
-    },
-  });
-};
-
-  return (
-    <Menu shadow="md" width={220} position="bottom-end">
-      <Menu.Target>
-        <UnstyledButton>
-          <Group gap="xs">
-            <Avatar
-              src={user?.profilePhotoUrl || undefined}
-              radius="xl"
-              size={40}
-              style={{ backgroundColor: "var(--color-primary)" }}
-            >
-              {initials}
-            </Avatar>
-            <Text fw={500} size="lg" visibleFrom="sm">{user.name}</Text>
-            <Box visibleFrom="sm" component="span" style={{ display: "inline-flex" }}>
-              <IconChevronDown size={16} style={{ color: "var(--color-text-secondary)" }} />
-            </Box>
-          </Group>
-        </UnstyledButton>
-      </Menu.Target>
-
-      <Menu.Dropdown>
-        <Menu.Label style={{ wordBreak: "break-all" }}>{user.email}</Menu.Label>
-
-        {NAV_LINKS.map(({ label, href, icon: Icon }) => (
-          <Menu.Item
-            key={href}
-            component={Link}
-            href={href}
-            leftSection={<Icon size={16} />}
-          >
-            {label}
-          </Menu.Item>
-        ))}
-        <Menu.Divider />
-        <Menu.Item
-          color="red"
-          leftSection={<IconLogout size={16} />}
-          onClick={handleLogout}
-          disabled={isLoggingOut}
-        >
-          {isLoggingOut ? "Keluar..." : "Keluar"}
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
-  );
-}
-````
-
 ## File: src/hooks/order.hooks.ts
 ````typescript
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -29159,6 +29716,229 @@ export function useLatestPayment(id: string) {
     queryKey: ["payment", id],
     queryFn: () => orderApi.getLastestPayment(id),
     enabled: !!id,
+  });
+}
+````
+
+## File: src/hooks/worker.hooks.ts
+````typescript
+import { ApiError } from "@/lib/api/axios";
+import { WorkerApi } from "@/lib/api/worker.api";
+import type { StationType, WorkerAvailableQuery, WorkerBypassPayload, WorkerHistoryQuery, WorkerValidatePayload } from "@/types/api/worker.types";
+import { notifications } from "@mantine/notifications";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import { useState } from "react";
+
+export const WORKER_QUERY_KEY = ["worker"] as const;
+export const WORKER_AVAILABLE_QUERY_KEY = [...WORKER_QUERY_KEY, "available"] as const;
+export const WORKER_ACTIVE_QUERY_KEY = [...WORKER_QUERY_KEY, "active"] as const;
+export const WORKER_HISTORY_QUERY_KEY = [...WORKER_QUERY_KEY, "history"] as const;
+
+type StationFilter = StationType | "ALL";
+const workerApi = new WorkerApi();
+
+export function useAvailable() {
+  const AVAILABLE_PAGE_SIZE = 5;
+
+  const [page, setPage] = useState<number>(1);
+  const [stationType, setStationType] = useState<StationFilter>("ALL");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  const query: WorkerAvailableQuery = {
+    page: page,
+    pageSize: AVAILABLE_PAGE_SIZE,
+    ...(stationType !== "ALL" && { stationType }),
+    sortOrder: sortOrder,
+  };
+
+  // fetching endpoint available
+
+  const availableQuery = useQuery({
+    queryKey: [...WORKER_AVAILABLE_QUERY_KEY, query],
+    queryFn: () => workerApi.getAvailable(query),
+  });
+
+  function handleStationFilter(value: string | null) {
+    if (!value) return;
+    setStationType(value as StationFilter);
+    setPage(1);
+  }
+
+  function handleSortChange(value: "asc" | "desc") {
+    setSortOrder(value);
+    setPage(1);
+  }
+  return {
+    availableQuery,
+
+    page,
+    stationType,
+    sortOrder,
+
+    setPage,
+    handleStationFilter,
+    handleSortChange,
+  };
+}
+
+export function useClaim() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (assignmentId: string) => workerApi.claim(assignmentId),
+    onSuccess: async () => {
+      notifications.show({
+        title: "Tugas berhasil diambil!",
+        message: "Tugas telah menjadi tugas aktif anda.",
+        color: "green",
+      });
+      await queryClient.invalidateQueries({ queryKey: WORKER_QUERY_KEY });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        title: "Gagal mengambil tugas",
+        message: error.message,
+        color: "red",
+      });
+    },
+  });
+}
+
+export function useActive() {
+  return useQuery({
+    queryKey: WORKER_ACTIVE_QUERY_KEY,
+    queryFn: () => workerApi.getActive(),
+    refetchInterval: 30_000, // supaya ketika ON_HOLD_BYPASS terapprove atau tereject, page tidak diam di situ saja.
+  });
+}
+
+export function useValidateQuantities() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ assignmentId, payload }: { assignmentId: string; payload: WorkerValidatePayload }) =>
+      workerApi.validateQuantities(assignmentId, payload),
+    onSuccess: async () => {
+      notifications.show({
+        title: "Validasi Berhasil",
+        message: "Kuantitas sesuai, silahkan memulai tugas anda!",
+        color: "green",
+      });
+      await queryClient.invalidateQueries({ queryKey: WORKER_ACTIVE_QUERY_KEY });
+    },
+    onError: async (error) => {
+      if (error instanceof ApiError && error.code === "QUANTITY_MISMATCH") {
+        await queryClient.invalidateQueries({ queryKey: WORKER_ACTIVE_QUERY_KEY });
+        return;
+      }
+      notifications.show({
+        title: "Validasi Gagal",
+        message: error instanceof Error ? error.message : "Terjadi Kesalahan",
+        color: "red",
+      });
+    },
+  });
+}
+
+export function useRequestBypass() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ assignmentId, payload }: { assignmentId: string; payload: WorkerBypassPayload }) => workerApi.requestBypass(assignmentId, payload),
+    onSuccess: async () => {
+      notifications.show({
+        title: "Permintaan bypass terkirim!",
+        message: "Silahkan menunggu konfirmasi dari Outlet admin.",
+        color: "green",
+      });
+      await queryClient.invalidateQueries({ queryKey: WORKER_ACTIVE_QUERY_KEY });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        title: "Permintaan bypass gagal!",
+        message: error.message,
+        color: "red",
+      });
+    },
+  });
+}
+
+export function useComplete() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (assignmentId: string) => workerApi.complete(assignmentId),
+    onSuccess: async () => {
+      notifications.show({
+        title: "Tugas Selesai!",
+        message: "Tugas berhasil diselesaikan, terimakasih atas kerja keras anda.",
+        color: "green",
+      });
+      await queryClient.invalidateQueries({ queryKey: WORKER_QUERY_KEY });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        title: "Gagal menyelesaikan tugas",
+        message: error.message,
+        color: "red",
+      });
+    },
+  });
+}
+
+export function useHistoryList() {
+  const HISTORY_PAGE_SIZE = 5;
+
+  const [page, setPage] = useState<number>(1);
+  const [stationType, setStationType] = useState<StationFilter>("ALL");
+  const [period, setPeriod] = useState<string>(() => dayjs().format("YYYY-MM"));
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  // query params
+  const query: WorkerHistoryQuery = {
+    page: page,
+    pageSize: HISTORY_PAGE_SIZE,
+    period,
+    ...(stationType !== "ALL" && { stationType }),
+    sortOrder,
+  };
+  const historyQuery = useQuery({
+    queryKey: [...WORKER_HISTORY_QUERY_KEY, query],
+    queryFn: () => workerApi.getHistoryList(query),
+  });
+
+  function handlePeriodChange(value: string) {
+    setPeriod(value);
+    setPage(1);
+  }
+
+  function handleStationFilter(value: string | null) {
+    if (!value) return;
+    setStationType(value as StationFilter);
+    setPage(1);
+  }
+
+  function handleSortChange(value: "asc" | "desc") {
+    setSortOrder(value);
+    setPage(1);
+  }
+
+  return {
+    historyQuery,
+
+    page,
+    period,
+    stationType,
+    sortOrder,
+
+    setPage,
+    handlePeriodChange,
+    handleStationFilter,
+    handleSortChange,
+  };
+}
+
+export function useHistoryDetail(assignmentId: string) {
+  return useQuery({
+    queryKey: [...WORKER_HISTORY_QUERY_KEY, "detail", assignmentId],
+    queryFn: () => workerApi.getHistoryDetail(assignmentId),
   });
 }
 ````
@@ -29427,343 +30207,65 @@ export type DriverHistoryDetailResponse = {
 };
 ````
 
-## File: src/types/api/index.ts
-````typescript
-export type Role = "CUSTOMER" | "WORKER" | "DRIVER" | "OUTLET_ADMIN" | "SUPER_ADMIN";
-
-export type RegisterCustomerResponse = {
-  customerId: string;
-  email: string;
-  message: string;
-};
-
-export type GoogleLoginPayload = { idToken: string };
-
-export type LoginUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: "CUSTOMER";
-  isEmailVerified: boolean;
-};
-
-export type LoginCustomerResponse = {
-  user: LoginUser;
-  homeUrl: string;
-};
-
-export type EmployeeLoginResponse = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-};
-
-export type VerifyEmailPayload = {
-  token: string;
-  name: string;
-  password: string;
-};
-
-export type AcceptInvitationPayload = {
-  token: string;
-  password: string;
-};
-
-export type VerificationPayload = {
-  email: string;
-};
-
-export type MessageResponse = {
-  message: string;
-};
-
-export type ResetPasswordCustomerPayload = {
-  token: string;
-  newPassword: string;
-};
-
-export type Me = {
-  id: string;
-  name: string;
-  email: string;
-  role: Role;
-  accountType: "customer" | "employee";
-  phone: string | null;
-  profilePhotoUrl: string | null;
-  isEmailVerified: boolean;
-  authProvider: string;
-};
-
-export type MeResponse = {
-  success: true;
-  data: Me;
-};
-
-export type AccountStatus = "INVITED" | "ACTIVE" | "INACTIVE";
-export type AttendanceStatus = "OFF_DUTY" | "ON_DUTY";
-export type AvailabilityStatus = "AVAILABLE" | "BUSY";
-export type PaymentStatus = "UNPAID" | "PENDING" | "PAID" | "FAILED" | "CANCELLED" | "EXPIRED";
-export type InternalOrderState = "ON_HOLD_BYPASS" | "PAUSED_OFF_HOURS";
-export type CustomerOrderStatus =
-  | "MENUNGGU_PENJEMPUTAN_DRIVER"
-  | "LAUNDRY_SEDANG_MENUJU_OUTLET"
-  | "LAUNDRY_TELAH_SAMPAI_OUTLET"
-  | "LAUNDRY_SEDANG_DICUCI"
-  | "LAUNDRY_SEDANG_DISETRIKA"
-  | "LAUNDRY_SEDANG_DI_PACKING"
-  | "MENUNGGU_PEMBAYARAN"
-  | "LAUNDRY_SIAP_DIANTAR"
-  | "LAUNDRY_SEDANG_DIKIRIM_MENUJU_CUSTOMER"
-  | "MENUNGGU_KONFIRMASI_CUSTOMER"
-  | "SELESAI"
-  | "DIBATALKAN_CUSTOMER"
-  | "DALAM_PENANGANAN_KOMPLAIN";
-
-export interface SessionUser {
-  id: string;
-  name: string;
-  email: string;
-  role: Role;
-  accountStatus: AccountStatus;
-  outletId?: string;
-  stationType?: "WASHING" | "IRONING" | "PACKING";
-  isEmailVerified?: boolean;
-}
-
-export interface ListQuery {
-  page: number;
-  pageSize: 10 | 20 | 50 | number;
-  search?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-  filters?: Record<string, string | number | boolean | undefined>;
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    page: number;
-    pageSize: number;
-    totalItems: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-  };
-}
-
-export interface OrderListItem {
-  id: string;
-  orderNumber: string;
-  customerName: string;
-  outletName: string;
-  status: CustomerOrderStatus;
-  paymentStatus: PaymentStatus;
-  createdAt: string;
-  total?: number;
-}
-
-export type PaginationMeta = {
-  page: number;
-  pageSize: number;
-  totalItems: number;
-  totalPages: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-};
-export type EmployeeRole = "OUTLET_ADMIN" | "WORKER" | "DRIVER";
-export type WorkStatus = "OFF_DUTY" | "AVAILABLE" | "BUSY";
-export type BypassStatus = "PENDING" | "APPROVED" | "REJECTED";
-export type StationType = "WASHING" | "IRONING" | "PACKING";
-export type SortOrder = "asc" | "desc";
-export type ComplaintCategory = "TIDAK_SESUAI" | "RUSAK" | "HILANG";
-
-export type ComplaintStatus = "OPEN" | "APPROVED" | "REJECTED";
-
-export type CustomerStatus =
-  | "SCHEDULED"
-  | "WAITING_DRIVER_PICKUP"
-  | "ON_THE_WAY_TO_OUTLET"
-  | "ARRIVED_AT_OUTLET"
-  | "WASHING"
-  | "IRONING"
-  | "PACKING"
-  | "WAITING_PAYMENT"
-  | "OVERDUE"
-  | "READY_FOR_DELIVERY"
-  | "ON_THE_WAY_TO_CUSTOMER"
-  | "WAITING_CUSTOMER_CONFIRMATION"
-  | "RECEIVED_BY_CUSTOMER";
-
-export type BillPaymentStatus =
-  | "UNPAID"
-  | "PAID";
-
-export type PickupDeliveryType =
-  | "PICKUP"
-  | "DELIVERY";
-
-export type DriverAssignmentStatus =
-  | "QUEUED"
-  | "ASSIGNED"
-  | "IN_PROGRESS"
-  | "COMPLETED";
-export type WorkerAssignmentStatus =
-  | "QUEUED"
-  | "ASSIGNED"
-  | "IN_PROGRESS"
-  | "ON_HOLD_BYPASS"
-  | "COMPLETED";
-````
-
-## File: src/lib/api/axios.ts
-````typescript
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-
-export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
+## File: package.json
+````json
+{
+  "name": "laundry-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
   },
-});
-
-export class ApiError extends Error {
-  code: string;
-  fields?: Record<string, string>;
-
-  constructor(code: string, message: string, fields?: Record<string, string>) {
-    super(message);
-
-    this.name = "ApiError";
-    this.code = code;
-    this.fields = fields;
+  "dependencies": {
+    "@mantine/carousel": "9.5.0",
+    "@mantine/charts": "9.5.0",
+    "@mantine/core": "9.5.0",
+    "@mantine/dates": "9.5.0",
+    "@mantine/form": "9.5.0",
+    "@mantine/hooks": "9.5.0",
+    "@mantine/modals": "9.5.0",
+    "@mantine/notifications": "9.5.0",
+    "@supabase/ssr": "^0.12.5",
+    "@supabase/supabase-js": "^2.114.0",
+    "@tabler/icons-react": "^3.46.0",
+    "@tanstack/react-query": "^5.101.4",
+    "axios": "^1.19.0",
+    "dayjs": "^1.11.23",
+    "embla-carousel-autoplay": "^8.6.0",
+    "embla-carousel-react": "^8.6.0",
+    "leaflet": "^1.9.4",
+    "next": "16.2.12",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-leaflet": "^5.0.0",
+    "recharts": "^3.10.1",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@tanstack/react-query-devtools": "^5.101.4",
+    "@types/leaflet": "^1.9.22",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.12",
+    "postcss": "^8.5.25",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "allowScripts": {
+    "sharp@0.34.5": true,
+    "unrs-resolver@1.12.2": true
   }
 }
-
-type ErrorEnvelope = {
-  success: false;
-  error: {
-    code: string;
-    message: string;
-    fields?: Record<string, string>;
-  };
-};
-
-type RetryableRequestConfig = InternalAxiosRequestConfig & {
-  _retry?: boolean;
-};
-
-let refreshPromise: Promise<void> | null = null;
-
-const NO_REFRESH_ENDPOINTS = [
-  "/auth/login",
-  "/auth/employee/login",
-  "/auth/employee/accept-invitation",
-  "/auth/employee/forgot-password",
-  "/auth/employee/reset-password",
-  "/auth/register",
-  "/auth/verify-email",
-  "/auth/resend-verification",
-  "/auth/forgot-password",
-  "/auth/reset-password",
-  "/auth/login/google",
-  "/auth/refresh",
-];
-
-function shouldSkipRefresh(url?: string): boolean {
-  if (!url) return false;
-
-  return NO_REFRESH_ENDPOINTS.some((endpoint) => url.includes(endpoint));
-}
-
-export async function refreshAccessToken(): Promise<void> {
-  if (refreshPromise) {
-    return refreshPromise;
-  }
-
-  refreshPromise = axios
-    .post(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
-      {},
-      {
-        withCredentials: true,
-      },
-    )
-    .then(() => {})
-    .finally(() => {
-      refreshPromise = null;
-    });
-
-  return refreshPromise;
-}
-
-api.interceptors.response.use(
-  (response) => response,
-
-  async (error: AxiosError<ErrorEnvelope>) => {
-    const originalRequest = error.config as RetryableRequestConfig | undefined;
-    const status = error.response?.status;
-
-    if (!originalRequest) {
-      return Promise.reject(error);
-    }
-
-    if (shouldSkipRefresh(originalRequest.url)) {
-      const payload = error.response?.data?.error;
-      return Promise.reject(
-        new ApiError(
-          payload?.code ?? "UNKNOWN_ERROR",
-          payload?.message ?? "Terjadi kesalahan. Silakan coba lagi.",
-          payload?.fields,
-        ),
-      );
-    }
-
-
-    const code = error.response?.data?.error?.code;
-
-    // HANYA coba refresh untuk token yang benar-benar EXPIRED
-    // (pernah login, tokennya basi). Kalau ACCESS_TOKEN_REQUIRED
-    // (belum pernah login sama sekali / tidak ada cookie), refresh
-    // dijamin gagal karena refreshToken juga tidak ada — percuma dicoba.
-    if (code === "ACCESS_TOKEN_EXPIRED" && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        await refreshAccessToken();
-        return api(originalRequest);
-      } catch (refreshError) {
-
-        // Hindari infinite reload: cuma redirect kalau BELUM di /login,
-        // dan pakai client-side navigation, bukan full reload.
-        if (
-          typeof window !== "undefined" &&
-          !window.location.pathname.startsWith("/login")
-        ) {
-          window.location.href = "/login";
-        }
-
-        return Promise.reject(refreshError);
-      }
-    }
-
-    const payload = error.response?.data?.error;
-    return Promise.reject(
-      new ApiError(
-        payload?.code ?? "UNKNOWN_ERROR",
-        payload?.message ?? "Terjadi kesalahan. Silakan coba lagi.",
-        payload?.fields,
-      ),
-    );
-  },
-);
 ````
 
 ## File: src/components/back-office/penerimaan/ReceptionContent.tsx
@@ -29880,66 +30382,5 @@ export function ReceptionContent() {
       />
     </>
   );
-}
-````
-
-## File: package.json
-````json
-{
-  "name": "laundry-app",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "@mantine/carousel": "9.5.0",
-    "@mantine/charts": "9.5.0",
-    "@mantine/core": "9.5.0",
-    "@mantine/dates": "9.5.0",
-    "@mantine/form": "9.5.0",
-    "@mantine/hooks": "9.5.0",
-    "@mantine/modals": "9.5.0",
-    "@mantine/notifications": "9.5.0",
-    "@supabase/ssr": "^0.12.5",
-    "@supabase/supabase-js": "^2.114.0",
-    "@tabler/icons-react": "^3.46.0",
-    "@tanstack/react-query": "^5.101.4",
-    "axios": "^1.19.0",
-    "dayjs": "^1.11.23",
-    "embla-carousel-autoplay": "^8.6.0",
-    "embla-carousel-react": "^8.6.0",
-    "leaflet": "^1.9.4",
-    "next": "16.2.12",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "react-leaflet": "^5.0.0",
-    "recharts": "^3.10.1",
-    "zod": "^4.4.3",
-    "zustand": "^5.0.15"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@tanstack/react-query-devtools": "^5.101.4",
-    "@types/leaflet": "^1.9.22",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.12",
-    "postcss": "^8.5.25",
-    "postcss-preset-mantine": "^1.18.0",
-    "postcss-simple-vars": "^7.0.1",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  },
-  "allowScripts": {
-    "sharp@0.34.5": true,
-    "unrs-resolver@1.12.2": true
-  }
 }
 ````

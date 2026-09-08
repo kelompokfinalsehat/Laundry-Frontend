@@ -7,12 +7,12 @@ import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { LaundryItemFilters } from "./LaundryItemFilters";
 import { LaundryItemTable } from "./LaundryItemTable";
+import { LaundryItemModal } from "./LaundryItemModal";
 import { useLaundryItemHooks } from "@/hooks/laundry-item.hooks";
 import TableSkeleton from "../shared/TableSkeleton";
 
 export function LaundryItemContent() {
   const {
-    router,
     form,
     setPage,
     handleReset,
@@ -22,7 +22,16 @@ export function LaundryItemContent() {
     selectedItem,
     deactivateLaundryItem,
     handleDeactivate,
+
+    itemModalOpened,
+    editingItem,
+    handleCreate,
+    handleEdit,
+    handleCloseItemModal,
+    handleSubmitItem,
+    isItemSubmitting,
   } = useLaundryItemHooks();
+
   return (
     <>
       <Stack gap="lg">
@@ -30,7 +39,10 @@ export function LaundryItemContent() {
           title="Laundry Item"
           description="Kelola jenis item laundry yang tersedia dalam sistem."
           action={
-            <Button leftSection={<IconPlus size={16} />} onClick={() => router.push("/internal/super-admin/item-laundry/baru")}>
+            <Button
+              leftSection={<IconPlus size={16} />}
+              onClick={handleCreate}
+            >
               Tambah Item
             </Button>
           }
@@ -68,17 +80,38 @@ export function LaundryItemContent() {
                   onPageChange={setPage}
                   onPageSizeChange={(value) => {
                     setPageSize(value as 10 | 20 | 50);
-
                     setPage(1);
                   }}
-                  onEdit={(item) => router.push(`/internal/super-admin/item-laundry/${item.id}`)}
-                  onDeactivate={(item) => setSelectedItem(item)}
+                  onEdit={handleEdit}
+                  onDeactivate={(item) =>
+                    setSelectedItem(item)
+                  }
                 />
               )}
             </AsyncStateView>
           </Stack>
         </Paper>
       </Stack>
+
+      <LaundryItemModal
+        opened={itemModalOpened}
+        onClose={handleCloseItemModal}
+        initialValues={{
+          name: editingItem?.name ?? "",
+        }}
+        onSubmit={handleSubmitItem}
+        isSubmitting={isItemSubmitting}
+        title={
+          editingItem
+            ? "Edit Item Laundry"
+            : "Tambah Item Laundry"
+        }
+        submitLabel={
+          editingItem
+            ? "Simpan Perubahan"
+            : "Tambah Item"
+        }
+      />
 
       <ConfirmDialog
         opened={Boolean(selectedItem)}
