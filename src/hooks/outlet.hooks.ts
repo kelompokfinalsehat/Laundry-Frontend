@@ -32,10 +32,24 @@ export function useCreateOutlet() {
   return useMutation({
     mutationFn: (payload: CreateOutletPayload) => outletApi.createOutlet(payload),
 
-    onSuccess: () =>
-      queryClient.invalidateQueries({
+    onSuccess: () => {
+      (queryClient.invalidateQueries({
         queryKey: OUTLETS_QUERY_KEY,
       }),
+        notifications.show({
+          title: "Berhasil",
+          message: "Berhasil membuat outlet.",
+          color: "green",
+        }));
+    },
+
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal membuat outlet.",
+        color: "red",
+      });
+    },
   });
 }
 

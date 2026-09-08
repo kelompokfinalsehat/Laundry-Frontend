@@ -1,16 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import type {
-  ApproveBypassPayload,
-  BypassListItem,
-  BypassQuery,
-  BypassSortBy,
-} from "@/types/api/bypass.types";
+import type { ApproveBypassPayload, BypassListItem, BypassQuery, BypassSortBy } from "@/types/api/bypass.types";
 import { BypassApi } from "@/lib/api/bypass.api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDebouncedValue } from "@mantine/hooks";
 import { SortOrder } from "@/types/api";
+import { notifications } from "@mantine/notifications";
 
 export const bypassKeys = {
   all: ["bypass"] as const,
@@ -31,7 +27,7 @@ export function useBypassRequests(query: BypassQuery) {
     queryKey: bypassKeys.list(query),
     queryFn: () => bypassApi.getBypassRequests(query),
     refetchInterval: 15_000,
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -49,13 +45,7 @@ export function useApproveBypassRequest() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      bypassId,
-      payload,
-    }: {
-      bypassId: string;
-      payload: ApproveBypassPayload;
-    }) => bypassApi.approveBypassRequest(bypassId, payload),
+    mutationFn: ({ bypassId, payload }: { bypassId: string; payload: ApproveBypassPayload }) => bypassApi.approveBypassRequest(bypassId, payload),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -64,6 +54,20 @@ export function useApproveBypassRequest() {
 
       queryClient.invalidateQueries({
         queryKey: bypassKeys.detail(variables.bypassId),
+      });
+
+      notifications.show({
+        title: "Berhasil",
+        message: "Berhasil approve bypass.",
+        color: "green",
+      });
+    },
+
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal approve bypass.",
+        color: "red",
       });
     },
   });
@@ -82,6 +86,20 @@ export function useRejectBypassRequest() {
 
       queryClient.invalidateQueries({
         queryKey: bypassKeys.detail(bypassId),
+      });
+
+      notifications.show({
+        title: "Berhasil",
+        message: "Berhasil reject bypass.",
+        color: "green",
+      });
+    },
+
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal reject bypass.",
+        color: "red",
       });
     },
   });
