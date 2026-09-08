@@ -43,10 +43,23 @@ export function useInviteEmployee() {
   return useMutation({
     mutationFn: (payload: InviteEmployeePayload) => employeeApi.inviteEmployee(payload),
 
-    onSuccess: () =>
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: EMPLOYEES_QUERY_KEY,
-      }),
+      });
+      notifications.show({
+        title: "Berhasil",
+        message: "Berhasil mengundang karyawan.",
+        color: "green",
+      });
+    },
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal mengundang karyawan.",
+        color: "red",
+      });
+    },
   });
 }
 
@@ -63,6 +76,19 @@ export function useUpdateEmployee() {
 
       queryClient.invalidateQueries({
         queryKey: [...EMPLOYEES_QUERY_KEY, "detail", variables.employeeId],
+      });
+
+      notifications.show({
+        title: "Berhasil",
+        message: "Berhasil update data karyawan.",
+        color: "green",
+      });
+    },
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal update data karyawan.",
+        color: "red",
       });
     },
   });
@@ -81,6 +107,18 @@ export function useActivateEmployee() {
       queryClient.invalidateQueries({
         queryKey: [...EMPLOYEES_QUERY_KEY, "detail", employeeId],
       });
+      notifications.show({
+        title: "Berhasil",
+        message: "Berhasil aktivasi akun karyawan.",
+        color: "green",
+      });
+    },
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal aktivasi akun karyawan.",
+        color: "red",
+      });
     },
   });
 }
@@ -98,6 +136,18 @@ export function useDeactivateEmployee() {
       queryClient.invalidateQueries({
         queryKey: [...EMPLOYEES_QUERY_KEY, "detail", employeeId],
       });
+      notifications.show({
+        title: "Berhasil",
+        message: "Berhasil nonaktifkan akun karyawan.",
+        color: "green",
+      });
+    },
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal nonaktifkan akun karyawan.",
+        color: "red",
+      });
     },
   });
 }
@@ -105,6 +155,20 @@ export function useDeactivateEmployee() {
 export function useResendInvitation() {
   return useMutation({
     mutationFn: (employeeId: string) => employeeApi.resendInvitation(employeeId),
+    onSuccess: () => {
+      notifications.show({
+        title: "Berhasil",
+        message: "Berhasil invite ulang karyawan.",
+        color: "green",
+      });
+    },
+    onError: (err) => {
+      notifications.show({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Gagal invite ulang karyawan.",
+        color: "red",
+      });
+    },
   });
 }
 
@@ -122,14 +186,19 @@ export function useAssignEmployee() {
       queryClient.invalidateQueries({
         queryKey: [...EMPLOYEES_QUERY_KEY, "detail", variables.employeeId],
       });
+      notifications.show({
+        title: "Berhasil",
+        message: "Berhasil assign/memindahkan karyawan.",
+        color: "green",
+      });
     },
     onError: (err) => {
       notifications.show({
         title: "Gagal",
-        message: err instanceof Error ? err.message : "Gagal memindahkan karyawan.",
-        color: "red"
-      })
-    }
+        message: err instanceof Error ? err.message : "Gagal assign/memindahkan karyawan.",
+        color: "red",
+      });
+    },
   });
 }
 
@@ -203,7 +272,7 @@ export function useEmployeeHooks() {
     handleReset,
     employees,
     setPageSize,
-    inviteEmployee
+    inviteEmployee,
   };
 }
 
@@ -253,7 +322,7 @@ export function useEmployeeAttendanceHooks() {
   );
 
   const handleReset = () => {
-    form.reset()
+    form.reset();
 
     setPage(1);
     setSortBy("name");
