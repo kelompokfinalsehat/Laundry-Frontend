@@ -23,7 +23,7 @@ const TASK_TYPE_INFO: Record<
   },
   DELIVERY: {
     label: "Pengantaran",
-    color: "yellow",
+    color: "orange",
   },
 };
 
@@ -92,7 +92,7 @@ export function DriverHistory() {
             <Stack gap="md">
               <Paper withBorder radius="lg" p="md" bg="var(--color-primary-light)">
                 <Group gap="sm">
-                  <ThemeIcon variant="light" radius="xl" size="lg" color="blue">
+                  <ThemeIcon variant="light" radius="xl" size="lg" color="var(--color-primary)">
                     <IconChecklist size={18} />
                   </ThemeIcon>
 

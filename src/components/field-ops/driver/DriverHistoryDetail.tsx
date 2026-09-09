@@ -47,7 +47,7 @@ export function DriverHistoryDetail() {
                 <Stack gap="md">
                   <Group justify="space-between" align="flex-start" wrap="nowrap">
                     <Group gap="sm" wrap="nowrap">
-                      <ThemeIcon size={44} radius="xl" variant="light" color="blue">
+                      <ThemeIcon size={44} radius="xl" variant="light" color="var(--color-primary)">
                         <IconTruckDelivery size={22} />
                       </ThemeIcon>
 
@@ -89,7 +89,7 @@ export function DriverHistoryDetail() {
                   <Paper withBorder radius="md" p="md">
                     <Stack gap="md">
                       <Group gap="sm" align="flex-start" wrap="nowrap">
-                        <ThemeIcon variant="light" radius="xl" color="blue">
+                        <ThemeIcon variant="light" radius="xl" color="var(--color-primary)">
                           <IconUser size={17} />
                         </ThemeIcon>
 
@@ -107,7 +107,7 @@ export function DriverHistoryDetail() {
                       <Divider />
 
                       <Group gap="sm" align="flex-start" wrap="nowrap">
-                        <ThemeIcon variant="light" radius="xl" color="blue">
+                        <ThemeIcon variant="light" radius="xl" color="var(--color-primary)">
                           <IconMapPin size={17} />
                         </ThemeIcon>
 
@@ -128,7 +128,7 @@ export function DriverHistoryDetail() {
                       </Group>
 
                       <Group gap="sm" align="flex-start" wrap="nowrap">
-                        <ThemeIcon variant="light" radius="xl" color="blue">
+                        <ThemeIcon variant="light" radius="xl" color="var(--color-primary)">
                           <IconPhone size={17} />
                         </ThemeIcon>
 
@@ -160,7 +160,7 @@ export function DriverHistoryDetail() {
               <Card withBorder radius="lg" p="lg">
                 <Stack gap="md">
                   <Group gap="sm">
-                    <ThemeIcon variant="light" radius="xl" color="blue">
+                    <ThemeIcon variant="light" radius="xl" color="var(--color-primary)">
                       <IconMapPin size={18} />
                     </ThemeIcon>
 
@@ -191,7 +191,7 @@ export function DriverHistoryDetail() {
               <Card withBorder radius="lg" p="lg">
                 <Stack gap="md">
                   <Group gap="sm">
-                    <ThemeIcon variant="light" radius="xl" color="blue">
+                    <ThemeIcon variant="light" radius="xl" color="var(--color-primary)">
                       <IconClock size={18} />
                     </ThemeIcon>
 

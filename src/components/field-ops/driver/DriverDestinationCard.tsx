@@ -18,7 +18,7 @@ export function DriverDestinationCard({ title, name, address, phone, latitude, l
     <Card withBorder radius="lg" p="lg">
       <Stack gap="md">
         <Group gap="sm" align="flex-start">
-          <ThemeIcon variant="light" radius="xl" size="lg">
+          <ThemeIcon variant="light" radius="xl" size="lg" color="var(--color-primary)">
             <IconMapPin size={18} />
           </ThemeIcon>
 
@@ -58,7 +58,7 @@ export function DriverDestinationCard({ title, name, address, phone, latitude, l
           </Group>
         )}
 
-        <Button component="a" href={mapsUrl} target="_blank" rel="noopener noreferrer" variant="light" leftSection={<IconMapPin size={18} />}>
+        <Button color="var(--color-primary-dark)" component="a" href={mapsUrl} target="_blank" rel="noopener noreferrer"  leftSection={<IconMapPin size={18} />}>
           Buka di Maps
         </Button>
       </Stack>
