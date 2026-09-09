@@ -4,6 +4,7 @@ import { FieldOpsHome } from "@/components/field-ops/shared/FieldOpsHome";
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { useActive } from "@/hooks/driver.hooks";
 import { Button, Card, Skeleton, Stack } from "@mantine/core";
+import { IconArrowNarrowRightDashed } from "@tabler/icons-react";
 import Link from "next/link";
 export default function Page() {
   const activeQuery = useActive();
@@ -31,7 +32,13 @@ export default function Page() {
           <Stack gap="sm">
             <DriverActiveSummary assignment={assignment} />
 
-            <Button component={Link} href="/internal/driver/tugas/aktif" variant="light">
+            <Button
+              color="var(--color-primary)"
+              component={Link}
+              href="/internal/driver/tugas/aktif"
+              variant="filled"
+              rightSection={<IconArrowNarrowRightDashed />}
+            >
               Lihat Tugas Aktif
             </Button>
           </Stack>

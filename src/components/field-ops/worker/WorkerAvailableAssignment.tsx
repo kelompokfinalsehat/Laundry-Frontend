@@ -27,6 +27,12 @@ const STATION_OPTIONS = [
   },
 ];
 
+const STATION_COLOR = {
+  WASHING: "blue",
+  IRONING: "orange",
+  PACKING: "teal",
+};
+
 function getStationLabel(stationType: string) {
   if (stationType === "WASHING") {
     return "Cuci";
@@ -58,6 +64,7 @@ export function WorkerAvailableAssignments() {
 
         <Group>
           <ActionIcon
+            color="blue"
             variant={sortOrder === "asc" ? "filled" : "light"}
             size={"lg"}
             aria-label="Urutkan terlama"
@@ -66,6 +73,7 @@ export function WorkerAvailableAssignments() {
             <IconArrowNarrowUp size={18} />
           </ActionIcon>
           <ActionIcon
+            color="blue"
             variant={sortOrder === "desc" ? "filled" : "light"}
             size={"lg"}
             aria-label="Urutkan terbaru"
@@ -101,7 +109,7 @@ export function WorkerAvailableAssignments() {
                 <Paper key={assignment.id} withBorder radius="md" p="md">
                   <Group justify="space-between">
                     <Stack gap={4}>
-                      <Badge color={"orange"} variant="light" w={"100"} h={25}>
+                      <Badge color={STATION_COLOR[assignment.stationType]} variant="light" w={"100"} h={25}>
                         {getStationLabel(assignment.stationType)}
                       </Badge>
 
@@ -112,7 +120,7 @@ export function WorkerAvailableAssignments() {
 
                     <Button
                       size="xs"
-                      color="blue"
+                      color="var(--color-accent)"
                       loading={claim.isPending && claim.variables === assignment.id}
                       disabled={claim.isPending && claim.variables !== assignment.id}
                       loaderProps={{ type: "dots" }}

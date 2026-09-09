@@ -109,12 +109,12 @@ export function WorkerAssignedTask({
             </Text>
           )}
 
-          <Button type="submit" loading={isValidating} disabled={!assignment.canValidate || isRequestingBypass}>
+          <Button color="var(--color-accent)" type="submit" loading={isValidating} disabled={!assignment.canValidate || isRequestingBypass}>
             Validasi & Mulai Proses
           </Button>
 
           {assignment.canRequestBypass && (
-            <Button type="button" variant="light" color="orange" loading={isRequestingBypass} disabled={isValidating} onClick={handleBypass}>
+            <Button  type="button" variant="light" color="red" loading={isRequestingBypass} disabled={isValidating} onClick={handleBypass}>
               Ajukan Bypass
             </Button>
           )}

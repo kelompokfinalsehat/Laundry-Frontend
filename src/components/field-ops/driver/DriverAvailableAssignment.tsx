@@ -116,7 +116,7 @@ export function DriverAvailableAssignments() {
                       assignment.order.pickupScheduledAt && ( //jadwal jemput hanya untuk pickup
                         <Paper withBorder radius="md" p="sm" bg="var(--color-primary-light)">
                           <Group gap="sm" wrap="nowrap">
-                            <ThemeIcon variant="light" color="blue" radius="xl" size="md">
+                            <ThemeIcon variant="light" color="var(--color-primary)" radius="xl" size="md">
                               <IconClock size={16} />
                             </ThemeIcon>
 

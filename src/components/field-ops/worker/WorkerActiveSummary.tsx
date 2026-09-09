@@ -23,6 +23,12 @@ function getStatusBadge(status: WorkerActiveAssignment["status"]) {
   }
 }
 
+const STATION_COLOR = {
+  WASHING: "blue",
+  IRONING: "orange",
+  PACKING: "teal",
+};
+
 export function WorkerActiveSummary({ assignment }: { assignment: WorkerActiveAssignment }) {
   const stationLabel = getStationLabel(assignment.stationType);
   const statusBadge = getStatusBadge(assignment.status);
@@ -50,7 +56,9 @@ export function WorkerActiveSummary({ assignment }: { assignment: WorkerActiveAs
           <Text size="sm" c="dimmed">
             Station Kerja
           </Text>
-          <Badge variant="light">{stationLabel}</Badge>
+          <Badge variant="light" color={STATION_COLOR[assignment.stationType]}>
+            {stationLabel}
+          </Badge>
         </Group>
 
         <Group justify="space-between">
