@@ -95,7 +95,7 @@ export function BottomNav({ basePath, tugasNew = false, onTaskOpen }: BottomNavP
                 <Icon size={22} stroke={active ? 2.2 : 1.6} />
               )}
 
-              <Text size="10px" fw={active ? 700 : 400} c={active ? "blue.7" : "dimmed"}>
+              <Text size="10px" fw={active ? 700 : 400} c={active ? "var(--color-primary-dark)" : "dimmed"}>
                 {item.label}
               </Text>
             </Stack>

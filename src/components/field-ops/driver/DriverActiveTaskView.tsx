@@ -44,7 +44,7 @@ export function DriverActiveTaskView({
           <Card withBorder radius="lg" p="lg">
             <Stack gap="md">
               <Group gap="sm" align="flex-start">
-                <ThemeIcon variant="light" radius="xl" size="lg" color="yellow">
+                <ThemeIcon variant="light" radius="xl" size="lg" color="var(--color-primary)">
                   <IconTruck size={18} />
                 </ThemeIcon>
 
@@ -60,7 +60,7 @@ export function DriverActiveTaskView({
               <Paper withBorder radius="md" p="md" bg="var(--color-primary-light)">
                 <Group justify="space-between" align="center">
                   <Group gap="sm">
-                    <ThemeIcon variant="light" radius="xl" color="blue">
+                    <ThemeIcon variant="light" radius="xl" color="var(--color-primary)">
                       <IconCalendarTime size={17} />
                     </ThemeIcon>
 
@@ -116,7 +116,7 @@ export function DriverActiveTaskView({
           <Card withBorder radius="lg" p="lg">
             <Stack gap="md">
               <Group gap="sm" align="flex-start">
-                <ThemeIcon variant="light" radius="xl" size="lg" color="blue">
+                <ThemeIcon variant="light" radius="xl" size="lg" color="var(--color-primary)">
                   <IconRoute size={18} />
                 </ThemeIcon>
 

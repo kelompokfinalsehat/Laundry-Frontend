@@ -11,6 +11,12 @@ import { IconArrowLeft, IconChecklist, IconClock, IconPackage } from "@tabler/ic
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
+const STATION_COLOR = {
+  WASHING: "blue",
+  IRONING: "orange",
+  PACKING: "teal",
+};
+
 export function WorkerHistoryDetail() {
   const { assignmentId } = useParams<{ assignmentId: string }>();
 
@@ -61,7 +67,7 @@ export function WorkerHistoryDetail() {
                       </Stack>
                     </Group>
 
-                    <Badge variant="light" color="blue" size="lg">
+                    <Badge variant="light" color={STATION_COLOR[assignment.stationType]} size="lg">
                       {stationLabel}
                     </Badge>
                   </Group>

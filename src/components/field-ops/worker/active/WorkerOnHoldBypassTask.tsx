@@ -12,17 +12,17 @@ export function WorkerOnHoldBypassTask() {
           Menunggu Persetujuan
         </Badge>
 
-        <Stack gap={4}>
-          <Text fw={600}>
-            Permintaan bypass sedang diproses
+        <Stack gap={5}>
+          <Text  fw={800}>
+            Permintaan bypass sedang diproses 
           </Text>
 
-          <Text size="sm" c="dimmed">
+          <Text textWrap='wrap' size="sm" c="dimmed">
             Penyesuaian kuantitas sedang menunggu
             keputusan dari Outlet Admin.
           </Text>
 
-          <Text size="sm" c="dimmed">
+          <Text textWrap="wrap" size="sm" c="dimmed">
             Tugas akan dapat dilanjutkan setelah
             permintaan bypass disetujui.
           </Text>

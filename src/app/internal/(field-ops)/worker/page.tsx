@@ -4,6 +4,7 @@ import { WorkerActiveSummary } from "@/components/field-ops/worker/WorkerActiveS
 import { AsyncStateView } from "@/components/ui/AsyncStateView";
 import { useActive } from "@/hooks/worker.hooks";
 import { Button, Card, Skeleton, Stack } from "@mantine/core";
+import { IconArrowNarrowRightDashed } from "@tabler/icons-react";
 import Link from "next/link";
 
 export default function Page() {
@@ -32,7 +33,13 @@ export default function Page() {
           <Stack gap="sm">
             <WorkerActiveSummary assignment={assignment} />
 
-            <Button component={Link} href="/internal/worker/tugas/aktif" variant="light">
+            <Button
+              color="var(--color-accent)"
+              component={Link}
+              href="/internal/worker/tugas/aktif"
+              variant="light"
+              rightSection={<IconArrowNarrowRightDashed />}
+            >
               Lihat Tugas Aktif
             </Button>
           </Stack>

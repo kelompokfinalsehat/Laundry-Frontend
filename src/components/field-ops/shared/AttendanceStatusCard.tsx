@@ -123,8 +123,8 @@ export function AttendanceStatusCard() {
               </Button>
             )}
 
-            {/* Tidak ada action yang tersedia */}
-            {!data.canClockIn && !data.canClockOut && (
+          
+            {!data.canClockIn && !data.canClockOut && ( // mengikuti response dari BackEnd
               <Text size="sm" c="dimmed" ta="center" py="xs">
                 Tidak ada aksi absensi yang tersedia saat ini.
               </Text>

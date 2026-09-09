@@ -33,22 +33,22 @@ export function DriverActiveSummary({ assignment }: { assignment: DriverActiveAs
   return (
     <Card withBorder shadow="sm" radius="lg" p="lg">
       <Stack gap="md">
-        <Group justify="space-between" align="flex-start">
-          <Group align="center" gap="sm">
-            <ThemeIcon size={44} radius="xl" variant="light" color="blue">
+        <Group justify="space-between" align="flex-start" wrap="nowrap">
+          <Group align="center" gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+            <ThemeIcon size={44} radius="xl" variant="light" color="var(--color-primary)">
               <IconTruckDelivery size={22} />
             </ThemeIcon>
-            <Stack gap={2}>
+            <Stack gap={2} style={{ minWidth: 0 }}>
               <Text size="xs" c="dimmed">
                 Tugas Aktif
               </Text>
-              <Text fw={700} size="lg">
+              <Text fw={700} size="lg" truncate>
                 {assignment.order.orderCode}
               </Text>
             </Stack>
           </Group>
 
-          <Badge color={stateBadge.color} variant="light" size="lg" radius="sm">
+          <Badge color={stateBadge.color} variant="light" size="lg" radius="sm" style={{ flexShrink: 0 }}>
             {stateBadge.label}
           </Badge>
         </Group>
@@ -64,7 +64,7 @@ export function DriverActiveSummary({ assignment }: { assignment: DriverActiveAs
               Jenis Tugas
             </Text>
           </Group>
-          <Badge variant="light" color="grape" radius="sm">
+          <Badge variant="light" color={assignment.taskType === "PICKUP" ? "orange" : "blue"} radius="sm">
             {taskTypeLabel}
           </Badge>
         </Group>

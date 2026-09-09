@@ -22,16 +22,16 @@ const STATION_INFO: Record<
   }
 > = {
   WASHING: {
-    label: "Washing",
+    label: "Cuci",
     color: "blue",
   },
   IRONING: {
-    label: "Ironing",
-    color: "yellow",
+    label: "Setrika",
+    color: "orange",
   },
   PACKING: {
     label: "Packing",
-    color: "grape",
+    color: "teal",
   },
 };
 
@@ -100,7 +100,7 @@ export function WorkerHistory() {
             <Stack gap="md">
               <Paper withBorder radius="lg" p="md" bg="var(--color-primary-light)">
                 <Group gap="sm">
-                  <ThemeIcon variant="light" radius="xl" size="lg" color="blue">
+                  <ThemeIcon variant="light" radius="xl" size="lg" color="var(--color-primary)">
                     <IconChecklist size={18} />
                   </ThemeIcon>
 
