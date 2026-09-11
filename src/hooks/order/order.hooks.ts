@@ -9,6 +9,7 @@ import { CreateComplaintSchema } from "@/lib/validation/order.validation";
 
 const orderApi = new OrderApi();
 
+
 export function useCreateOrder() {
   return useMutation({ mutationFn: orderApi.createOrder });
 }
@@ -66,5 +67,11 @@ export function useCreateComplaint(id: string) {
         queryKey: ["orders", id],
       });
     },
+  });
+}
+
+export function useExpirePayment() {
+  return useMutation({
+    mutationFn: orderApi.expirePayment,
   });
 }

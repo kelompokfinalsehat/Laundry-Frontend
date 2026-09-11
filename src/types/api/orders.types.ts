@@ -125,3 +125,13 @@ export type Complaint = {
   createdAt: string;
 };
  
+export type PaymentStatusResponse = {
+  orderId: string;
+  transactionStatus: string;
+  message: string;
+};
+
+export type PaymentStatusEnvelope = {
+  success: true;
+  data: PaymentStatusResponse;
+};
