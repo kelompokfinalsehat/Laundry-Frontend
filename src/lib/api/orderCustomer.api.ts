@@ -48,6 +48,13 @@ export class OrderApi {
     return data.data;
   }
 
+  async expirePayment(gatewayOrderId: string) {
+    const { data } = await api.post("/payments/expire", {
+      order_id: gatewayOrderId,
+    });
+    return data;
+  }
+
   async confirm(id: string) {
     const { data } = await api.patch<ConfirmResponse>(`/order/${id}/confirm`);
     return data;
