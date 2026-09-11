@@ -11,14 +11,14 @@ export const FEATURES: {
 }[] = [
   {
     icon: IconTruck,
-    title: "Request pickup",
+    title: "jadwalkan penjemputan laundry",
     description:
       "Jadwalkan penjemputan cucian dari alamat tersimpan, kapan saja kamu mau.",
     href: "/request-pickup",
   },
   {
     icon: IconActivity,
-    title: "Tracking proses",
+    title: "Lacak proses",
     description:
       "Ikuti tiap tahap: pickup, cuci-setrika-packing, sampai diantar kembali.",
     href: "/pesanan",

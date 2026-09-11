@@ -48,8 +48,8 @@ export function RequestPickupReview({
 
       <Alert
         style={{
-          backgroundColor: "var(--color-error-light)",
-          color: "var(--color-error)",
+          backgroundColor: "var(--color-warning-light)",
+          color: "var(--color-warning)",
         }}
       >
         Pastikan alamat serta jadwal pickup sudah benar. Request yang sudah
@@ -69,7 +69,7 @@ export function RequestPickupReview({
             color: "var(--color-text-on-accent)",
           }}
         >
-          Buat Request Pickup
+          Buat pesanan
         </Button>
       </Group>
     </Stack>

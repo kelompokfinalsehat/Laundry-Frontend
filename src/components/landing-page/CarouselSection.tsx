@@ -111,7 +111,7 @@ export default function CarouselSection() {
                       color: "var(--color-text-on-accent)",
                     }}
                   >
-                    Request Pickup
+                    Buat Pesanan
                   </Button>
                   <Button component={Link} href="/pesanan" variant="outline">
                     Lacak Pesanan

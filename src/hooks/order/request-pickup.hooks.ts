@@ -82,7 +82,7 @@ export function useRequestPickup() {
         onSuccess: (result) => {
           notifications.show({
             title: "Berhasil",
-            message: "Request pickup berhasil dibuat.",
+            message: "jadwal penjemputan laundry berhasil dibuat.",
             color: "green",
           });
 

@@ -53,7 +53,7 @@ export function RequestPickupForm() {
 
     notifications.show({
       id: "request-pickup-error",
-      title: "Gagal membuat request pickup",
+      title: "Gagal membuat penjemputan laundry",
       message: errorMessage,
       color: "red",
       autoClose: 5000,
@@ -69,7 +69,7 @@ export function RequestPickupForm() {
       onRetry={() => refetchAddresses()}
       isEmpty={(data) => data.length === 0}
       emptyTitle="Belum ada alamat"
-      emptyDescription="Tambah alamat dulu sebelum request pickup."
+      emptyDescription="Tambah alamat dulu sebelum buat pesanan."
       emptyAction={{
         label: "Tambah Alamat",
         onClick: () => router.push("/alamat"),
@@ -84,7 +84,7 @@ export function RequestPickupForm() {
                 color: "var(--color-primary)",
               }}
             >
-              Izinkan akses lokasi browser dulu untuk membuat request pickup.
+              Izinkan akses lokasi browser dulu untuk membuat jadwal penjemputan laundry.
             </Alert>
           );
         }

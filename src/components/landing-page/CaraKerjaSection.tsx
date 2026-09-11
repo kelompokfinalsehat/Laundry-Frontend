@@ -9,7 +9,7 @@ const STEPS: {
 }[] = [
   {
     n: 1,
-    title: "Request Pickup",
+    title: "jadwalkan penjemputan cucian",
     desc: "Ajukan penjemputan lewat aplikasi, kurir kami datang ke lokasimu.",
   },
   {

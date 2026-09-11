@@ -16,7 +16,7 @@ export function getCreateOrderErrorMessage(error: unknown) {
       return "Layanan sedang tidak tersedia. Coba lagi nanti.";
 
     case "OUTSIDE_OPERATIONAL_HOURS":
-      return "Request pickup hanya bisa dibuat pada jam operasional.";
+      return "penjadwalan hanya bisa dibuat pada jam operasional.";
 
     default:
       return error.message;
