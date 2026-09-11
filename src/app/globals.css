@@ -21,7 +21,7 @@ a { color: inherit; text-decoration: none; }
   /* Accent / CTA */
   --color-accent: #f2a93b;          /* Sundry Yellow — tombol aksi utama */
   --color-accent-dark: #d6900f;     /* hover/active state tombol accent */
-  --color-accent-light: #fdf1de;    /* background lembut untuk badge/alert info */
+  --color-accent-light:#ffc107;    /* background lembut untuk badge/alert info */
  
   /* Base */
   --color-background: #eaf4fb;      /* Chalk Linen — background utama */

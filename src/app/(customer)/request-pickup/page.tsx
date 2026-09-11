@@ -35,7 +35,7 @@ export default function RequestPickupPage() {
       </Anchor>
       <div>
         <Title order={3} style={{ color: "var(--color-text-primary)" }}>
-          Request Pickup
+          Buat Pesanan
         </Title>
         <Text size="sm" c="var(--color-text-secondary)">
           Pilih alamat dan jadwal, tim kami akan menjemput laundry kamu.

@@ -7,7 +7,7 @@ export const NAV_LINKS = [
     icon: IconUser,
   },
   {
-    label: "Request Pickup",
+    label: "Buat pesanan",
     href: "/request-pickup",
     icon: IconTruck,
   },
