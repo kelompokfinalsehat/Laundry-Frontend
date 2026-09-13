@@ -109,6 +109,5 @@ export type ComplaintDetail = {
 };
 
 export type DecideComplaintPayload = {
-  decision: "APPROVED" | "REJECTED";
   responseNote: string;
 };
