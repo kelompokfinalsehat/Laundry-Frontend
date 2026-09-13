@@ -116,46 +116,48 @@ export function useCreateOrderHooks({ order, isSubmitting, onClose, onSubmit }: 
     );
   };
 
-  const handleSubmit = async () => {
-    if (!order) {
-      return;
-    }
+ const buildPayload = (): CreateOrderPayload | null => {
+  if (!order) {
+    return null;
+  }
 
-    if (typeof weightKg !== "number" || weightKg <= 0) {
-      return;
-    }
+  if (typeof weightKg !== "number" || weightKg <= 0) {
+    return null;
+  }
 
-    const hasInvalidItem = items.some((item) => item.laundryItemId === "" || !Number.isInteger(item.quantity) || item.quantity <= 0);
+  const hasInvalidItem = items.some(
+    (item) =>
+      item.laundryItemId === "" ||
+      !Number.isInteger(item.quantity) ||
+      item.quantity <= 0,
+  );
 
-    if (hasInvalidItem) {
-      return;
-    }
-
-    const payload: CreateOrderPayload = {
-      weightKg,
-      items: items.map((item) => ({
-        laundryItemId: item.laundryItemId,
-        quantity: item.quantity,
-      })),
-    };
-
-    await onSubmit(order.id, payload);
-    resetForm(); 
-  };
+  if (hasInvalidItem) {
+    return null;
+  }
 
   return {
-    handleClose,
     weightKg,
-    setWeightKg,
-    handleAddItem,
-    isLaundryItemsLoading,
-    items,
-    getLaundryItemOptions,
-    handleLaundryItemChange,
-    handleQuantityChange,
-    handleRemoveItem,
-    handleSubmit,
+    items: items.map((item) => ({
+      laundryItemId: item.laundryItemId,
+      quantity: item.quantity,
+    })),
   };
+};
+
+ return {
+  handleClose,
+  weightKg,
+  setWeightKg,
+  handleAddItem,
+  isLaundryItemsLoading,
+  items,
+  getLaundryItemOptions,
+  handleLaundryItemChange,
+  handleQuantityChange,
+  handleRemoveItem,
+  buildPayload,
+};
 }
 
 type ReceptionStage = "WAITING_RECEIPT" | "READY_TO_CREATE";
