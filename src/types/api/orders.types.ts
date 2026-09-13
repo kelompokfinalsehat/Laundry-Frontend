@@ -64,6 +64,7 @@ export type OrderDetail = {
     paymentStatus: string;
     pricePerKgSnapshot: number;
     shippingFeeSnapshot: number;
+    expiresAt: string | null;
   } | null;
   orderItems: { id: string; quantity: number; laundryItem: { name: string } }[];
   complaint: Complaint | null;

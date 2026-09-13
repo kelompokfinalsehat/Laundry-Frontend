@@ -1,7 +1,19 @@
 "use client";
 
 import { OrderDetail } from "@/types/api/orders.types";
-import { Badge, Box, Button, Divider, Group, Paper, Stack, Text, Title } from "@mantine/core";
+import {
+  Alert,
+  Badge,
+  Box,
+  Button,
+  Divider,
+  Group,
+  Paper,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
 
 type BillStatus = NonNullable<OrderDetail["bill"]>;
 
@@ -13,7 +25,9 @@ function formatRupiah(value: string | number) {
   }).format(Number(value));
 }
 
-function getPaymentStatusLabel(status: BillStatus["paymentStatus"] | undefined) {
+function getPaymentStatusLabel(
+  status: BillStatus["paymentStatus"] | undefined,
+) {
   switch (status) {
     case "PAID":
       return "Sudah Dibayar";
@@ -24,7 +38,9 @@ function getPaymentStatusLabel(status: BillStatus["paymentStatus"] | undefined) 
   }
 }
 
-function getPaymentStatusColor(status: BillStatus["paymentStatus"] | undefined) {
+function getPaymentStatusColor(
+  status: BillStatus["paymentStatus"] | undefined,
+) {
   switch (status) {
     case "PAID":
       return "green";
@@ -68,7 +84,10 @@ export function BillDetailContent({
           <Group justify="space-between">
             <Text fw={600}>Status Pembayaran</Text>
 
-            <Badge color={getPaymentStatusColor(bill.paymentStatus)} variant="light">
+            <Badge
+              color={getPaymentStatusColor(bill.paymentStatus)}
+              variant="light"
+            >
               {getPaymentStatusLabel(bill.paymentStatus)}
             </Badge>
           </Group>
@@ -105,11 +124,43 @@ export function BillDetailContent({
             </Text>
           </Group>
 
-          {order.allowedActions.canPay && bill.paymentStatus === "UNPAID" && (
-            <Button fullWidth mt="sm" onClick={onPay} loading={isPaying}>
-              Bayar Sekarang
-            </Button>
+          {order.customerStatus === "OVERDUE" && (
+            <Alert
+              color="red"
+              variant="light"
+              icon={<IconAlertCircle size={16} />}
+              mt="sm"
+            >
+              Maaf, tagihan ini sudah melewati batas waktu dan tidak dapat
+              diproses lagi. Silakan hubungi customer service kami di +62
+              812-0000-0000 untuk bantuan lebih lanjut.
+            </Alert>
           )}
+
+          {order.allowedActions.canPay &&
+            bill.paymentStatus === "UNPAID" &&
+            order.customerStatus !== "OVERDUE" && (
+              <>
+                {bill.expiresAt && (
+                  <Alert
+                    color="yellow"
+                    variant="light"
+                    icon={<IconAlertCircle size={16} />}
+                    mt="sm"
+                  >
+                    Selesaikan pembayaran sebelum{" "}
+                    {new Date(bill.expiresAt).toLocaleString("id-ID", {
+                      dateStyle: "long",
+                      timeStyle: "short",
+                    })}
+                  </Alert>
+                )}
+
+                <Button fullWidth mt="sm" onClick={onPay} loading={isPaying}>
+                  Bayar Sekarang
+                </Button>
+              </>
+            )}
         </Stack>
       </Paper>
 
