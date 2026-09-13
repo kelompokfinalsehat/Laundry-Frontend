@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Button, Group, Modal, Radio, Stack, Text, Textarea } from "@mantine/core";
+import { Badge, Button, Group, Modal, Stack, Text, Textarea } from "@mantine/core";
 import { useState } from "react";
 import { ComplaintListItem, DecideComplaintPayload } from "@/types/api/complaint.types";
 import { IconExternalLink } from "@tabler/icons-react";
@@ -27,11 +27,9 @@ function getCategoryLabel(category: ComplaintListItem["category"]) {
 }
 
 export function ComplaintDecisionModal({ opened, complaint, isSubmitting, onClose, onSubmit, onOpenedProof }: Props) {
-  const [decision, setDecision] = useState<Decision | null>(null);
   const [responseNote, setResponseNote] = useState("");
 
   const resetForm = () => {
-    setDecision(null);
     setResponseNote("");
   };
 
@@ -45,12 +43,11 @@ export function ComplaintDecisionModal({ opened, complaint, isSubmitting, onClos
   };
 
   const handleSubmit = async () => {
-    if (!decision || responseNote.trim().length === 0) {
+    if (responseNote.trim().length === 0) {
       return;
     }
 
     await onSubmit({
-      decision,
       responseNote: responseNote.trim(),
     });
 
@@ -96,14 +93,6 @@ export function ComplaintDecisionModal({ opened, complaint, isSubmitting, onClos
             Lihat Bukti
           </Button>
         </Stack>
-        <Radio.Group label="Keputusan" value={decision} onChange={(value) => setDecision(value as Decision)} required>
-          <Stack gap="xs" mt="xs">
-            <Radio value="APPROVED" label="Terima komplain" />
-
-            <Radio value="REJECTED" label="Tolak komplain" />
-          </Stack>
-        </Radio.Group>
-
         <Textarea
           label="Catatan Tanggapan"
           placeholder="Masukkan tanggapan untuk pelanggan"
@@ -119,7 +108,7 @@ export function ComplaintDecisionModal({ opened, complaint, isSubmitting, onClos
             Batal
           </Button>
 
-          <Button onClick={handleSubmit} loading={isSubmitting} disabled={!decision || responseNote.trim().length === 0}>
+          <Button onClick={handleSubmit} loading={isSubmitting} disabled={responseNote.trim().length === 0}>
             Simpan Keputusan
           </Button>
         </Group>
