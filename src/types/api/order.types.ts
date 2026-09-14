@@ -47,7 +47,8 @@ export type OrderBill = {
   paymentStatus: BillPaymentStatus;
   laundryCost: DecimalString;
   shippingCost: DecimalString;
-  paidAt: DecimalString
+  paidAt: string;
+  expiresAt: string;
 };
 
 export type OrderListItem = {
