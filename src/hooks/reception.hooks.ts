@@ -243,13 +243,6 @@ export function useReceiveOrderHooks() {
     }
 
     await receiveOrderMutation.mutateAsync(selectedOrderToReceive.id, {
-      onSuccess: () => {
-        notifications.show({
-          title: "Berhasil",
-          message: "Pesanan berhasil diterima.",
-          color: "green",
-        });
-      },
       onError: (err) => {
         notifications.show({
           title: "Gagal",
@@ -273,13 +266,6 @@ export function useReceiveOrderHooks() {
         payload,
       },
       {
-        onSuccess: () => {
-          notifications.show({
-            title: "Berhasil",
-            message: "Order berhasil dibuat.",
-            color: "green",
-          });
-        },
         onError: (err) => {
           notifications.show({
             title: "Gagal",
