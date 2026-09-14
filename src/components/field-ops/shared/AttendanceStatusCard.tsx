@@ -78,7 +78,7 @@ export function AttendanceStatusCard() {
             </Group>
 
             <SimpleGrid cols={2}>
-              <Paper withBorder p="sm" radius="md">
+              <Paper withBorder p="sm" radius="md" shadow='md'>
                 <Text size="xs" c="dimmed">
                   Jam Masuk
                 </Text>
@@ -86,7 +86,7 @@ export function AttendanceStatusCard() {
                 <Text fw={500}>{formatFieldOpsTime(data.clockInAt)}</Text>
               </Paper>
 
-              <Paper withBorder p="sm" radius="md">
+              <Paper withBorder p="sm" radius="md" shadow="md">
                 <Text size="xs" c="dimmed">
                   Jam Pulang
                 </Text>

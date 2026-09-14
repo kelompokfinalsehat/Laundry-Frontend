@@ -58,8 +58,7 @@ export function FieldOpsGreeting() {
           pos="relative"
           style={{
             overflow: "hidden",
-            background:
-              "linear-gradient(135deg, var(--mantine-color-orange-6) 0%, var(--mantine-color-orange-5) 45%, var(--mantine-color-yellow-5) 100%)",
+            background: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent) 45%, var(--color-accent-light) 100%)",
           }}
         >
           <Stack gap="lg" p={15} pos="relative" style={{ zIndex: 1 }}>

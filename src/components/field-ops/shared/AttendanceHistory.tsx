@@ -23,20 +23,10 @@ export function AttendanceHistory() {
           w={200}
         />
         <Group>
-          <ActionIcon
-            variant={sortOrder === "asc" ? "filled" : "light"}
-            size={"lg"}
-            aria-label="Urutkan terlama"
-            onClick={() => handleSortChange("asc")}
-          >
+          <ActionIcon variant={sortOrder === "asc" ? "filled" : "light"} size={"lg"} aria-label="Urutkan terlama" onClick={() => handleSortChange("asc")}>
             <IconArrowNarrowUp size={18} />
           </ActionIcon>
-          <ActionIcon
-            variant={sortOrder === "desc" ? "filled" : "light"}
-            size={"lg"}
-            aria-label="Urutkan terbaru"
-            onClick={() => handleSortChange("desc")}
-          >
+          <ActionIcon variant={sortOrder === "desc" ? "filled" : "light"} size={"lg"} aria-label="Urutkan terbaru" onClick={() => handleSortChange("desc")}>
             <IconArrowNarrowDown size={18} />
           </ActionIcon>
         </Group>
@@ -69,8 +59,8 @@ export function AttendanceHistory() {
             <Stack gap={"md"}>
               {/* summary statistic requested by mentor */}
               <SimpleGrid cols={3}>
-                <Paper withBorder p={"sm"} radius={"md"} shadow="md">
-                  <Text size="xs" c="dimmed" ta={"center"}>
+                <Paper withBorder p={"sm"} radius={"md"} shadow="sm">
+                  <Text fw={400} size="xs" c="dimmed" ta={"center"}>
                     Hari Efektif
                   </Text>
                   <Text fw={600} size="lg" ta={"center"}>
@@ -78,8 +68,8 @@ export function AttendanceHistory() {
                   </Text>
                 </Paper>
 
-                <Paper withBorder p={"sm"} radius={"md"} shadow="md">
-                  <Text size="xs" c="dimmed" ta={"center"}>
+                <Paper withBorder p={"sm"} radius={"md"} shadow="sm">
+                  <Text fw={400} size="xs" c="dimmed" ta={"center"}>
                     Hadir
                   </Text>
                   <Text fw={600} size="lg" ta={"center"}>
@@ -87,8 +77,8 @@ export function AttendanceHistory() {
                   </Text>
                 </Paper>
 
-                <Paper withBorder p={"sm"} radius={"md"} shadow="md">
-                  <Text size="xs" c="dimmed" ta={"center"}>
+                <Paper withBorder p={"sm"} radius={"md"} shadow="sm">
+                  <Text fw={400} size="xs" c="dimmed" ta={"center"}>
                     Tidak Hadir
                   </Text>
                   <Text fw={600} size="lg" ta={"center"}>
