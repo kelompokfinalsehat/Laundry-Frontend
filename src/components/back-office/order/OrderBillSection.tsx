@@ -100,6 +100,7 @@ export function OrderBillSection({ bill }: Props) {
 
           <BillInformationItem label="Total Tagihan" value={formatCurrency(bill.totalAmount)} />
           <BillInformationItem label="Dibayar Pada" value={formatDateTime(bill.paidAt)?? "-"} />
+          <BillInformationItem label="Expire Pada" value={formatDateTime(bill.expiresAt)?? "-"} />
         </SimpleGrid>
       </Stack>
     </Paper>
