@@ -1,4 +1,13 @@
-import { Badge, Button, Group, Paper, ScrollArea, Stack, Table, Text } from "@mantine/core";
+import {
+  Badge,
+  Button,
+  Group,
+  Paper,
+  ScrollArea,
+  Stack,
+  Table,
+  Text,
+} from "@mantine/core";
 import { DashboardResponse } from "@/types/api/dashboard.types";
 import { CUSTOMER_STATUS } from "@/lib/constants/customer-status";
 
@@ -41,56 +50,71 @@ export function RecentOrders({ data, onSelect, onViewAll }: Props) {
           </Button>
         </Group>
 
-        <ScrollArea>
-          <Table highlightOnHover miw={650} verticalSpacing="sm">
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Kode</Table.Th>
-                <Table.Th>Customer</Table.Th>
-                <Table.Th>Status</Table.Th>
-                <Table.Th>Dibuat</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
+        {data.length === 0 ? (
+          <Stack align="center" justify="center" py="xl" gap={4}>
+            <Text size="sm" fw={500}>
+              Belum ada pesanan
+            </Text>
+            <Text size="xs" c="var(--color-text-secondary)" ta="center">
+              Belum ada pesanan yang masuk.
+            </Text>
+          </Stack>
+        ) : (
+          <ScrollArea>
+            <Table highlightOnHover miw={650} verticalSpacing="sm">
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Kode</Table.Th>
+                  <Table.Th>Customer</Table.Th>
+                  <Table.Th>Status</Table.Th>
+                  <Table.Th>Dibuat</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
 
-            <Table.Tbody>
-              {data.map((order) => {
-                const customerStatus = CUSTOMER_STATUS[order.status];
-                return (
-                  <Table.Tr
-                    key={order.id}
-                    onClick={() => onSelect(order.id)}
-                    style={{
-                      cursor: "pointer",
-                      transition: "background-color 120ms ease",
-                    }}
-                  >
-                    <Table.Td>
-                      <Text size="sm" fw={600}>
-                        {order.orderCode}
-                      </Text>
-                    </Table.Td>
+              <Table.Tbody>
+                {data.map((order) => {
+                  const customerStatus = CUSTOMER_STATUS[order.status];
+                  return (
+                    <Table.Tr
+                      key={order.id}
+                      onClick={() => onSelect(order.id)}
+                      style={{
+                        cursor: "pointer",
+                        transition: "background-color 120ms ease",
+                      }}
+                    >
+                      <Table.Td>
+                        <Text size="sm" fw={600}>
+                          {order.orderCode}
+                        </Text>
+                      </Table.Td>
 
-                    <Table.Td>
-                      <Text size="sm">{order.customerName}</Text>
-                    </Table.Td>
+                      <Table.Td>
+                        <Text size="sm">{order.customerName}</Text>
+                      </Table.Td>
 
-                    <Table.Td>
-                      <Badge variant="light" color={customerStatus.color} radius="sm">
-                        {customerStatus.label}
-                      </Badge>
-                    </Table.Td>
+                      <Table.Td>
+                        <Badge
+                          variant="light"
+                          color={customerStatus.color}
+                          radius="sm"
+                        >
+                          {customerStatus.label}
+                        </Badge>
+                      </Table.Td>
 
-                    <Table.Td>
-                      <Text size="sm" c="var(--color-text-secondary)">
-                        {formatDate(order.createdAt)}
-                      </Text>
-                    </Table.Td>
-                  </Table.Tr>
-                );
-              })}
-            </Table.Tbody>
-          </Table>
-        </ScrollArea>
+                      <Table.Td>
+                        <Text size="sm" c="var(--color-text-secondary)">
+                          {formatDate(order.createdAt)}
+                        </Text>
+                      </Table.Td>
+                    </Table.Tr>
+                  );
+                })}
+              </Table.Tbody>
+            </Table>
+          </ScrollArea>
+        )}
       </Stack>
     </Paper>
   );
