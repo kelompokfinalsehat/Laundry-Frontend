@@ -27,27 +27,43 @@ export function OrderOverview({ data }: { data: OrderOverviewItem[] }) {
           </Text>
         </div>
 
-        <Stack gap="sm">
-          {sortedData.map((item) => {
-            const percentage = total > 0 ? (item.total / total) * 100 : 0;
+        {data.length === 0 ? (
+          <Stack align="center" justify="center" py="xl" gap={4}>
+            <Text size="sm" fw={500}>
+              Belum ada data pesanan
+            </Text>
+            <Text size="xs" c="var(--color-text-secondary)" ta="center">
+              Distribusi status pesanan akan tampil setelah ada pesanan.
+            </Text>
+          </Stack>
+        ) : (
+          <Stack gap="sm">
+            {sortedData.map((item) => {
+              const percentage = total > 0 ? (item.total / total) * 100 : 0;
 
-            return (
-              <Stack key={item.status} gap={5}>
-                <Group justify="space-between" wrap="nowrap">
-                  <Text size="sm" c="var(--color-text-primary)">
-                    {CUSTOMER_STATUS[item.status].label}
-                  </Text>
+              return (
+                <Stack key={item.status} gap={5}>
+                  <Group justify="space-between" wrap="nowrap">
+                    <Text size="sm" c="var(--color-text-primary)">
+                      {CUSTOMER_STATUS[item.status].label}
+                    </Text>
 
-                  <Text size="sm" fw={600} c="var(--color-text-primary)">
-                    {item.total}
-                  </Text>
-                </Group>
+                    <Text size="sm" fw={600} c="var(--color-text-primary)">
+                      {item.total}
+                    </Text>
+                  </Group>
 
-                <Progress value={percentage} size={4} radius="xl" color={CUSTOMER_STATUS[item.status].color} />
-              </Stack>
-            );
-          })}
-        </Stack>
+                  <Progress
+                    value={percentage}
+                    size={4}
+                    radius="xl"
+                    color={CUSTOMER_STATUS[item.status].color}
+                  />
+                </Stack>
+              );
+            })}
+          </Stack>
+        )}
       </Stack>
     </Paper>
   );
