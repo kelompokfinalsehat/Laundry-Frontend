@@ -48,7 +48,7 @@ export function FieldOpsAppShell({ children, role, basePath }: { children: React
         </Group>
       </AppShell.Header>
 
-      <AppShell.Main maw={720} mx="auto" pb={80}>
+      <AppShell.Main maw={720} mx="auto" pb={80} >
         {children}
       </AppShell.Main>
 
