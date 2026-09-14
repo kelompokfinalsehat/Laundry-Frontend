@@ -49,7 +49,7 @@ export class OrderApi {
   }
 
   async expirePayment(gatewayOrderId: string) {
-    const { data } = await api.post("/payments/expire", {
+    const { data } = await api.post("/payment/expire", {
       order_id: gatewayOrderId,
     });
     return data;
