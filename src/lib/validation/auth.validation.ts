@@ -2,7 +2,7 @@ import * as z from "zod"
 
 export const loginCustomerSchema = z.object({
   email: z.string().email("Email tidak valid"),
-  password: z.string().min(8, "Minimal 8 karakter"),
+  password: z.string().min(8, "Minimal 8 karakter").regex(/[^a-z0-9]/,{message: 'password harus unik'}),
 });
 
 export const registerCustomerSchema = z.object({
@@ -17,7 +17,7 @@ export const emailVerificationSchema = z.object({
     .string()
     .min(5, "Nama minimal 5 karakter")
     .max(150, "Nama maksimal 150 karakter"),
-  password: z.string().min(8, "Kata sandi minimal 8 karakter"),
+  password: z.string().min(8, "Kata sandi minimal 8 karakter").regex(/[^a-z0-9]/,{message: 'password harus unik'}),
 });
 
 export const forgotPasswordSchema = z.object({
