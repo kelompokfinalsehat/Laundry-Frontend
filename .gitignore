@@ -44,3 +44,5 @@ next-env.d.ts
 *.zip
 Archive.zip
 FE.md
+
+.agents/

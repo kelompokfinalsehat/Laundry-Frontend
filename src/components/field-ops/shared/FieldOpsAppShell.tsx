@@ -23,7 +23,7 @@ export function FieldOpsAppShell({ children, role, basePath }: { children: React
   });
 
   return (
-    <AppShell header={{ height: 56 }} footer={{ height: 64 }} padding="md">
+    <AppShell header={{ height: 56 }} footer={{ height: 88 }} padding="md">
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Title
@@ -48,11 +48,23 @@ export function FieldOpsAppShell({ children, role, basePath }: { children: React
         </Group>
       </AppShell.Header>
 
-      <AppShell.Main maw={720} mx="auto" pb={80} >
+      <AppShell.Main maw={720} mx="auto" pb={96}>
         {children}
       </AppShell.Main>
 
-      <AppShell.Footer>
+      <AppShell.Footer
+        withBorder={false}
+        style={{
+          background: "transparent",
+          border: "none",
+          pointerEvents: "none",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "0 16px",
+          paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
+        }}
+      >
         <BottomNav basePath={basePath} tugasNew={hasNewTask} onTaskOpen={handleTaskOpen} />
       </AppShell.Footer>
     </AppShell>

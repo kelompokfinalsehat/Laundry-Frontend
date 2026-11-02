@@ -1,9 +1,7 @@
 "use client";
 
 import { Box, Indicator, Stack, Text, UnstyledButton } from "@mantine/core";
-
 import { IconCalendarCheck, IconClipboardList, IconHistory, IconHome, IconUser } from "@tabler/icons-react";
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -13,6 +11,8 @@ type NavItem = {
   icon: React.ComponentType<{
     size?: number;
     stroke?: number;
+    color?: string;
+    style?: React.CSSProperties;
   }>;
   isTask?: boolean;
 };
@@ -61,13 +61,24 @@ export function BottomNav({ basePath, tugasNew = false, onTaskOpen }: BottomNavP
 
   return (
     <Box
+      component="nav"
+      aria-label="Navigasi Menu Utama"
       style={{
+        width: "100%",
+        maxWidth: 520,
+        pointerEvents: "auto",
         display: "flex",
-        justifyContent: "space-around",
-        borderTop: "1px solid var(--mantine-color-gray-3)",
-        background: "var(--mantine-color-body)",
-        paddingTop: 6,
-        paddingBottom: 6,
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: "rgba(255, 255, 255, 0.92)",
+        backdropFilter: "blur(16px) saturate(180%)",
+        WebkitBackdropFilter: "blur(16px) saturate(180%)",
+        border: "1px solid rgba(226, 227, 222, 0.9)",
+        borderRadius: 9999,
+        boxShadow:
+          "0 10px 25px -5px rgba(38, 49, 58, 0.12), 0 8px 10px -6px rgba(38, 49, 58, 0.08), 0 0 1px rgba(38, 49, 58, 0.2)",
+        padding: "6px 8px",
+        gap: 4,
       }}
     >
       {items.map((item) => {
@@ -81,21 +92,71 @@ export function BottomNav({ basePath, tugasNew = false, onTaskOpen }: BottomNavP
             component={Link}
             href={item.href}
             onClick={item.isTask ? onTaskOpen : undefined}
+            aria-label={item.label}
+            aria-current={active ? "page" : undefined}
             style={{
-              minWidth: 64,
-              minHeight: 44,
+              flex: 1,
+              minWidth: 0,
+              minHeight: 48,
+              borderRadius: 9999,
+              padding: "6px 4px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: active ? "var(--color-primary-light)" : "transparent",
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              cursor: "pointer",
             }}
           >
-            <Stack gap={2} align="center">
+            <Stack gap={2} align="center" style={{ width: "100%" }}>
               {item.isTask ? (
-                <Indicator inline label="New" size={16} disabled={!tugasNew}>
-                  <Icon size={22} stroke={active ? 2.2 : 1.6} />
+                <Indicator
+                  inline
+                  label="New"
+                  size={15}
+                  disabled={!tugasNew}
+                  color="red"
+                  offset={2}
+                  styles={{
+                    indicator: {
+                      fontSize: "9px",
+                      fontWeight: 700,
+                      padding: "0 4px",
+                      lineHeight: "13px",
+                    },
+                  }}
+                >
+                  <Icon
+                    size={21}
+                    stroke={active ? 2.3 : 1.7}
+                    style={{
+                      color: active ? "var(--color-primary-dark)" : "var(--color-text-secondary)",
+                      transition: "color 0.2s ease, stroke-width 0.2s ease",
+                    }}
+                  />
                 </Indicator>
               ) : (
-                <Icon size={22} stroke={active ? 2.2 : 1.6} />
+                <Icon
+                  size={21}
+                  stroke={active ? 2.3 : 1.7}
+                  style={{
+                    color: active ? "var(--color-primary-dark)" : "var(--color-text-secondary)",
+                    transition: "color 0.2s ease, stroke-width 0.2s ease",
+                  }}
+                />
               )}
 
-              <Text size="10px" fw={active ? 700 : 400} c={active ? "var(--color-primary-dark)" : "dimmed"}>
+              <Text
+                size="10.5px"
+                fw={active ? 700 : 500}
+                c={active ? "var(--color-primary-dark)" : "var(--color-text-secondary)"}
+                style={{
+                  lineHeight: 1.2,
+                  whiteSpace: "nowrap",
+                  letterSpacing: active ? "-0.2px" : "normal",
+                  transition: "color 0.2s ease, font-weight 0.2s ease",
+                }}
+              >
                 {item.label}
               </Text>
             </Stack>
